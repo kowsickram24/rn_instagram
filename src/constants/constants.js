@@ -1,4 +1,3 @@
-import Logo from '../assets/insta_logo.svg';
 
 export const FONT = {
   SFPro: {
@@ -13,12 +12,8 @@ export const FONT = {
   },
 };
 
-export const ASSET = {
-  INSTA_LOGO: Logo,
-};
-
 export const COLOR = {
-    PRIMARY: '#3797EF',
-    WHITE : '#FFFFFF',
-    BLACK : '#000000',
-}
+  PRIMARY: '#3797EF',
+  WHITE: '#FFFFFF',
+  BLACK: '#000000',
+};

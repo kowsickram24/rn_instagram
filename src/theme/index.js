@@ -1,20 +1,36 @@
-import {createTheme} from '@shopify/restyle';
-import {StyleSheet} from 'react-native';
+import { color, createTheme } from '@shopify/restyle';
 
-const palette = {
+export const palette = {
   primaryBlue: '#3797EF',
-  white: '#ffffff',
-  black: '#262626',
+  mainwhite: '#ffffff',
+  dullwhite: '#FAFAFA',
+  lightgrey: '#767680',
+  mainblack: '#000000',
+  fadedblack: '#121212',
+  darkgrey: '#262626',
 };
 
-const theme = createTheme({
+export const FONT = {
+  SFPro: {
+    regular: 'SF_Pro_Text_Regular',
+  },
+  OpenSans: {
+    regular: 'OpenSans-Regular',
+    bold: 'OpenSans-Bold',
+    medium: 'OpenSans-Medium',
+    light: 'OpenSans-Light',
+    italic: 'OpenSans-italic',
+  },
+};
+export const theme = createTheme({
   colors: {
-    primary: palette.primaryBlue,
-    darkbg: palette.black,
-    lightbg: palette.white,
-    text: palette.black,
-    buttonBackground: palette.primaryBlue,
-    buttonText: palette.white,
+    primaryBlue: '#3797EF',
+    mainwhite: '#ffffff',
+    dullwhite: '#FAFAFA',
+    lightgrey: '#767680',
+    mainblack: '#000000',
+    fadedblack: '#121212',
+    darkgrey: '#262626',
   },
   spacing: {
     s: 8,
@@ -22,25 +38,55 @@ const theme = createTheme({
     l: 24,
     xl: 32,
   },
-  radii: {
+  borderRadii: {
     s: 4,
     m: 8,
     l: 16,
   },
+  container:{
+    flex: 1,
+    padding: 16,
+
+  },
   textVariants: {
     defaults: {
       fontSize: 16,
-      color: 'text',
+
     },
     body: {
       fontSize: 16,
-      color: 'text',
+
     },
     title: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: 'text',
+      fontFamily: FONT.OpenSans.regular
     },
+    FBcnt:{
+      fontSize: 14,
+      color: 'primaryBlue',
+      fontFamily: FONT.OpenSans.bold
+    },
+    Pass:{
+      fontSize: 14,
+      color: 'primaryBlue',
+      fontFamily: FONT.OpenSans.bold
+    },
+    Linkcnt:{
+      fontSize: 14,
+      color: 'lightgrey',
+      fontFamily: FONT.OpenSans.regular
+    },
+    Linktxt:{
+      fontSize: 14,
+      color: 'primaryBlue',
+      fontFamily: FONT.OpenSans.regular
+    },
+    Footertxt:{
+      fontSize: 12,
+      color: 'lightgrey',
+      fontFamily: FONT.OpenSans.regular
+    }
   },
   breakpoints: {
     phone: 0,
@@ -48,32 +94,47 @@ const theme = createTheme({
   },
 });
 
-export default theme;
-
-
-
-
-
-export const DarkTheme = StyleSheet.create({
+export const darkTheme = {
+  ...theme,
+  colors: {
+    ...theme.colors,
+    text: palette.mainwhite,
+    primary: palette.primaryBlue,
+    buttonBackground: palette.primaryBlue,
+    buttonText: palette.mainwhite,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: palette.mainblack,
   },
-  text: {
-    color: '#fff',
-  },
-});
+};
 
-export const LightTheme = StyleSheet.create({
+export const lightTheme = {
+  ...theme,
+  colors: {
+    ...theme.colors,
+    text: palette.mainblack,
+    primary: palette.primaryBlue,
+    buttonBackground: palette.primaryBlue,
+    buttonText: palette.mainwhite,
+  },
+  text:{
+   color:'#000',
+   fontFamily: FONT.OpenSans.regular
+  },
+  Linktxt:{
+color: palette.primaryBlue
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    padding: 12,
+    justifyContent: 'space-between',
+    backgroundColor: palette.mainwhite,
+  },
+  FBAuth: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: 10,
   },
-  text: {
-    color: '#000',
-  },
-});
+};

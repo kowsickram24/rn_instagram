@@ -12,9 +12,9 @@ export const ThemeProvider = ({children}) => {
   const scheme = useColorScheme();
   const [theme, setTheme] = useState(scheme);
 
-  useEffect(() => {
-      setTheme(scheme);
-    },[scheme]);
+  // useEffect(() => {
+  //     setTheme(scheme);
+  //   },[scheme]);
 
   const toggleTheme = () => {
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));

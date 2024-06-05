@@ -1,3 +1,15 @@
 {
-    "welcome": "Welcome"
+    "Auth": {
+        "usernamePlaceholder":"Username",
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "forgetPassword": "Forget Password?",
+        "loginButton": "Log in",
+        "loginWithFacebook": "Login with Facebook",
+        "footerText": "Instagram from Facebook",
+        "OR": "OR",
+        "Signup": "Sign up",
+        "DontHaveAccount": "Don't have an account ?",
+        "Alreadyhaveanaccount": "Already have an account ?"
+    }
 }

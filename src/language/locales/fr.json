@@ -1,3 +1,15 @@
 {
-    "welcome": "Bienvenue"
+    "Auth": {
+        "usernamePlaceholder":"nom d'utilisateur",
+        "emailPlaceholder": "Correo electrónico",
+        "passwordPlaceholder": "Contraseña",
+        "forgetPassword": "¿Olvidaste tu contraseña?",
+        "loginButton": "Iniciar sesión",
+        "loginWithFacebook": "Iniciar sesión con Facebook",
+        "footerText": "Instagram de Facebook",
+        "Signup": "S'inscrire",
+        "OR": "OU",
+        "DontHaveAccount": "Vous n'avez pas de compte ?",
+        "Alreadyhaveanaccount": "Vous avez déjà un compte ?"
+    }
 }
