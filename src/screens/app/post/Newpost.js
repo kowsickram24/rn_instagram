@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { InstagramLikePicker } from 'react-native-instagram-like-picker';
 
 const NewPost = () => {
 
@@ -18,12 +17,7 @@ const NewPost = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#000000' }}>
-            <InstagramLikePicker
-                onClose={onClose}
-                onCropped={(croppedUri) => onCropped(croppedUri)}
-                onSelectImage={(result) => onSelectImage(result)}
-                headerTitle="Last Post"
-            />
+
         </View>
     );
 }

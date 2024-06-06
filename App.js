@@ -1,43 +1,24 @@
 import analytics from '@react-native-firebase/analytics';
-import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { SafeAreaView, Text, useColorScheme } from 'react-native';
 import firebase from './firebase.config';
-import {  useTheme } from './src/context/Theme/Themectxt';
-import { DarkTheme, LightTheme } from './src/theme';
 // import S3Bucket from './src/services/aws/s3bucket';
-// Language setup
+
+import { ThemeProvider } from '@shopify/restyle';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './src/language/i18n';
-import { ThemeProvider } from '@shopify/restyle';
 
+import { Provider } from 'react-redux';
+import { store } from './src/store';
 
 // Network
-import { Insta_Typo_logo } from './src/constants/assets';
-import { FONT } from './src/constants/constants';
 import NetworkProvider from './src/context/Network/NetworkContext';
 
-import Stacknavigator from './src/navigation/Stack/Stack';
+import { NavigationContainer } from '@react-navigation/native';
+import StackNavigator from './src/navigation/Stack';
 import { theme } from './src/theme';
-const ThemedComponent = () => {
-  const {theme, toggleTheme} = useTheme();
-
-  const styles = theme === 'dark' ? DarkTheme : LightTheme;
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={[styles.text, {fontFamily: FONT.OpenSans.regular}]}>
-        Hello
-      </Text>
-      <Insta_Typo_logo />
-    </SafeAreaView>
-  );
-};
 
 const App = () => {
-  const scheme = useColorScheme();
-  console.log(scheme);
-
+ 
   useEffect(() => {
     const checkFirebaseConnection = async () => {
       try {
@@ -54,15 +35,17 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <NetworkProvider>
-        <I18nextProvider i18n={i18n}>
-          <NavigationContainer>
-            <Stacknavigator />
-          </NavigationContainer>
-        </I18nextProvider>
-      </NetworkProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <NetworkProvider>
+          <I18nextProvider i18n={i18n}>
+            <NavigationContainer>
+             <StackNavigator />
+            </NavigationContainer>
+          </I18nextProvider>
+        </NetworkProvider>
+      </ThemeProvider>
+    </Provider>
   );
 };
 

@@ -1,29 +1,38 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Input} from '@rneui/themed';
 import React from 'react';
-import { palette } from '../../theme';
+import {palette} from '../../theme';
 
-const Inputbox = ({placeholder, value, errorMessage}) => {
+const Inputbox = ({
+  placeholder,
+  value,
+  errorMessage,
+  onChangeText,
+  onBlur,
+  secureTextEntry,
+}) => {
   return (
-    <View>
-      <Input
+    <Input
       containerStyle={styles.container}
-        inputContainerStyle={styles.inputsttyle}
-        value={value}
-        placeholder={placeholder}
-        errorMessage={errorMessage}
-      />
-    </View>
+      inputContainerStyle={styles.inputstyle}
+      value={value}
+      placeholder={placeholder}
+      errorMessage={errorMessage}
+      onChangeText={onChangeText}
+      onBlur={onBlur}
+      secureTextEntry={secureTextEntry}
+    />
   );
 };
 
 export default Inputbox;
+
 const styles = StyleSheet.create({
-  inputsttyle: {
+  inputstyle: {
     borderWidth: 0.5,
     borderRadius: 4,
-    backgroundColor: palette.dullwhite
+    borderStyle:'dashed',
+    backgroundColor: palette.dullwhite,
   },
-  container:{
-  }
+  container: {},
 });

@@ -1,4 +1,4 @@
-import { color, createTheme } from '@shopify/restyle';
+import { createTheme } from '@shopify/restyle';
 
 export const palette = {
   primaryBlue: '#3797EF',
@@ -31,6 +31,7 @@ export const theme = createTheme({
     mainblack: '#000000',
     fadedblack: '#121212',
     darkgrey: '#262626',
+    red :'#FF0000'
   },
   spacing: {
     s: 8,
@@ -42,6 +43,9 @@ export const theme = createTheme({
     s: 4,
     m: 8,
     l: 16,
+    xl : 24,
+    xxl : 36,
+    xxxl: 48
   },
   container:{
     flex: 1,
@@ -86,6 +90,22 @@ export const theme = createTheme({
       fontSize: 12,
       color: 'lightgrey',
       fontFamily: FONT.OpenSans.regular
+    },
+    ProInfo:{
+      fontSize: 14,
+      color:'mainblack'
+    },
+    ProCount:{
+      fontSize: 18,
+      color:'mainblack'
+    },
+    userName:{
+      fontSize: 16,
+      color:'mainblack'
+    },
+    Logout:{
+      fontSize: 16,
+      color:'red',
     }
   },
   breakpoints: {
@@ -94,47 +114,4 @@ export const theme = createTheme({
   },
 });
 
-export const darkTheme = {
-  ...theme,
-  colors: {
-    ...theme.colors,
-    text: palette.mainwhite,
-    primary: palette.primaryBlue,
-    buttonBackground: palette.primaryBlue,
-    buttonText: palette.mainwhite,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: palette.mainblack,
-  },
-};
 
-export const lightTheme = {
-  ...theme,
-  colors: {
-    ...theme.colors,
-    text: palette.mainblack,
-    primary: palette.primaryBlue,
-    buttonBackground: palette.primaryBlue,
-    buttonText: palette.mainwhite,
-  },
-  text:{
-   color:'#000',
-   fontFamily: FONT.OpenSans.regular
-  },
-  Linktxt:{
-color: palette.primaryBlue
-  },
-  container: {
-    flex: 1,
-    padding: 12,
-    justifyContent: 'space-between',
-    backgroundColor: palette.mainwhite,
-  },
-  FBAuth: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    gap: 10,
-  },
-};

@@ -1,0 +1,15 @@
+{
+    "Auth": {
+        "usernamePlaceholder": "اسم المستخدم",
+        "emailPlaceholder": "البريد الإلكتروني",
+        "passwordPlaceholder": "كلمة المرور",
+        "forgetPassword": "هل نسيت كلمة المرور؟",
+        "loginButton": "تسجيل الدخول",
+        "loginWithFacebook": "تسجيل الدخول باستخدام فيسبوك",
+        "footerText": "إنستغرام من فيسبوك",
+        "OR": "أو",
+        "Signup": "إنشاء حساب",
+        "DontHaveAccount": "ليس لديك حساب؟",
+        "Alreadyhaveanaccount": "لديك حساب بالفعل؟"
+    }
+}
