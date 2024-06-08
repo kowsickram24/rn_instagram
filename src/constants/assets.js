@@ -5,6 +5,7 @@ export {default as Line} from '../assets/line.svg';
 // Light
 export {default as Insta_Typo_logo} from '../assets/insta_typo_logo.svg';
 export {default as Lock} from '../assets/lock.svg';
+export {default as Tag_Ppl} from '../assets/tag_user.svg'
 export {default as Menu} from '../assets/menu.svg';
 export {default as Save_f} from '../assets/save_f.svg'
 export {default as Image_Fill} from '../assets/image.svg'

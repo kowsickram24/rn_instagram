@@ -1,13 +1,11 @@
-import {useEffect, useState, useRef} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Explore from '../../screens/app/explore/Explore';
-import Home from '../../screens/app/home/Home';
-import Notification from '../../screens/app/notification/Notification';
-import Profile from '../../screens/app/profile/Profile';
-import {useSelector} from 'react-redux';
+import {Avatar} from '@rneui/themed';
+import {useEffect, useRef, useState} from 'react';
+import {TouchableOpacity, View} from 'react-native';
+import NewSheet from '../../components/bottomsheet/NewSheet';
 import {
   Heart_bf,
-  Heaty_f,
   Heaty_uf,
   Home_f,
   Home_uf,
@@ -15,33 +13,30 @@ import {
   Search_f,
   Search_uf,
 } from '../../constants/assets';
-import {Avatar} from '@rneui/themed';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import NewSheet from '../../components/bottomsheet/NewSheet';
+import Explore from '../../screens/app/explore/Explore';
+import Home from '../../screens/app/home/Home';
+import Notification from '../../screens/app/notification/Notification';
+import Profile from '../../screens/app/profile/Profile';
 
 const BottomTab = createBottomTabNavigator();
 
-const BottomNavigator = ({navigation}) => {
+const BottomNavigator = ({navigation, getData}) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const user = useSelector(state => state.user);
   const refRBSheet = useRef();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = await AsyncStorage.getItem('user');
-        if (user) {
-          setCurrentUser(JSON.parse(user));
-        } else {
-          console.log('No user data found');
-        }
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
+  const fetchUserData = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        setCurrentUser(JSON.parse(user));
+      } else {
+        console.log('No user data found');
       }
-    };
-
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    }
+  };
+  useEffect(() => {
     fetchUserData();
   }, []);
 
@@ -71,9 +66,9 @@ const BottomNavigator = ({navigation}) => {
               </TouchableOpacity>
             ),
           }}
-          name="NewPost"
-          component={() => <View />}
-        />
+          name="NewPost">
+          {() => <View />}
+        </BottomTab.Screen>
         <BottomTab.Screen
           name="Notification"
           options={{
@@ -91,15 +86,14 @@ const BottomNavigator = ({navigation}) => {
               />
             ),
           }}
-          name="Profile"
-          component={Profile}
-        />
+          name="Profile">
+          {props => <Profile {...props} currentUser={currentUser} />}
+        </BottomTab.Screen>
       </BottomTab.Navigator>
 
       <NewSheet ref={refRBSheet} navigation={navigation} />
     </>
   );
 };
-
 
 export default BottomNavigator;

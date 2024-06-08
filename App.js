@@ -12,6 +12,7 @@ import {store} from './src/store';
 
 import {
   Keyboard,
+  SafeAreaView,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -44,19 +45,21 @@ const App = () => {
   notifee.onBackgroundEvent(handleBackgroundEvent);
 
   return (
-    <Provider store={store}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ThemeProvider theme={theme}>
-          <NetworkProvider>
-            <I18nextProvider i18n={i18n}>
-              <NavigationContainer>
-                <StackNavigator />
-              </NavigationContainer>
-            </I18nextProvider>
-          </NetworkProvider>
-        </ThemeProvider>
-      </TouchableWithoutFeedback>
-    </Provider>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={{flex: 1}}>
+        <Provider store={store}>
+          <ThemeProvider theme={theme}>
+            <NetworkProvider>
+              <I18nextProvider i18n={i18n}>
+                <NavigationContainer>
+                  <StackNavigator />
+                </NavigationContainer>
+              </I18nextProvider>
+            </NetworkProvider>
+          </ThemeProvider>
+        </Provider>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

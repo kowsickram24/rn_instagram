@@ -7,7 +7,7 @@ const EditProfile = () => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Box flex={1}>
-        <Text>Profile</Text>
+        <Text>Edit Profile</Text>
       </Box>
     </Box>
   );

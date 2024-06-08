@@ -14,8 +14,8 @@ import config from '../../config';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import S3 from 'aws-sdk/clients/s3';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch } from 'react-redux';
-import { login } from '../../store/slices/userSlice';
+import {useDispatch} from 'react-redux';
+import {login} from '../../store/slices/userSlice';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -24,7 +24,7 @@ const s3 = new S3({
 
 const RegisterScreen = ({navigation, getData}) => {
   const [selectedImage, setSelectedImage] = useState();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const {t} = useTranslation();
   const Box = createBox();
@@ -33,17 +33,17 @@ const RegisterScreen = ({navigation, getData}) => {
   const uploadProfile = async () => {
     try {
       const image = await ImageCropPicker.openPicker({
-        width:300,
-        height:300,
+        width: 300,
+        height: 300,
         mediaType: 'photo',
-        showCropFrame:false,
+        showCropFrame: false,
         forceJpg: true,
         cropping: true,
         showCropGuidelines: false,
-        cropperCircleOverlay:true,
+        cropperCircleOverlay: true,
         freeStyleCropEnabled: true,
-        cropperToolbarTitle:'Profile',
-        hideBottomControls:true,
+        cropperToolbarTitle: 'Profile',
+        hideBottomControls: true,
       });
       setSelectedImage(image.path);
     } catch (error) {
@@ -85,15 +85,15 @@ const RegisterScreen = ({navigation, getData}) => {
     } catch (error) {
       console.error('Error:', error);
       return null;
-    } 
+    }
   };
 
   const handleRegister = async (values, {setSubmitting, setErrors}) => {
     try {
       const usersCollectionRef = firestore().collection('instagram');
       const userQuerySnapshot = await usersCollectionRef
-      .where('email', '==', values.email)
-      .get();
+        .where('email', '==', values.email)
+        .get();
       if (!userQuerySnapshot.empty) {
         setErrors({email: 'Email already exists'});
       } else {
@@ -104,15 +104,21 @@ const RegisterScreen = ({navigation, getData}) => {
             email: values.email,
             password: values.password,
             profilepic: profileImageUrl,
+            posts: [],
+            followers: [],
+            following: [],
           });
           const userData = {
             username: values.username,
             email: values.email,
             password: values.password,
             profilepic: profileImageUrl,
-          }
+            posts: [],
+            followers: [],
+            following: [],
+          };
           AsyncStorage.setItem('user', JSON.stringify(userData));
-          dispatch(login(userData))
+          dispatch(login(userData));
           await getData();
           navigation.replace('User');
         }
@@ -228,6 +234,5 @@ const RegisterScreen = ({navigation, getData}) => {
     </Box>
   );
 };
-
 
 export default RegisterScreen;
