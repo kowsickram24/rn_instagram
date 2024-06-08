@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/userSlice';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({navigation, getData}) => {
   const dispatch = useDispatch();
 
   const {t} = useTranslation();
@@ -71,7 +71,8 @@ const LoginScreen = ({navigation}) => {
         if (userData.password === values.password) {
           await AsyncStorage.setItem('user', JSON.stringify(userData));
           dispatch(login(userData));
-          navigation.navigate('Main');
+          await getData();
+          navigation.replace('User');
         } else {
           setErrors({password: t('Incorrect Credentials')});
         }

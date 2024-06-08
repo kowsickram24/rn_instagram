@@ -1,4 +1,4 @@
-import { createTheme } from '@shopify/restyle';
+import {createTheme} from '@shopify/restyle';
 
 export const palette = {
   primaryBlue: '#3797EF',
@@ -31,7 +31,7 @@ export const theme = createTheme({
     mainblack: '#000000',
     fadedblack: '#121212',
     darkgrey: '#262626',
-    red :'#FF0000'
+    red: '#FF0000',
   },
   spacing: {
     s: 8,
@@ -43,75 +43,78 @@ export const theme = createTheme({
     s: 4,
     m: 8,
     l: 16,
-    xl : 24,
-    xxl : 36,
-    xxxl: 48
+    xl: 24,
+    xxl: 36,
+    xxxl: 48,
   },
-  container:{
+  container: {
     flex: 1,
     padding: 16,
-
   },
   textVariants: {
     defaults: {
       fontSize: 16,
-
     },
     body: {
       fontSize: 16,
-
     },
     title: {
-      fontSize: 24,
+      fontSize: 18,
+      color: 'mainblack',
       fontWeight: 'bold',
-      fontFamily: FONT.OpenSans.regular
     },
-    FBcnt:{
+    FBcnt: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.bold
+      fontFamily: FONT.OpenSans.bold,
     },
-    Pass:{
+    Pass: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.bold
+      fontFamily: FONT.OpenSans.bold,
     },
-    Linkcnt:{
+    Linkcnt: {
       fontSize: 14,
       color: 'lightgrey',
-      fontFamily: FONT.OpenSans.regular
+      fontFamily: FONT.OpenSans.regular,
     },
-    Linktxt:{
+    Linktxt: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.regular
+      fontFamily: FONT.OpenSans.regular,
     },
-    Footertxt:{
+    Footertxt: {
       fontSize: 12,
       color: 'lightgrey',
-      fontFamily: FONT.OpenSans.regular
+      fontFamily: FONT.OpenSans.regular,
     },
-    ProInfo:{
+    ProInfo: {
       fontSize: 14,
-      color:'mainblack'
+      color: 'mainblack',
     },
-    ProCount:{
+    ProCount: {
       fontSize: 18,
-      color:'mainblack'
+      color: 'mainblack',
     },
-    userName:{
+    userName: {
       fontSize: 16,
-      color:'mainblack'
+      color: 'mainblack',
     },
-    Logout:{
+    Logout: {
       fontSize: 16,
-      color:'red',
-    }
+      color: 'red',
+    },
+    Liked: {
+      fontSize: 14,
+      color: 'mainblack',
+    },
+    Desc: {
+      fontSize: 14,
+      color: 'mainblack',
+    },
   },
   breakpoints: {
     phone: 0,
     tablet: 768,
   },
 });
-
-

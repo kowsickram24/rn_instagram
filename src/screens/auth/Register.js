@@ -22,7 +22,7 @@ const s3 = new S3({
   region: config.REGION,
 });
 
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({navigation, getData}) => {
   const [selectedImage, setSelectedImage] = useState();
   const dispatch = useDispatch()
 
@@ -113,7 +113,8 @@ const RegisterScreen = ({navigation}) => {
           }
           AsyncStorage.setItem('user', JSON.stringify(userData));
           dispatch(login(userData))
-          navigation.navigate('Main');
+          await getData();
+          navigation.replace('User');
         }
       }
     } catch (error) {

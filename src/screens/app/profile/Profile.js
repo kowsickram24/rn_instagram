@@ -1,10 +1,10 @@
-import {Avatar, Button, Divider} from '@rneui/themed';
-import {createBox, createText} from '@shopify/restyle';
-import React,{useEffect, useState} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {Menu, New_story} from '../../../constants/assets';
-import TopNavigator from '../../../navigation/TopTab/TopTab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Avatar, Button, Divider } from '@rneui/themed';
+import { createBox, createText } from '@shopify/restyle';
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { Menu, New_story } from '../../../constants/assets';
+import TopNavigator from '../../../navigation/TopTab/TopTab';
 
 
 const Box = createBox();

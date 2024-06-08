@@ -1,18 +1,20 @@
-import React, {useState, useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
 
 import LoginScreen from '../../../screens/auth/login';
 import RegisterScreen from '../../../screens/auth/Register';
-import BottomNavigator from '../../BottomTab/BottomTab';
 
 const Stack = createNativeStackNavigator();
 
-const AuthStack = () => {
+const AuthStack = ({fetchUserData}) => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="Main" component={BottomNavigator} />
+      <Stack.Screen name="Login">
+        {props => <LoginScreen {...props} getData={fetchUserData} />}
+      </Stack.Screen>
+      <Stack.Screen name="Register">
+        {props => <RegisterScreen {...props} getData={fetchUserData} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };
