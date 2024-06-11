@@ -1,20 +1,20 @@
 import firestore from '@react-native-firebase/firestore';
-import { createBox, createText } from '@shopify/restyle';
-import { Formik } from 'formik';
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import {createBox, createText} from '@shopify/restyle';
+import {Formik} from 'formik';
+import React, {useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
+import {TouchableOpacity} from 'react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import { Back, Fb_logo, Insta_Typo_logo, Line } from '../../constants/assets';
-import { LoginSchema } from '../../utils/validation';
+import {Back, Fb_logo, Insta_Typo_logo, Line} from '../../constants/assets';
+import {LoginSchema} from '../../utils/validation';
 const Box = createBox();
 const Text = createText();
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { useDispatch } from 'react-redux';
-import { login } from '../../store/slices/userSlice';
+import {useDispatch} from 'react-redux';
+import {login} from '../../store/slices/userSlice';
 
 const LoginScreen = ({navigation, getData}) => {
   const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const LoginScreen = ({navigation, getData}) => {
       try {
         const user = await AsyncStorage.getItem('user');
         if (user) {
-          console.log(user,'old user')
+          console.log(user, 'old user');
         } else {
           console.log('No user data found');
         }
@@ -50,7 +50,7 @@ const LoginScreen = ({navigation, getData}) => {
         console.error('Failed to fetch user data:', error);
       }
     };
-    
+
     fetchUserData();
   }, []);
 

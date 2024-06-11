@@ -7,7 +7,7 @@ const Box = createBox();
 const Text = createText();
 import {Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('screen');
-console.log(width);
+
 const MyPosts = ({navigation}) => {
   const [posts, setPosts] = useState([]);
   const currentuser = useSelector(state => state.user.user);
@@ -37,7 +37,8 @@ const MyPosts = ({navigation}) => {
 
   const renderPostItem = ({item}) => (
     <Box>
-      <TouchableOpacity onPress={() => navigation.navigate('PostDesc', {fetchPosts, posts})}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PostDesc', {fetchPosts, posts})}>
         <Image
           resizeMode="cover"
           style={{width: width / 3, height: 125}}
@@ -56,7 +57,7 @@ const MyPosts = ({navigation}) => {
         ListEmptyComponent={<Text>No Posts Yet</Text>}
         numColumns={3}
         contentContainerStyle={{
-          flex: 1,
+          flex: 1
         }}
       />
     </Box>

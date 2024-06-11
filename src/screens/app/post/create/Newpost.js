@@ -18,7 +18,6 @@ import {Input} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
 import {Image_Fill, Rt_Arrow, Loc} from '../../../../constants/assets';
 import {useFocusEffect} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 const Height = Dimensions.get('screen').height;
 const Width = Dimensions.get('screen').width;
 import config from '../../../../config';
@@ -31,7 +30,6 @@ const s3 = new S3({
 
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
-
   const [postImage, setPostImage] = useState(null);
   const [location, setLocation] = useState('');
   const [caption, setCaption] = useState('');
@@ -97,6 +95,8 @@ const NewPost = ({navigation, route, getData}) => {
       try {
         const imageUrl = await UploadToAWS();
         const newPost = {
+          username: currentuser.username,
+          profilepic : currentuser.profilepic,
           imageUrl,
           caption,
           location,

@@ -4,6 +4,7 @@ import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {logout} from '../../../store/slices/userSlice';
+import {Back} from '../../../constants/assets';
 
 const Box = createBox();
 const Text = createText();
@@ -23,10 +24,16 @@ const Settings = ({navigation, getData}) => {
   };
 
   return (
-    <Box flex={1} padding="m" backgroundColor="mainwhite">
-      <Text>Settings and Privacy</Text>
+    <Box flex={1} padding="m" gap={'m'} backgroundColor="mainwhite">
+      <Box flexDirection="row" alignItems="center" gap={'m'}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Back />
+        </TouchableOpacity>
+        <Text color={'mainblack'}>Settings and Privacy</Text>
+      </Box>
+      <Text color={'mainblack'}>Settings and Privacy</Text>
+      <Text color={'mainblack'}>Accounts Center</Text>
       <Box flex={1}>
-        <Text>Accounts Center</Text>
         <Box>
           <TouchableOpacity onPress={handleLogout}>
             <Text variant="Logout">Logout</Text>

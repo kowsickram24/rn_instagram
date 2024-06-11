@@ -17,25 +17,46 @@ import Explore from '../../screens/app/explore/Explore';
 import Home from '../../screens/app/home/Home';
 import Notification from '../../screens/app/notification/Notification';
 import Profile from '../../screens/app/profile/Profile';
-
+import {useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 const BottomTab = createBottomTabNavigator();
 
 const BottomNavigator = ({navigation, getData}) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const refRBSheet = useRef();
+  const user = useSelector(state => state.user.user);
 
+  const [currentUser, setCurrentUser] = useState();
+  const refRBSheet = useRef();
   const fetchUserData = async () => {
     try {
-      const user = await AsyncStorage.getItem('user');
-      if (user) {
-        setCurrentUser(JSON.parse(user));
+      const userDoc = await firestore()
+        .collection('instagram')
+        .where('email', '==', user?.email)
+        .get();
+
+      if (!userDoc.empty) {
+        const userDocRef = userDoc.docs[0].ref;
+        const userDataSnapshot = await userDocRef.get();
+        const userData = userDataSnapshot.data();
+        setCurrentUser(userData);
       } else {
-        console.log('No user data found');
+        console.log('No matching documents.');
       }
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      console.error('Error fetching user data: ', error);
     }
   };
+  // const fetchUserData = async () => {
+  //   try {
+  //     const user = await AsyncStorage.getItem('user');
+  //     if (user) {
+  //       setCurrentUser(JSON.parse(user));
+  //     } else {
+  //       console.log('No user data found');
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to fetch user data:', error);
+  //   }
+  // };
   useEffect(() => {
     fetchUserData();
   }, []);

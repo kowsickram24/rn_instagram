@@ -1,29 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {FlatList} from 'react-native';
-import {createBox, createText} from '@shopify/restyle';
+import { createBox, createText } from '@shopify/restyle';
+import React, { useEffect } from 'react';
+import { FlatList } from 'react-native';
 import FeedPost from '../../../../components/card/FeedPost';
-import { useSelector } from 'react-redux';
 
 const Box = createBox();
 const Text = createText();
 
 const PostDesc = ({route}) => {
-  const user = useSelector(state => state.user.user)
-  const {fetchPosts, posts} = route.params;
-  const [postDetails, setPostDetails] = useState([]);
-console.log(posts)
+  const {fetchPosts, posts} = route.params
+  console.log(posts);
+  const getPosts = async () => {
+    const fetchedPosts = await fetchPosts();
+  };
   useEffect(() => {
-    const getPosts = async () => {
-      const fetchedPosts = await fetchPosts();
-      setPostDetails(fetchedPosts);
-    };
-
     getPosts();
   }, [fetchPosts]);
 
   const renderPostItem = ({item}) => (
     <Box marginVertical="m">
-      <FeedPost ProfileUrl={user.profilepic} user={user.username} location={item.location} Caption={item.caption} imageSrc={item.imageUrl} />
+      <FeedPost
+        ProfileUrl={item?.profilepic}
+        user={item?.username}
+        location={item.location}
+        Caption={item.caption}
+        imageSrc={item.imageUrl}
+        
+      />
     </Box>
   );
 

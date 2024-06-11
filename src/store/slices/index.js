@@ -1,6 +1,7 @@
-import {combineReducers} from '@reduxjs/toolkit';
-import {userSlice} from './userSlice';
-
+import { combineReducers } from '@reduxjs/toolkit';
+import { apiSlice } from './apiSlice';
+import { userSlice } from './userSlice';
 export const rootReducers = combineReducers({
-    user: userSlice.reducer
-})
+  [apiSlice.reducerPath]: apiSlice.reducer,
+  user: userSlice.reducer,
+});

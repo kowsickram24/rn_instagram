@@ -9,7 +9,7 @@ import {useDispatch} from 'react-redux';
 import {login} from '../../store/slices/userSlice';
 
 const StackNavigator = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
   const [initializing, setInitializing] = useState(true);
   const dispatch = useDispatch();
 
