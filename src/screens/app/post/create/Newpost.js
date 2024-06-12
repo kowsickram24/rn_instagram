@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   Image,
   StyleSheet,
@@ -30,6 +30,7 @@ const s3 = new S3({
 
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
+  const [userData, setUserData] = useState()
   const [postImage, setPostImage] = useState(null);
   const [location, setLocation] = useState('');
   const [caption, setCaption] = useState('');
@@ -41,11 +42,37 @@ const NewPost = ({navigation, route, getData}) => {
       }
     }, [route.params?.location]),
   );
+
+  const fetchUser = async () => {
+    try {
+      const userQuery = await firestore()
+        .collection('instagram')
+        .where('email', '==', currentuser.email)
+        .get();
+  
+      if (!userQuery.empty) {
+        const userDoc = userQuery.docs[0];
+        const userData = userDoc.data();
+        setUserData(userData);
+      } else {
+        console.error('User document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching user details: ', error);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchUser();
+  });
+
   const pickImage = async () => {
     try {
       const result = await ImageCropPicker.openPicker({
-        width: 300,
-        height: 300,
+        mediaType: 'photo',
+        width: 1080,
+        height: 1080,
         cropping: true,
       });
       setPostImage(result.path);
@@ -95,8 +122,8 @@ const NewPost = ({navigation, route, getData}) => {
       try {
         const imageUrl = await UploadToAWS();
         const newPost = {
-          username: currentuser.username,
-          profilepic : currentuser.profilepic,
+          username: userData.username,
+          profilepic: userData.profilepic,
           imageUrl,
           caption,
           location,

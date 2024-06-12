@@ -1,14 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import {Box, Text} from '../../../../theme';
 
 const TagsView = ({user}) => {
   return (
-    <View>
-      <Text>TagsView</Text>
-    </View>
-  )
-}
+    <Box
+      backgroundColor={'mainwhite'}
+      flex={1}
+      justifyContent="center"
+      alignItems="center">
+      <Text>Tags View</Text>
+    </Box>
+  );
+};
 
-export default TagsView
-
-const styles = StyleSheet.create({})
+export default TagsView;

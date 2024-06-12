@@ -1,15 +1,13 @@
-import {createBox, createText} from '@shopify/restyle';
 import React from 'react';
 import {FlatList, Image, TouchableOpacity} from 'react-native';
-
-const Box = createBox();
-const Text = createText();
+import {Box, Text} from '../../../../theme';
 import {Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('screen');
-const PostsView = ({user}) => {
+
+const PostsView = ({user, navigation}) => {
   const renderPostItem = ({item}) => (
-    <Box>
-      <TouchableOpacity>
+    <Box flex={1}>
+      <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {user})}>
         <Image
           resizeMode="cover"
           style={{width: width / 3, height: 125}}
@@ -25,7 +23,11 @@ const PostsView = ({user}) => {
         data={user?.posts}
         renderItem={renderPostItem}
         keyExtractor={(item, index) => index.toString()}
-        ListEmptyComponent={<Text>No Posts Yet</Text>}
+        ListEmptyComponent={
+          <Box flex={1} justifyContent="center" alignItems="center">
+            <Text>No Posts Yet</Text>
+          </Box>
+        }
         numColumns={3}
         contentContainerStyle={{
           flex: 1,

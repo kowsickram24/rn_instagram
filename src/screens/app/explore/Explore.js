@@ -4,7 +4,7 @@ import {createBox, createText} from '@shopify/restyle';
 import {Input, Avatar, ListItem} from '@rneui/themed';
 import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
 import {Search_uf} from '../../../constants/assets';
-import { ActivityIndicator } from 'react-native';
+import {ActivityIndicator} from 'react-native';
 
 const Box = createBox();
 const Text = createText();
@@ -33,7 +33,6 @@ const Explore = ({navigation}) => {
 
   const renderItem = ({item}) => (
     <ListItem
-      bottomDivider
       onPress={() => navigation.navigate('ProfileView', {userId: item.id})}>
       <Avatar size={'medium'} source={{uri: item.profilepic}} rounded />
       <ListItem.Content>

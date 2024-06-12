@@ -1,14 +1,24 @@
 import firestore from '@react-native-firebase/firestore';
-import { Avatar, Button, Divider } from '@rneui/themed';
-import { createBox, createText } from '@shopify/restyle';
-import { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import {Avatar, Button, Divider} from '@rneui/themed';
+import {createBox, createText} from '@shopify/restyle';
+import {useEffect, useState} from 'react';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
+import {
+  PrimaryBtn,
+  SecondaryBtn,
+} from '../../../components/buttons/primaryButton';
+import {useSelector} from 'react-redux';
+import Profile from '../profile/Profile';
 const Box = createBox();
 const Text = createText();
 const ProfileView = ({route, navigation}) => {
+  const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
-  const [selecteduser, setSelecteduser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isFollowed, setIsFollowed] = useState(false);
+
+  const isSameUser = currentUser?.username === selectedUser?.username;
 
   const fetchUserDetails = async () => {
     try {
@@ -16,8 +26,15 @@ const ProfileView = ({route, navigation}) => {
         .collection('instagram')
         .doc(userId)
         .get();
+
       if (userDoc.exists) {
-        setSelecteduser(userDoc.data());
+        const userData = {...userDoc.data(), uid: userDoc.id};
+        setSelectedUser(userData);
+
+        const isFollowed = userData.followers.some(
+          follower => follower.username === currentUser.username,
+        );
+        setIsFollowed(isFollowed);
       } else {
         console.error('User not found');
       }
@@ -25,21 +42,86 @@ const ProfileView = ({route, navigation}) => {
       console.error('Error fetching user details: ', error);
     }
   };
+
+  const handleFollow = async () => {
+    try {
+      const userQuerySnapshot = await firestore()
+        .collection('instagram')
+        .where('email', '==', selectedUser?.email)
+        .get();
+      const currentUserQuerySnapshot = await firestore()
+        .collection('instagram')
+        .where('email', '==', currentUser?.email)
+        .get();
+
+      if (!userQuerySnapshot.empty && !currentUserQuerySnapshot.empty) {
+        const userDocRef = userQuerySnapshot.docs[0].ref;
+        const currentUserDocRef = currentUserQuerySnapshot.docs[0].ref;
+
+        const userData = { ...userQuerySnapshot.docs[0].data() };
+        const currentUserData = { ...currentUserQuerySnapshot.docs[0].data() };
+
+        const updatedFollowers = isFollowed
+          ? userData.followers.filter(
+              follower => follower.username !== currentUser.username,
+            )
+          : [
+              ...userData.followers,
+              {
+                username: currentUser.username,
+                profilepic: currentUser.profilepic,
+              },
+            ];
+
+        const updatedFollowing = isFollowed
+          ? currentUserData.following.filter(
+              following => following.username !== userData.username,
+            )
+          : [
+              ...currentUserData.following,
+              { username: userData.username, profilepic: userData.profilepic },
+            ];
+
+        await firestore().runTransaction(async transaction => {
+          transaction.update(userDocRef, { followers: updatedFollowers });
+          transaction.update(currentUserDocRef, { following: updatedFollowing });
+        });
+
+        setSelectedUser({ ...userData, followers: updatedFollowers });
+        setIsFollowed(!isFollowed);
+      } else {
+        console.error('One of the documents was not found');
+      }
+    } catch (error) {
+      console.error('Error updating follow status: ', error);
+    }
+  };
+
   useEffect(() => {
     fetchUserDetails();
   }, [userId]);
 
-  if (!selecteduser) {
-    return <Text>Loading...</Text>;
+  if (!selectedUser) {
+    return (
+      <Box
+        flex={1}
+        backgroundColor={'mainwhite'}
+        alignItems="center"
+        justifyContent="center">
+        <ActivityIndicator size={'large'} />
+      </Box>
+    );
+  }
+
+  if (isSameUser) {
+    return <Profile navigation={navigation} />;
   }
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
-        <Box padding={'m'}>
-        <Text color={'mainblack'}>
-            {selecteduser?.username}
-        </Text>
-        </Box>
+      <Box padding={'m'}>
+        <Text color={'mainblack'}>{selectedUser?.username}</Text>
+      </Box>
       <Box
         flexDirection="row"
         marginVertical={'m'}
@@ -47,55 +129,48 @@ const ProfileView = ({route, navigation}) => {
         <Avatar
           avatarStyle={{borderRadius: 40}}
           containerStyle={{width: 80, height: 80}}
-          source={{
-            uri: selecteduser?.profilepic,
-          }}
+          source={{uri: selectedUser?.profilepic}}
         />
         <Box flexDirection="row" gap={'xl'}>
           <Box alignSelf="center">
             <Text variant={'ProCount'} textAlign="center">
-              {selecteduser?.posts.length}
+              {selectedUser?.posts.length}
             </Text>
             <Text variant={'ProInfo'}>Posts</Text>
           </Box>
           <Box alignSelf="center">
             <TouchableOpacity onPress={() => navigation.replace('Reach')}>
               <Text variant={'ProCount'} textAlign="center">
-                {selecteduser?.followers.length}
+                {selectedUser?.followers.length}
               </Text>
             </TouchableOpacity>
             <Text variant={'ProInfo'}>Followers</Text>
           </Box>
           <Box alignSelf="center">
             <Text variant={'ProCount'} textAlign="center">
-              {selecteduser?.followers.length}
+              {selectedUser?.following.length}
             </Text>
-
             <Text variant={'ProInfo'}>Following</Text>
           </Box>
         </Box>
       </Box>
       <Box padding={'m'}>
-        <Text variant={'userName'}>{selecteduser?.username}</Text>
-        <Text variant={'userName'}>{selecteduser?.bio}</Text>
+        <Text variant={'userName'}>{selectedUser?.username}</Text>
+        <Text variant={'userName'}>{selectedUser?.bio}</Text>
       </Box>
-      <Box padding={'s'}>
-        <Button
-          onPress={() => navigation.navigate('EditProfile')}
-          title={'Follow'}
-          containerStyle={{
-            borderWidth: 0.5,
-            borderRadius: 5,
-            marginVertical: 6,
-          }}
-          titleStyle={{color: '#fff'}}
-          buttonStyle={{
-            backgroundColor: '#3797EF',
-          }}
+      <Box justifyContent="center" flexDirection="row" padding={'s'} gap={'s'}>
+        {isFollowed ? (
+          <SecondaryBtn title={'Following'} onPress={handleFollow} />
+        ) : (
+          <PrimaryBtn title={'Follow'} onPress={handleFollow} />
+        )}
+        <SecondaryBtn
+          title={'Message'}
+          onPress={() => navigation.navigate('Chats')}
         />
       </Box>
       <Divider />
-      <ProfileTab  user={selecteduser}/>
+      <ProfileTab user={selectedUser} />
     </Box>
   );
 };

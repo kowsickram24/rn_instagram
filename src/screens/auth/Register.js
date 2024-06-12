@@ -33,8 +33,8 @@ const RegisterScreen = ({navigation, getData}) => {
   const uploadProfile = async () => {
     try {
       const image = await ImageCropPicker.openPicker({
-        width: 300,
-        height: 300,
+        width: 1080,
+        height: 1080,
         mediaType: 'photo',
         showCropFrame: false,
         forceJpg: true,

@@ -11,9 +11,12 @@ import PostDesc from '../../../screens/app/profile/View/PostDesc';
 import Notification from '../../../screens/app/notification/Notification';
 import AccountReach from '../../../screens/app/reach';
 import ProfileView from '../../../screens/app/explore/ProfileView';
+import PostInfo from '../../../screens/app/explore/public/PostInfo';
+import EditPost from '../../../screens/app/profile/Edit/editPost';
 const Stack = createNativeStackNavigator();
 
-const UserStack = ({getData}) => {
+const UserStack = ({getData,route}) => {
+  console.log(route.params);
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main">
@@ -33,7 +36,10 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="PostDesc" component={PostDesc} />
       <Stack.Screen name="Addlocation" component={Addlocation} />
       <Stack.Screen name="Tagpeople" component={TagPeople} />
-      <Stack.Screen name='ProfileView' component={ProfileView} />
+      <Stack.Screen name="ProfileView" component={ProfileView} />
+      <Stack.Screen name="PostInfo" component={PostInfo} />
+      <Stack.Screen name="Editpost" component={EditPost} />
+
       <Stack.Screen name="Reach" component={AccountReach} />
     </Stack.Navigator>
   );

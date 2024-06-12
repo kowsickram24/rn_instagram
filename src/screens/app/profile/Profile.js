@@ -1,11 +1,11 @@
+import firestore from '@react-native-firebase/firestore';
 import {Avatar, Button, Divider} from '@rneui/themed';
 import {createBox, createText} from '@shopify/restyle';
 import React, {useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
+import {useSelector} from 'react-redux';
 import {Menu, New_story} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
 const Box = createBox();
 const Text = createText();
 
@@ -26,6 +26,7 @@ const Profile = ({navigation}) => {
         const userDataSnapshot = await userDocRef.get();
         const userData = userDataSnapshot.data();
         setCurrentUser(userData);
+        console.log(currentUser);
       } else {
         console.log('No matching documents.');
       }
@@ -35,7 +36,7 @@ const Profile = ({navigation}) => {
   };
   useEffect(() => {
     fetchUserData();
-  });
+  }, []);
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
@@ -46,8 +47,8 @@ const Profile = ({navigation}) => {
       </Box>
       <Box
         flexDirection="row"
-        marginVertical={'m'}
-        justifyContent="space-around">
+        marginVertical={'s'}
+        justifyContent="space-evenly">
         <Avatar
           avatarStyle={{borderRadius: 40}}
           containerStyle={{width: 80, height: 80}}
@@ -63,19 +64,20 @@ const Profile = ({navigation}) => {
             <Text variant={'ProInfo'}>Posts</Text>
           </Box>
           <Box alignSelf="center">
-            <TouchableOpacity onPress={()=> navigation.replace('Reach')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
               <Text variant={'ProCount'} textAlign="center">
                 {currentUser?.followers.length}
               </Text>
+              <Text variant={'ProInfo'}>Followers</Text>
             </TouchableOpacity>
-            <Text variant={'ProInfo'}>Followers</Text>
           </Box>
           <Box alignSelf="center">
-            <Text variant={'ProCount'} textAlign="center">
-              {currentUser?.followers.length}
-            </Text>
-
-            <Text variant={'ProInfo'}>Following</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
+              <Text variant={'ProCount'} textAlign="center">
+                {currentUser?.following.length}
+              </Text>
+              <Text variant={'ProInfo'}>Following</Text>
+            </TouchableOpacity>
           </Box>
         </Box>
       </Box>
@@ -103,7 +105,7 @@ const Profile = ({navigation}) => {
         <Text color={'mainblack'}> New</Text>
       </Box>
       <Divider />
-      <TopNavigator />
+      <TopNavigator navigation={navigation} />
     </Box>
   );
 };

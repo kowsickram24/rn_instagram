@@ -54,7 +54,12 @@ const MyPosts = ({navigation}) => {
         data={posts}
         renderItem={renderPostItem}
         keyExtractor={(item, index) => index.toString()}
-        ListEmptyComponent={<Text>No Posts Yet</Text>}
+        ListEmptyComponent={
+        
+        <Box flex={1} justifyContent='center' alignItems='center'>
+        <Text>No Posts Yet</Text>
+        
+        </Box>}
         numColumns={3}
         contentContainerStyle={{
           flex: 1

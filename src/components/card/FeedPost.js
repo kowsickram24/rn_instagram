@@ -26,6 +26,8 @@ const FeedPost = ({
   isSaved,
   onLikePress,
   onSavePress,
+  onOptionpress,
+  oncommentPress
 }) => {
   return (
     <Box marginVertical={'s'}>
@@ -47,9 +49,11 @@ const FeedPost = ({
               <Text variant={'userName'}>{user}</Text>
               <Text variant={'ProInfo'}>{location}</Text>
             </Box>
-            <Box justifyContent="center">
-              <Three_dots />
-            </Box>
+            <TouchableOpacity onPress={onOptionpress}>
+              <Box flex={1} padding={'s'} justifyContent="center" >
+                <Three_dots />
+              </Box>
+            </TouchableOpacity>
           </Box>
         </Box>
         <Image
@@ -65,11 +69,11 @@ const FeedPost = ({
           justifyContent="space-between"
           alignItems="center"
           padding={'s'}>
-          <Box flexDirection="row" justifyContent="center" gap={'m'}>
+          <Box flexDirection="row" justifyContent="center"  gap={'m'}>
             <TouchableOpacity onPress={onLikePress}>
               {isLiked ? <Heaty_f /> : <Heaty_uf />}
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={oncommentPress}>
               <Comment />
             </TouchableOpacity>
 

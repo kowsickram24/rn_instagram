@@ -1,4 +1,8 @@
 import {createTheme} from '@shopify/restyle';
+import {createBox, createText} from '@shopify/restyle';
+
+export const Box = createBox()
+export const Text = createText()
 
 export const palette = {
   primaryBlue: '#3797EF',

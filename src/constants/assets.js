@@ -23,6 +23,8 @@ export {default as Grid} from '../assets/grid.svg';
 export {default as Save} from '../assets/save.svg';
 export {default as Share} from '../assets/share.svg';
 export {default as Tags} from '../assets/tags.svg';
+export {default as Pencil} from '../assets/pencil.svg'
+export {default as Dustbin} from '../assets/bin.svg'
 
 // Bottom Tab
 export {default as Plus} from '../assets/plus.svg';
