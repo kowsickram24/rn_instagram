@@ -9,12 +9,11 @@ import {
   Three_dots,
   Share,
 } from '../../constants/assets';
-import {Avatar, Card} from '@rneui/themed';
+import {Avatar, Card, ListItem} from '@rneui/themed';
 import {Image, TouchableOpacity, View} from 'react-native';
-import config from '../../config';
 const Box = createBox();
 const Text = createText();
-const CloudFront = config.CLDFRNTDOM;
+
 const FeedPost = ({
   user,
   location,
@@ -27,10 +26,14 @@ const FeedPost = ({
   onLikePress,
   onSavePress,
   onOptionpress,
-  oncommentPress
+  onSharePress,
+  oncommentPress,
+  ViewCmnt,
+  onProfilePress,
+  comments,
 }) => {
   return (
-    <Box marginVertical={'s'}>
+    <Box>
       <Card
         containerStyle={{
           padding: 0,
@@ -39,18 +42,22 @@ const FeedPost = ({
           borderWidth: 0,
         }}>
         <Box padding={'s'} flexDirection="row" alignItems="center" gap={'s'}>
-          <Avatar
-            avatarStyle={{borderRadius: 21}}
-            containerStyle={{width: 42, height: 42}}
-            source={{uri: ProfileUrl}}
-          />
+          <TouchableOpacity onPress={onProfilePress}>
+            <Avatar
+              avatarStyle={{borderRadius: 21}}
+              containerStyle={{width: 42, height: 42}}
+              source={{uri: ProfileUrl}}
+            />
+          </TouchableOpacity>
           <Box flex={1} flexDirection="row" justifyContent="space-between">
             <Box flexDirection="column">
-              <Text variant={'userName'}>{user}</Text>
+              <TouchableOpacity onPress={onProfilePress}>
+                <Text variant={'userName'}>{user}</Text>
+              </TouchableOpacity>
               <Text variant={'ProInfo'}>{location}</Text>
             </Box>
             <TouchableOpacity onPress={onOptionpress}>
-              <Box flex={1} padding={'s'} justifyContent="center" >
+              <Box flex={1} padding={'s'} justifyContent="center">
                 <Three_dots />
               </Box>
             </TouchableOpacity>
@@ -69,7 +76,7 @@ const FeedPost = ({
           justifyContent="space-between"
           alignItems="center"
           padding={'s'}>
-          <Box flexDirection="row" justifyContent="center"  gap={'m'}>
+          <Box flexDirection="row" justifyContent="center" gap={'m'}>
             <TouchableOpacity onPress={onLikePress}>
               {isLiked ? <Heaty_f /> : <Heaty_uf />}
             </TouchableOpacity>
@@ -77,7 +84,7 @@ const FeedPost = ({
               <Comment />
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onSharePress}>
               <Share />
             </TouchableOpacity>
           </Box>
@@ -90,10 +97,40 @@ const FeedPost = ({
         </Box>
         <Box paddingVertical={'s'} paddingHorizontal={'s'}>
           <Text width={300} numberOfLines={1} variant={'Desc'}>
-            {Caption}
+            {user} {Caption}
           </Text>
         </Box>
+        {/* {comments.length > 0 && (
+          <Box paddingVertical="s" paddingHorizontal="s">
+            <TouchableOpacity onPress={ViewCmnt}>
+              <Text fontSize={14}>
+                View{' '}
+                {comments.length > 1
+                  ? `${comments.length} comments`
+                  : 'comment'}
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        )} */}
       </Card>
+      {comments?.map((comment, index) => (
+        <Box
+          key={index}
+          paddingHorizontal={'s'}
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between">
+          <TouchableOpacity onPress={ViewCmnt}>
+            <Box marginLeft="s" flexDirection="row" gap={'s'}>
+              <Text fontSize={14} color={'mainblack'}>{comment.username}</Text>
+              <Text fontSize={14} color={'mainblack'}>{comment.comment}</Text>
+            </Box>
+          </TouchableOpacity>
+          <Box>
+            <Heaty_uf height='10' width='10' />
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 };

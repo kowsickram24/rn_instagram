@@ -1,26 +1,38 @@
 import {Avatar, ListItem} from '@rneui/themed';
-import {createBox, createText} from '@shopify/restyle';
-import React, {useState} from 'react';
+import { FlatList } from 'react-native';
+import React from 'react';
+import {Box, Text} from '../../../theme';
 
-const Box = createBox();
-const Text = createText();
+const renderItem = ({item}) => (
+  <ListItem>
+    <Avatar
+      size={'medium'}
+      source={{uri: item.profilepic}}
+      rounded
+    />
+    <ListItem.Content>
+      <ListItem.Title>
+        {item?.username}
+      </ListItem.Title>
+    </ListItem.Content>
+  </ListItem>
+);
 
 const Following = ({userData}) => {
-
   return (
     <Box backgroundColor={'mainwhite'} flex={1}>
-      <ListItem>
-        <Avatar
-          size={'medium'}
-          source={{uri: userData?.following[0].profilepic}}
-          rounded
-        />
-        <ListItem.Content>
-          <ListItem.Title>
-            {userData?.following[0] ? userData.following[0].username : ''}
-          </ListItem.Title>
-        </ListItem.Content>
-      </ListItem>
+      <FlatList
+        data={userData?.following} 
+        renderItem={renderItem}
+        keyExtractor={(item) => item.toString()}
+        ListEmptyComponent={
+          <Box flex={1} justifyContent='center' alignItems='center'>
+            <Text>
+              No following Yet
+            </Text>
+            </Box>
+        }
+      />
     </Box>
   );
 };

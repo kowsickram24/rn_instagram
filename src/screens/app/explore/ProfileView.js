@@ -175,4 +175,5 @@ const ProfileView = ({route, navigation}) => {
   );
 };
 
+
 export default ProfileView;

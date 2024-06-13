@@ -3,6 +3,8 @@ export {default as Insta_logo} from '../assets/insta_logo.svg';
 export {default as Line} from '../assets/line.svg';
 export {default as DefPP} from '../assets/default_pp.jpg'
 // Light
+
+export {default as Cmt_Share} from '../assets/cmt_ryt.svg'
 export {default as Insta_Typo_logo} from '../assets/insta_typo_logo.svg';
 export {default as Lock} from '../assets/lock.svg';
 export {default as Tag_Ppl} from '../assets/tag_user.svg'
@@ -25,6 +27,10 @@ export {default as Share} from '../assets/share.svg';
 export {default as Tags} from '../assets/tags.svg';
 export {default as Pencil} from '../assets/pencil.svg'
 export {default as Dustbin} from '../assets/bin.svg'
+export {default as Within} from '../assets/within.svg'
+export {default as LInk} from '../assets/link.svg'
+
+
 
 // Bottom Tab
 export {default as Plus} from '../assets/plus.svg';

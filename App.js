@@ -6,7 +6,7 @@ import notifee from '@notifee/react-native';
 import {ThemeProvider} from '@shopify/restyle';
 import {I18nextProvider} from 'react-i18next';
 import i18n from './src/language/i18n';
-
+import linking from './linking';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
 
@@ -51,7 +51,7 @@ const App = () => {
           <ThemeProvider theme={theme}>
             <NetworkProvider>
               <I18nextProvider i18n={i18n}>
-                <NavigationContainer>
+                <NavigationContainer linking={linking}>
                   <StackNavigator />
                 </NavigationContainer>
               </I18nextProvider>
