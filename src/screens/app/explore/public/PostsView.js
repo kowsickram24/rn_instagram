@@ -6,7 +6,7 @@ const {width, height} = Dimensions.get('screen');
 
 const PostsView = ({user, navigation}) => {
   const renderPostItem = ({item}) => (
-    <Box flex={1}>
+    <Box >
       <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {user})}>
         <Image
           resizeMode="cover"

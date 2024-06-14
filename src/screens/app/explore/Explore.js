@@ -9,7 +9,7 @@ import {ActivityIndicator} from 'react-native';
 const Box = createBox();
 const Text = createText();
 
-const Explore = ({navigation}) => {
+const Explore = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -17,7 +17,7 @@ const Explore = ({navigation}) => {
     data: searchResults = [],
     isLoading,
     isError,
-  } = useSearchUsersQuery(debouncedQuery, {
+  } = useSearchUsersQuery(debouncedQuery.trim().toLowerCase(), {
     skip: debouncedQuery.trim() === '',
   });
 
@@ -31,10 +31,9 @@ const Explore = ({navigation}) => {
     };
   }, [searchQuery]);
 
-  const renderItem = ({item}) => (
-    <ListItem
-      onPress={() => navigation.navigate('ProfileView', {userId: item.id})}>
-      <Avatar size={'medium'} source={{uri: item.profilepic}} rounded />
+  const renderItem = ({ item }) => (
+    <ListItem onPress={() => navigation.navigate('ProfileView', { userId: item.id })}>
+      <Avatar size={'medium'} source={{ uri: item.profilepic }} rounded />
       <ListItem.Content>
         <ListItem.Title>{item.username}</ListItem.Title>
       </ListItem.Content>
@@ -45,8 +44,8 @@ const Explore = ({navigation}) => {
     <Box flex={1} padding={'s'} backgroundColor={'mainwhite'}>
       <Input
         leftIcon={<Search_uf />}
-        leftIconContainerStyle={{marginRight: 8, padding: 6}}
-        containerStyle={{paddingVertical: 12}}
+        leftIconContainerStyle={{ marginRight: 8, padding: 6 }}
+        containerStyle={{ paddingVertical: 12 }}
         inputContainerStyle={{
           borderBottomWidth: 0,
           backgroundColor: '#FAFAFA',
@@ -67,5 +66,6 @@ const Explore = ({navigation}) => {
     </Box>
   );
 };
+
 
 export default Explore;

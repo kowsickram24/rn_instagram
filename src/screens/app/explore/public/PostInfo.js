@@ -31,7 +31,7 @@ const PostInfo = ({route}) => {
   };
 
   const openDeepLink = () => {
-    const postId = generateUniqueId(); 
+    const postId = generateUniqueId();
     const deepLink = generateDeepLink(postId, currentPost.username);
     Linking.openURL(deepLink);
   };
@@ -72,6 +72,36 @@ const PostInfo = ({route}) => {
   const OpenShareSheet = item => {
     setCurrentPost(item);
     Shareref.current.open();
+  };
+  const handleSave = async item => {
+    try {
+      console.log(item)
+      const isSaved = currentUser.saves.some(
+        save => save.imageUrl === item.imageUrl,
+      );
+
+      if (!isSaved) {
+        const updatedSaves = [...currentUser.saves, item];
+        const userQuery = await firestore()
+          .collection('instagram')
+          .where('email', '==', currentUser.email)
+          .get();
+
+        if (!userQuery.empty) {
+          const userDoc = userQuery.docs[0];
+          await firestore()
+            .collection('instagram')
+            .doc(userDoc.id)
+            .update({saves: updatedSaves});
+
+          console.log('Post saved successfully');
+        } else {
+          console.error('User document not found');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving post: ', error);
+    }
   };
 
   const handleLike = async item => {
@@ -171,7 +201,7 @@ const PostInfo = ({route}) => {
 
   const renderItem = ({item}) => (
     <Box marginVertical="m">
-      <FeedPost
+       <FeedPost
         ProfileUrl={item.profilepic}
         user={item.username}
         location={item.location}
@@ -181,13 +211,16 @@ const PostInfo = ({route}) => {
         isLiked={item.likes.some(
           like => like.username === currentUser.username,
         )}
-        isSaved={false}
+        isSaved={currentUser.saves.some(
+          save => save.imageUrl === item.imageUrl,
+        )}
         likedUsers={item.likes.map(like => like.username).join(', ')}
         onLikePress={() => handleLike(item)}
         oncommentPress={() => OpenCmtBox(item)}
         onSharePress={() => OpenShareSheet(item)}
         ViewCmnt={() => OpenCmtBox(item)}
         comments={item?.comments}
+        onSavePress={() => handleSave(item)}
       />
     </Box>
   );

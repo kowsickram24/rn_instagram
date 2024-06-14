@@ -14,6 +14,8 @@ import ProfileView from '../../../screens/app/explore/ProfileView';
 import PostInfo from '../../../screens/app/explore/public/PostInfo';
 import EditPost from '../../../screens/app/profile/Edit/editPost';
 import MySaves from '../../../screens/app/saves/Mysave';
+import AccountCenter from '../../../screens/app/settings/AccountCenter';
+import ChatBox from '../../../screens/app/chat/ChatBox';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
@@ -24,6 +26,7 @@ const UserStack = ({getData}) => {
       </Stack.Screen>
       <Stack.Screen name="Notifications" component={Notification} />
       <Stack.Screen name="Chats" component={Chats} />
+      <Stack.Screen name="ChatBox" component={ChatBox} />
       <Stack.Screen name="Settings">
         {props => <Settings {...props} getData={getData} />}
       </Stack.Screen>
@@ -42,6 +45,7 @@ const UserStack = ({getData}) => {
 
       <Stack.Screen name="Reach" component={AccountReach} />
       <Stack.Screen name="MySaves" component={MySaves} />
+      <Stack.Screen name="AccountCenter" component={AccountCenter} />
     </Stack.Navigator>
   );
 };

@@ -11,9 +11,9 @@ import {useSelector} from 'react-redux';
 import config from '../../../../config';
 import {Back} from '../../../../constants/assets';
 import {Box, Text} from '../../../../theme';
-import Toast from 'react-native-toast-message';
+import Container, { Toast } from 'toastify-react-native';
 const {width, height} = Dimensions.get('screen');
-
+import ToastManager from 'toastify-react-native';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -102,12 +102,9 @@ const EditProfile = ({navigation}) => {
           username: userData.username,
           bio: userData.bio,
         });
-        setUserData(prevState => ({...prevState, profilepic: imageUrl})); // Update the state immediately
-        Toast.show({
-          type: 'success',
-          text1: 'Updated Successfully',
-          text1Style: {fontSize: 16, fontWeight: '400'},
-        });
+        setUserData(prevState => ({...prevState, profilepic: imageUrl}));
+        //Toast
+        Toast.success('Update Successful')
         console.log('User profile updated successfully');
       } else {
         console.log('No matching documents.');
@@ -133,6 +130,7 @@ const EditProfile = ({navigation}) => {
 
   return (
     <Box flex={1} padding={'m'} backgroundColor={'mainwhite'}>
+      <ToastManager position="top" />
       <Box flexDirection="row" alignItems="center" gap={'l'}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Back />
@@ -200,7 +198,6 @@ const EditProfile = ({navigation}) => {
           </TouchableOpacity>
         </Box>
       </RBSheet>
-      <Toast visibilityTime={1200} position="top" bottomOffset={20} />
     </Box>
   );
 };

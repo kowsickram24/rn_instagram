@@ -1,16 +1,18 @@
+import {Avatar, Card} from '@rneui/themed';
 import {createBox, createText} from '@shopify/restyle';
-import React, {useState} from 'react';
+import React from 'react';
+import {useState, useEffect} from 'react';
+import {Image, TouchableOpacity} from 'react-native';
+import {Skeleton} from '@rneui/themed';
 import {
   Comment,
+  Heaty_f,
+  Heaty_uf,
   Save,
   Save_f,
-  Heaty_uf,
-  Heaty_f,
-  Three_dots,
   Share,
+  Three_dots,
 } from '../../constants/assets';
-import {Avatar, Card, ListItem} from '@rneui/themed';
-import {Image, TouchableOpacity, View} from 'react-native';
 const Box = createBox();
 const Text = createText();
 
@@ -32,6 +34,100 @@ const FeedPost = ({
   onProfilePress,
   comments,
 }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // Simulate a network request
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (loading) {
+    return (
+      <Box>
+        <Card
+          containerStyle={{
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <Box padding={'s'} flexDirection="row" alignItems="center" gap={'s'}>
+            <Skeleton animation="pulse" circle width={42} height={42} />
+            <Box flex={1} flexDirection="row" justifyContent="space-between">
+              <Box flexDirection="column" gap={'s'}>
+                <Skeleton
+                  animation="pulse"
+                  style={{borderRadius: 50}}
+                  width={100}
+                  height={10}
+                />
+                <Skeleton
+                  animation="pulse"
+                  style={{borderRadius: 50}}
+                  width={100}
+                  height={10}
+                />
+              </Box>
+              <Skeleton animation="pulse" width={30} height={10} />
+            </Box>
+          </Box>
+          <Skeleton animation="pulse" height={400} width="100%" />
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            padding={'s'}>
+            <Box flexDirection="row" justifyContent="center" gap={'m'}>
+              <Skeleton
+                animation="pulse"
+                style={{borderRadius: 15}}
+                width={30}
+                height={30}
+              />
+              <Skeleton
+                animation="pulse"
+                style={{borderRadius: 15}}
+                width={30}
+                height={30}
+              />
+              <Skeleton
+                animation="pulse"
+                style={{borderRadius: 15}}
+                width={30}
+                height={30}
+              />
+            </Box>
+            <Skeleton
+              animation="pulse"
+              style={{borderRadius: 15}}
+              width={30}
+              height={30}
+            />
+          </Box>
+          <Box paddingVertical={'s'} paddingHorizontal={'s'}>
+            <Skeleton
+              animation="pulse"
+              style={{borderRadius: 100}}
+              width={200}
+              height={15}
+            />
+          </Box>
+          <Box paddingVertical={'s'} paddingHorizontal={'s'}>
+            <Skeleton
+              animation="pulse"
+              style={{borderRadius: 150}}
+              width={150}
+              height={15}
+            />
+          </Box>
+        </Card>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Card

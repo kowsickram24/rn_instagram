@@ -10,35 +10,31 @@ import Authbutton from '../../components/buttons/authbutton';
 import {Fb_logo, Insta_Typo_logo, Line} from '../../constants/assets';
 import {Box, Text} from '../../theme';
 import {LoginSchema} from '../../utils/validation';
-import Toast from 'react-native-toast-message';
-
+import  {Toast} from 'toastify-react-native';
+import ToastManager from 'toastify-react-native';
 import {useDispatch} from 'react-redux';
 import {login} from '../../store/slices/userSlice';
 import {Loader} from '../../components/loader/Loader';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {t} = useTranslation();
-
-  // Function to handle sending password reset email
   const handleForgotPassword = async email => {
     if (!email) {
-      Toast.show({
-        type: 'info',
-        text1: 'Enter Email',
-        text1Style: {fontWeight: '400', fontSize: 16},
+      // Toast
+      Toast.info('Enter Your Email', {
+        icon: <Icon name="check" size={24} color="green" />,
       });
       return;
     }
     try {
       await auth().sendPasswordResetEmail(email);
-      alert('Password reset email sent successfully. Check your inbox.');
+      //Toast
+      Toast.info('Check You Mail');
     } catch (error) {
-      console.error('Error sending password reset email:', error);
-      alert(
-        'Failed to send password reset email. Please check the email address and try again.',
-      );
+      //Toast
+      Toast.error('Invalid Email');
     }
   };
 
@@ -75,7 +71,7 @@ const LoginScreen = ({navigation, getData}) => {
     fetchUserData();
   }, []);
 
-  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+  const handleLogin = async (values, {setSubmitting, setErrors}) => {
     try {
       setLoading(true);
       const userQuerySnapshot = await firestore()
@@ -84,30 +80,25 @@ const LoginScreen = ({navigation, getData}) => {
         .get();
 
       if (userQuerySnapshot.empty) {
-        setErrors({ email: 'Incorrect email' });
+        setErrors({email: 'Incorrect email'});
         setSubmitting(false);
+        setLoading(false);
       }
+      const {email, password} = values;
+      Toast.success('Login Success');
+      await auth().signInWithEmailAndPassword(email, password);
 
       const userDoc = userQuerySnapshot.docs[0];
       const userData = userDoc.data();
-
-      const { email, password } = values;
-      await auth().signInWithEmailAndPassword(email, password);
-
-      Toast.show({
-        type: 'success',
-        text1: 'Login Success',
-        text1Style: { fontSize: 16, fontWeight: '400' },
-      });
-      console.log('User authenticated:', email);
+      console.log(userData, '/userData');
 
       await AsyncStorage.setItem('user', JSON.stringify(userData));
+      //Toast
+      console.log('User authenticated:', email);
 
       dispatch(login(userData));
-
       await getData();
-
-      navigation.replace('User');
+      navigation.navigate('User');
     } catch (error) {
       console.error('Error logging in:', error);
 
@@ -115,9 +106,9 @@ const LoginScreen = ({navigation, getData}) => {
         error.code === 'auth/user-not-found' ||
         error.code === 'auth/wrong-password'
       ) {
-        setErrors({ password: 'Incorrect Credentials' });
+        setErrors({password: 'Incorrect Credentials'});
       } else {
-        setErrors({ email: 'Error logging in. Please try again later.' });
+        setErrors({email: 'Error logging in. Please try again later.'});
       }
     }
     setLoading(false);
@@ -131,9 +122,10 @@ const LoginScreen = ({navigation, getData}) => {
       justifyContent="space-evenly"
       padding={'l'}>
       {loading ? (
-        <Loader /> // Display the loader when Loading is true
+        <Loader />
       ) : (
         <>
+          <ToastManager position="top" />
           <Box alignSelf="center" marginVertical={'l'}>
             <Insta_Typo_logo />
           </Box>
@@ -218,7 +210,6 @@ const LoginScreen = ({navigation, getData}) => {
           </Box>
         </>
       )}
-      <Toast visibilityTime={1200} position="top" bottomOffset={20} />
     </Box>
   );
 };

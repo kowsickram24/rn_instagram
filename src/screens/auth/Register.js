@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import Toast from 'react-native-toast-message';
 import S3 from 'aws-sdk/clients/s3';
 import {Buffer} from 'buffer';
 import {Formik} from 'formik';
@@ -10,15 +10,15 @@ import {Image, TouchableOpacity} from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {useDispatch} from 'react-redux';
+import ToastManager, {Toast} from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
+import {Loader} from '../../components/loader/Loader';
 import config from '../../config';
 import {Back, Insta_Typo_logo, White_cam} from '../../constants/assets';
 import {login} from '../../store/slices/userSlice';
-import {RegSchema} from '../../utils/validation';
-import auth from '@react-native-firebase/auth';
 import {Box, Text} from '../../theme';
-import {Loader} from '../../components/loader/Loader';
+import {RegSchema} from '../../utils/validation';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -102,15 +102,10 @@ const RegisterScreen = ({navigation, getData}) => {
       } else {
         const profileImageUrl = await UploadToAWS();
         const {email, password, username} = values;
-        const FirebaseAuth = await auth()
-          .createUserWithEmailAndPassword(email, password)
-          .then(
-            Toast.show({
-              type: 'success',
-              text1: 'Register Success ',
-              text1Style: {fontSize: 16, fontWeight: '400'},
-            }),
-          );
+        const FirebaseAuth = await auth().createUserWithEmailAndPassword(
+          email,
+          password,
+        );
 
         const userData = {
           username: username,
@@ -121,6 +116,7 @@ const RegisterScreen = ({navigation, getData}) => {
           followers: [],
           following: [],
         };
+        Toast.success('Regiter Success');
         await usersCollectionRef.add(userData);
         await AsyncStorage.setItem('user', JSON.stringify(userData));
         dispatch(login(userData));
@@ -144,6 +140,7 @@ const RegisterScreen = ({navigation, getData}) => {
         <Loader />
       ) : (
         <>
+          <ToastManager position="Top" />
           <Box>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Back />
@@ -247,7 +244,6 @@ const RegisterScreen = ({navigation, getData}) => {
               {t('Auth.footerText')}
             </Text>
           </Box>
-          <Toast visibilityTime={1200} position="top" bottomOffset={20} />
         </>
       )}
     </Box>
