@@ -30,7 +30,7 @@ export {default as Dustbin} from '../assets/bin.svg'
 export {default as Within} from '../assets/within.svg'
 export {default as LInk} from '../assets/link.svg'
 
-
+export {default as Def_pp} from '../assets/default_pp.jpg'
 
 // Bottom Tab
 export {default as Plus} from '../assets/plus.svg';

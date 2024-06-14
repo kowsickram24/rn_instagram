@@ -65,7 +65,7 @@ const NewPost = ({navigation, route, getData}) => {
 
   useEffect(() => {
     fetchUser();
-  });
+  },[]);
 
   const pickImage = async () => {
     try {

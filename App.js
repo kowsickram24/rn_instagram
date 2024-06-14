@@ -13,7 +13,6 @@ import {store} from './src/store';
 import {
   Keyboard,
   SafeAreaView,
-  TouchableNativeFeedback,
   TouchableWithoutFeedback,
 } from 'react-native';
 // Network

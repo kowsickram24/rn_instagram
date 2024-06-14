@@ -13,10 +13,10 @@ import AccountReach from '../../../screens/app/reach';
 import ProfileView from '../../../screens/app/explore/ProfileView';
 import PostInfo from '../../../screens/app/explore/public/PostInfo';
 import EditPost from '../../../screens/app/profile/Edit/editPost';
+import MySaves from '../../../screens/app/saves/Mysave';
 const Stack = createNativeStackNavigator();
 
-const UserStack = ({getData,route}) => {
-  console.log(route.params);
+const UserStack = ({getData}) => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main">
@@ -41,6 +41,7 @@ const UserStack = ({getData,route}) => {
       <Stack.Screen name="Editpost" component={EditPost} />
 
       <Stack.Screen name="Reach" component={AccountReach} />
+      <Stack.Screen name="MySaves" component={MySaves} />
     </Stack.Navigator>
   );
 };

@@ -1,22 +1,19 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Image, TouchableOpacity} from 'react-native';
-import {createBox, createText} from '@shopify/restyle';
-import {Fragment} from 'react';
-import {Back} from '../../../../constants/assets';
-import S3 from 'aws-sdk/clients/s3';
-import RNFS from 'react-native-fs';
-import {Buffer} from 'buffer';
-import ImageCropPicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
-import config from '../../../../config';
-import {useSelector} from 'react-redux';
 import {Button, Input} from '@rneui/themed';
+import S3 from 'aws-sdk/clients/s3';
+import {Buffer} from 'buffer';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, Image, TouchableOpacity} from 'react-native';
+import RNFS from 'react-native-fs';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {Dimensions} from 'react-native';
-import {DefPP} from '../../../../constants/assets';
+import {useSelector} from 'react-redux';
+import config from '../../../../config';
+import {Back} from '../../../../constants/assets';
+import {Box, Text} from '../../../../theme';
+import Toast from 'react-native-toast-message';
 const {width, height} = Dimensions.get('screen');
-const Box = createBox();
-const Text = createText();
+
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -25,7 +22,7 @@ const s3 = new S3({
 const EditProfile = ({navigation}) => {
   const [newImage, setNewImage] = useState(null);
   const user = useSelector(state => state.user.user);
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState({});
   const RBSheetref = useRef();
 
   const fetchUserData = async () => {
@@ -35,8 +32,8 @@ const EditProfile = ({navigation}) => {
         .where('email', '==', user?.email)
         .get();
       if (!userDoc.empty) {
-        const userdata = userDoc.docs[0].data();
-        setUserData(userdata);
+        const userData = userDoc.docs[0].data();
+        setUserData(userData);
       } else {
         console.log('No matching documents.');
       }
@@ -47,7 +44,7 @@ const EditProfile = ({navigation}) => {
 
   useEffect(() => {
     fetchUserData();
-  }, [user]);
+  }, []);
 
   const pickImage = async () => {
     try {
@@ -105,6 +102,12 @@ const EditProfile = ({navigation}) => {
           username: userData.username,
           bio: userData.bio,
         });
+        setUserData(prevState => ({...prevState, profilepic: imageUrl})); // Update the state immediately
+        Toast.show({
+          type: 'success',
+          text1: 'Updated Successfully',
+          text1Style: {fontSize: 16, fontWeight: '400'},
+        });
         console.log('User profile updated successfully');
       } else {
         console.log('No matching documents.');
@@ -121,8 +124,7 @@ const EditProfile = ({navigation}) => {
         imageUrl = await uploadImageToS3(newImage);
       }
       await updateFirestore(imageUrl);
-      alert('Profile updated successfully!');
-      navigation.goBack();
+      setNewImage(null); // Clear new image after updating
     } catch (error) {
       console.error('Error saving changes: ', error);
       alert('Failed to update profile. Please try again.');
@@ -150,7 +152,6 @@ const EditProfile = ({navigation}) => {
           }}
           source={{uri: newImage || userData?.profilepic}}
         />
-
         <TouchableOpacity onPress={() => RBSheetref.current.open()}>
           <Text color="primaryBlue" textAlign="center">
             Edit Picture
@@ -199,6 +200,7 @@ const EditProfile = ({navigation}) => {
           </TouchableOpacity>
         </Box>
       </RBSheet>
+      <Toast visibilityTime={1200} position="top" bottomOffset={20} />
     </Box>
   );
 };

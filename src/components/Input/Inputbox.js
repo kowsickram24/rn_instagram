@@ -13,8 +13,17 @@ const Inputbox = ({
 }) => {
   return (
     <Input
-      containerStyle={styles.container}
-      inputContainerStyle={styles.inputstyle}
+      containerStyle={{}}
+      inputContainerStyle={{
+        borderRadius: 4,
+        backgroundColor: palette.dullwhite,
+        borderBottomWidth: 1,
+        borderWidth: 1,
+        margin:0.5
+      }}
+      inputStyle={{
+        padding: 10,
+      }}
       value={value}
       placeholder={placeholder}
       errorMessage={errorMessage}
@@ -26,13 +35,3 @@ const Inputbox = ({
 };
 
 export default Inputbox;
-
-const styles = StyleSheet.create({
-  inputstyle: {
-    borderWidth: 0.5,
-    borderRadius: 4,
-    borderStyle:'dashed',
-    backgroundColor: palette.dullwhite,
-  },
-  container: {},
-});

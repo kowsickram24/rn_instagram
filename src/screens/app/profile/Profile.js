@@ -8,7 +8,7 @@ import {Menu, New_story} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
 const Box = createBox();
 const Text = createText();
-
+import {Def_pp} from '../../../constants/assets';
 const Profile = ({navigation}) => {
   const user = useSelector(state => state.user.user);
 
@@ -26,7 +26,7 @@ const Profile = ({navigation}) => {
         const userDataSnapshot = await userDocRef.get();
         const userData = userDataSnapshot.data();
         setCurrentUser(userData);
-        console.log(currentUser);
+
       } else {
         console.log('No matching documents.');
       }

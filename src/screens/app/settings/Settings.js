@@ -5,7 +5,7 @@ import {TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {logout} from '../../../store/slices/userSlice';
 import {Back} from '../../../constants/assets';
-
+import auth from '@react-native-firebase/auth';
 const Box = createBox();
 const Text = createText();
 
@@ -14,6 +14,9 @@ const Settings = ({navigation, getData}) => {
 
   const handleLogout = async () => {
     try {
+      await auth()
+        .signOut()
+        .then(() => console.log('User signed out!'));
       await AsyncStorage.removeItem('user');
       dispatch(logout());
       await getData();
@@ -33,12 +36,13 @@ const Settings = ({navigation, getData}) => {
       </Box>
       <Text color={'mainblack'}>Settings and Privacy</Text>
       <Text color={'mainblack'}>Accounts Center</Text>
-      <Box flex={1}>
-        <Box>
-          <TouchableOpacity onPress={handleLogout}>
-            <Text variant="Logout">Logout</Text>
-          </TouchableOpacity>
-        </Box>
+      <TouchableOpacity onPress={() => navigation.navigate('MySaves')}>
+        <Text color={'mainblack'}>My Saves</Text>
+      </TouchableOpacity>
+      <Box>
+        <TouchableOpacity onPress={handleLogout}>
+          <Text variant="Logout">Logout</Text>
+        </TouchableOpacity>
       </Box>
     </Box>
   );

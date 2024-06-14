@@ -45,18 +45,6 @@ const BottomNavigator = ({navigation, getData}) => {
       console.error('Error fetching user data: ', error);
     }
   };
-  // const fetchUserData = async () => {
-  //   try {
-  //     const user = await AsyncStorage.getItem('user');
-  //     if (user) {
-  //       setCurrentUser(JSON.parse(user));
-  //     } else {
-  //       console.log('No user data found');
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to fetch user data:', error);
-  //   }
-  // };
   useEffect(() => {
     fetchUserData();
   }, []);

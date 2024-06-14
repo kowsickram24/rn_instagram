@@ -1,8 +1,9 @@
 import {createTheme} from '@shopify/restyle';
 import {createBox, createText} from '@shopify/restyle';
-
-export const Box = createBox()
-export const Text = createText()
+import { Dimensions } from 'react-native';
+export const { width, height } = Dimensions.get('screen');
+export const Box = createBox();
+export const Text = createText();
 
 export const palette = {
   primaryBlue: '#3797EF',
@@ -70,27 +71,18 @@ export const theme = createTheme({
     FBcnt: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.bold,
     },
     Pass: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.bold,
     },
     Linkcnt: {
       fontSize: 14,
       color: 'lightgrey',
-      fontFamily: FONT.OpenSans.regular,
     },
     Linktxt: {
       fontSize: 14,
       color: 'primaryBlue',
-      fontFamily: FONT.OpenSans.regular,
-    },
-    Footertxt: {
-      fontSize: 12,
-      color: 'lightgrey',
-      fontFamily: FONT.OpenSans.regular,
     },
     ProInfo: {
       fontSize: 14,

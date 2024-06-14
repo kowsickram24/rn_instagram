@@ -16,10 +16,10 @@ const StackNavigator = () => {
   const fetchUserData = async () => {
     try {
       const user = await AsyncStorage.getItem('user');
-
       if (user) {
         setUser(JSON.parse(user));
         dispatch(login(JSON.parse(user)));
+        console.log(user)
       } else {
         console.log('No user data found');
         setUser(null);

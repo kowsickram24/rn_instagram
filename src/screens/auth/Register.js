@@ -1,21 +1,24 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import {createBox, createText} from '@shopify/restyle';
+import Toast from 'react-native-toast-message';
+import S3 from 'aws-sdk/clients/s3';
+import {Buffer} from 'buffer';
 import {Formik} from 'formik';
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Image, TouchableOpacity} from 'react-native';
+import RNFS from 'react-native-fs';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import {useDispatch} from 'react-redux';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import {Back, Insta_Typo_logo, White_cam} from '../../constants/assets';
-import RNFS from 'react-native-fs';
-import {Buffer} from 'buffer';
-import {RegSchema} from '../../utils/validation';
 import config from '../../config';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import S3 from 'aws-sdk/clients/s3';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch} from 'react-redux';
+import {Back, Insta_Typo_logo, White_cam} from '../../constants/assets';
 import {login} from '../../store/slices/userSlice';
+import {RegSchema} from '../../utils/validation';
+import auth from '@react-native-firebase/auth';
+import {Box, Text} from '../../theme';
+import {Loader} from '../../components/loader/Loader';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -23,12 +26,10 @@ const s3 = new S3({
 });
 
 const RegisterScreen = ({navigation, getData}) => {
+  const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState();
   const dispatch = useDispatch();
-
   const {t} = useTranslation();
-  const Box = createBox();
-  const Text = createText();
 
   const uploadProfile = async () => {
     try {
@@ -90,42 +91,46 @@ const RegisterScreen = ({navigation, getData}) => {
 
   const handleRegister = async (values, {setSubmitting, setErrors}) => {
     try {
+      setLoading(true);
       const usersCollectionRef = firestore().collection('instagram');
       const userQuerySnapshot = await usersCollectionRef
         .where('email', '==', values.email)
         .get();
+
       if (!userQuerySnapshot.empty) {
         setErrors({email: 'Email already exists'});
       } else {
         const profileImageUrl = await UploadToAWS();
-        if (profileImageUrl) {
-          await usersCollectionRef.add({
-            username: values.username,
-            email: values.email,
-            password: values.password,
-            profilepic: profileImageUrl,
-            posts: [],
-            followers: [],
-            following: [],
-          });
-          const userData = {
-            username: values.username,
-            email: values.email,
-            password: values.password,
-            profilepic: profileImageUrl,
-            posts: [],
-            followers: [],
-            following: [],
-          };
-          AsyncStorage.setItem('user', JSON.stringify(userData));
-          dispatch(login(userData));
-          await getData();
-          navigation.replace('User');
-        }
+        const {email, password, username} = values;
+        const FirebaseAuth = await auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(
+            Toast.show({
+              type: 'success',
+              text1: 'Register Success ',
+              text1Style: {fontSize: 16, fontWeight: '400'},
+            }),
+          );
+
+        const userData = {
+          username: username,
+          email: email,
+          profilepic: profileImageUrl,
+          saves: [],
+          posts: [],
+          followers: [],
+          following: [],
+        };
+        await usersCollectionRef.add(userData);
+        await AsyncStorage.setItem('user', JSON.stringify(userData));
+        dispatch(login(userData));
+        await getData();
+        navigation.replace('User');
       }
     } catch (error) {
-      console.error('Error registering user: ', error);
+      console.error('Error registering user:', error);
     }
+    setLoading(false);
     setSubmitting(false);
   };
 
@@ -135,102 +140,116 @@ const RegisterScreen = ({navigation, getData}) => {
       justifyContent="space-between"
       padding={'l'}
       flex={1}>
-      <Box>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Back />
-        </TouchableOpacity>
-      </Box>
-      <Box>
-        <Box alignSelf="center" marginVertical={'l'}>
-          <Insta_Typo_logo />
-        </Box>
-        <Box alignSelf="center" marginVertical={'l'}>
-          <TouchableOpacity onPress={uploadProfile}>
-            {selectedImage ? (
-              <Image
-                style={{
-                  width: 90,
-                  backgroundColor: '#3797EF',
-                  height: 90,
-                  borderRadius: 48,
-                }}
-                source={{uri: selectedImage}}
-              />
-            ) : (
-              <Box
-                justifyContent="center"
-                backgroundColor={'primaryBlue'}
-                borderRadius={'xxxl'}
-                alignItems="center"
-                width={90}
-                height={90}>
-                <White_cam />
-              </Box>
-            )}
-          </TouchableOpacity>
-        </Box>
-        <Formik
-          initialValues={{username: '', email: '', password: ''}}
-          validationSchema={RegSchema}
-          onSubmit={handleRegister}>
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-            isSubmitting,
-          }) => (
-            <>
-              <Inputbox
-                placeholder={t('Auth.usernamePlaceholder')}
-                value={values.username}
-                onChangeText={handleChange('username')}
-                onBlur={handleBlur('username')}
-                errorMessage={
-                  touched.username && errors.username ? errors.username : null
-                }
-              />
-              <Inputbox
-                placeholder={t('Auth.emailPlaceholder')}
-                value={values.email}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                errorMessage={
-                  touched.email && errors.email ? errors.email : null
-                }
-              />
-              <Inputbox
-                placeholder={t('Auth.passwordPlaceholder')}
-                value={values.password}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                secureTextEntry
-                errorMessage={
-                  touched.password && errors.password ? errors.password : null
-                }
-              />
-              <Authbutton
-                title={t('Auth.Signup')}
-                onPress={handleSubmit}
-                disabled={isSubmitting}
-              />
-            </>
-          )}
-        </Formik>
-        <Box flexDirection="row" justifyContent="center" alignItems="center">
-          <Text variant={'Linkcnt'}> {t('Auth.Alreadyhaveanaccount')}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text variant={'Linktxt'}> {t('Auth.loginButton')}</Text>
-          </TouchableOpacity>
-        </Box>
-      </Box>
-      <Box>
-        <Text textAlign="center" variant={'Footertxt'}>
-          {t('Auth.footerText')}
-        </Text>
-      </Box>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <Box>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Back />
+            </TouchableOpacity>
+          </Box>
+          <Box>
+            <Box alignSelf="center" marginVertical={'l'}>
+              <Insta_Typo_logo />
+            </Box>
+            <Box alignSelf="center" marginVertical={'l'}>
+              <TouchableOpacity onPress={uploadProfile}>
+                {selectedImage ? (
+                  <Image
+                    style={{
+                      width: 90,
+                      backgroundColor: '#3797EF',
+                      height: 90,
+                      borderRadius: 48,
+                    }}
+                    source={{uri: selectedImage}}
+                  />
+                ) : (
+                  <Box
+                    justifyContent="center"
+                    backgroundColor={'primaryBlue'}
+                    borderRadius={'xxxl'}
+                    alignItems="center"
+                    width={90}
+                    height={90}>
+                    <White_cam />
+                  </Box>
+                )}
+              </TouchableOpacity>
+            </Box>
+            <Formik
+              initialValues={{username: '', email: '', password: ''}}
+              validationSchema={RegSchema}
+              onSubmit={handleRegister}>
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+                isSubmitting,
+              }) => (
+                <>
+                  <Inputbox
+                    placeholder={t('Auth.usernamePlaceholder')}
+                    value={values.username}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    errorMessage={
+                      touched.username && errors.username
+                        ? errors.username
+                        : null
+                    }
+                  />
+                  <Inputbox
+                    placeholder={t('Auth.emailPlaceholder')}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    errorMessage={
+                      touched.email && errors.email ? errors.email : null
+                    }
+                  />
+                  <Inputbox
+                    placeholder={t('Auth.passwordPlaceholder')}
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    secureTextEntry
+                    errorMessage={
+                      touched.password && errors.password
+                        ? errors.password
+                        : null
+                    }
+                  />
+                  <Authbutton
+                    title={t('Auth.Signup')}
+                    onPress={handleSubmit}
+                    disabled={isSubmitting}
+                  />
+                </>
+              )}
+            </Formik>
+            <Box
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center">
+              <Text> {t('Auth.Alreadyhaveanaccount')}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text color={'primaryBlue'}> {t('Auth.loginButton')}</Text>
+              </TouchableOpacity>
+            </Box>
+          </Box>
+          <Box>
+            <Text fontSize={12} textAlign="center">
+              {t('Auth.footerText')}
+            </Text>
+          </Box>
+          <Toast visibilityTime={1200} position="top" bottomOffset={20} />
+        </>
+      )}
     </Box>
   );
 };

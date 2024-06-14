@@ -171,7 +171,6 @@ const PostInfo = ({route}) => {
 
   const renderItem = ({item}) => (
     <Box marginVertical="m">
-      {console.log(item)}
       <FeedPost
         ProfileUrl={item.profilepic}
         user={item.username}

@@ -100,18 +100,18 @@ const FeedPost = ({
             {user} {Caption}
           </Text>
         </Box>
-        {/* {comments.length > 0 && (
+        {comments?.length > 0 && (
           <Box paddingVertical="s" paddingHorizontal="s">
             <TouchableOpacity onPress={ViewCmnt}>
               <Text fontSize={14}>
                 View{' '}
-                {comments.length > 1
-                  ? `${comments.length} comments`
+                {comments?.length > 1
+                  ? `${comments?.length} comments`
                   : 'comment'}
               </Text>
             </TouchableOpacity>
           </Box>
-        )} */}
+        )}
       </Card>
       {comments?.map((comment, index) => (
         <Box
@@ -122,12 +122,16 @@ const FeedPost = ({
           justifyContent="space-between">
           <TouchableOpacity onPress={ViewCmnt}>
             <Box marginLeft="s" flexDirection="row" gap={'s'}>
-              <Text fontSize={14} color={'mainblack'}>{comment.username}</Text>
-              <Text fontSize={14} color={'mainblack'}>{comment.comment}</Text>
+              <Text fontSize={14} color={'mainblack'}>
+                {comment.username}
+              </Text>
+              <Text fontSize={14} color={'mainblack'}>
+                {comment.comment}
+              </Text>
             </Box>
           </TouchableOpacity>
           <Box>
-            <Heaty_uf height='10' width='10' />
+            <Heaty_uf height="10" width="10" />
           </Box>
         </Box>
       ))}

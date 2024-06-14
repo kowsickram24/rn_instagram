@@ -68,7 +68,7 @@ const Notification = () => {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
       />
-      <Push />
+      {/* <Push /> */}
     </Box>
   );
 };

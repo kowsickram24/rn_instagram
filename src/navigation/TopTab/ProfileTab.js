@@ -6,7 +6,6 @@ import TagsView from '../../screens/app/explore/public/TagsView';
 const TopTab = createMaterialTopTabNavigator();
 
 const ProfileTab = ({user}) => {
-  console.log(user);
   return (
     <TopTab.Navigator
       screenOptions={{
