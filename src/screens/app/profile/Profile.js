@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Button, Divider} from '@rneui/themed';
+import {Avatar, Button, Divider, Header} from '@rneui/themed';
 import {createBox, createText} from '@shopify/restyle';
 import React, {useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
@@ -8,43 +8,21 @@ import {Menu, New_story} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
 const Box = createBox();
 const Text = createText();
-import {Def_pp} from '../../../constants/assets';
-const Profile = ({navigation}) => {
-  const user = useSelector(state => state.user.user);
-
-  const [currentUser, setCurrentUser] = useState();
-
-  const fetchUserData = async () => {
-    try {
-      const userDoc = await firestore()
-        .collection('instagram')
-        .where('email', '==', user.email)
-        .get();
-
-      if (!userDoc.empty) {
-        const userDocRef = userDoc.docs[0].ref;
-        const userDataSnapshot = await userDocRef.get();
-        const userData = userDataSnapshot.data();
-        setCurrentUser(userData);
-
-      } else {
-        console.log('No matching documents.');
-      }
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
+const Profile = ({navigation, User}) => {
+  const [currentUser, setCurrentUser] = useState(User);
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
-      <Box padding={'s'} alignSelf="flex-end">
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-          <Menu />
-        </TouchableOpacity>
-      </Box>
+      <Header
+        rightComponent={
+          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+            <Menu />
+          </TouchableOpacity>
+        }
+        backgroundColor="white"
+        statusBarProps={{
+          hidden: true,
+        }}
+      />
       <Box
         flexDirection="row"
         marginVertical={'s'}
@@ -53,7 +31,8 @@ const Profile = ({navigation}) => {
           avatarStyle={{borderRadius: 40}}
           containerStyle={{width: 80, height: 80}}
           source={{
-            uri: currentUser?.profilepic,
+            uri:
+              currentUser?.avatar 
           }}
         />
         <Box flexDirection="row" gap={'xl'}>
@@ -82,12 +61,13 @@ const Profile = ({navigation}) => {
         </Box>
       </Box>
       <Box padding={'m'}>
-        <Text variant={'userName'}>{currentUser?.username}</Text>
-        <Text variant={'userName'}>{currentUser?.bio}</Text>
+        <Text fontSize={14} color={'mainblack'}>{currentUser?.username}</Text>
+        <Text fontSize={14} color={'mainblack'}>{currentUser?.fullname}</Text>
+        <Text fontSize={14} color={'mainblack'}>{currentUser?.bio}</Text>
       </Box>
       <Box padding={'s'}>
         <Button
-          onPress={() => navigation.navigate('EditProfile')}
+          onPress={() => navigation.navigate('EditProfile',currentUser)}
           title={'Edit Profile'}
           containerStyle={{
             borderWidth: 0.5,

@@ -13,66 +13,24 @@ const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('instagram')
-      .where('email', '==', currentUser.email)
-      .onSnapshot(
-        querySnapshot => {
-          if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            const userData = userDoc.data();
-            const userPosts = userData.posts || [];
-            const updatedPost = userPosts.find(
-              p => p.imageUrl === posts.imageUrl,
-            );
-            if (updatedPost) {
-              setPosts(updatedPost);
-            }
-          } else {
-            console.log('No matching documents.');
-          }
-        },
-        error => {
-          console.error('Error fetching user data: ', error);
-        },
-      );
-
-    return () => unsubscribe();
-  }, [currentUser.email, posts.imageUrl]);
 
   const handleEdit = async () => {
     try {
-      const userQuerySnapshot = await firestore()
-        .collection('instagram')
-        .where('email', '==', currentUser.email)
-        .get();
+      const postRef = firestore().collection('posts').doc(posts.postId);
 
-      if (!userQuerySnapshot.empty) {
-        const userDoc = userQuerySnapshot.docs[0];
-        const userData = userDoc.data();
-        const userPosts = userData.posts || [];
-
-        const updatedPosts = userPosts.map(p =>
-          p.imageUrl === posts.imageUrl
-            ? {...p, caption: posts.caption, location: posts.location}
-            : p,
-        );
-
-        await firestore()
-          .collection('instagram')
-          .doc(userDoc.id)
-          .update({posts: updatedPosts})
-          .then(() => Toast.success('Updated Post'));
-      } else {
-        console.error('User document not found');
-      }
+      await postRef.update({
+        caption: posts.caption,
+        location: posts.location,
+      });
+  
+      console.log('Post updated successfully');
     } catch (error) {
-      console.error('Error Updating post: ', error);
+      console.error('Error updating post: ', error);
     } finally {
       navigation.navigate('Profile');
     }
   };
+  
 
   const handleLocationChange = text => {
     setPosts({...posts, location: text});

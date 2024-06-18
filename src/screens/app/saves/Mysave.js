@@ -5,8 +5,9 @@ import {Box, Text} from '../../../theme';
 import {useState, useEffect} from 'react';
 import {FlatList, Image, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { ActivityIndicator } from 'react-native';
-const MySaves = ({ navigation }) => {
+import {ActivityIndicator} from 'react-native';
+import {Header} from '@rneui/themed';
+const MySaves = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [savedItems, setSavedItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +16,9 @@ const MySaves = ({ navigation }) => {
     const fetchSavedItems = async () => {
       setLoading(true);
       try {
-        const userRef = firestore().collection('instagram').where('email', '==', currentUser.email);
+        const userRef = firestore()
+          .collection('instagram')
+          .where('email', '==', currentUser.email);
         const snapshot = await userRef.get();
         if (!snapshot.empty) {
           const userData = snapshot.docs[0].data();
@@ -39,7 +42,7 @@ const MySaves = ({ navigation }) => {
     }
   }, [currentUser]);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <Box marginBottom="m">
       <FeedPost
         ProfileUrl={item.profilepic}
@@ -47,15 +50,17 @@ const MySaves = ({ navigation }) => {
         location={item.location}
         Caption={item.caption}
         imageSrc={item.imageUrl}
-        isLiked={item.likes.some(like => like.username === currentUser.username)}
+        isLiked={item.likes.some(
+          like => like.username === currentUser.username,
+        )}
         likedUsers={item.likes.map(like => like.username).join(', ')}
         onLikePress={() => handleLike(item)}
-        oncommentPress={() => OpenCmtBox(item)} 
+        oncommentPress={() => OpenCmtBox(item)}
         onSharePress={() => OpenShareSheet(item)}
-        ViewCmnt={() => OpenCmtBox(item)} 
+        ViewCmnt={() => OpenCmtBox(item)}
         comments={item?.comments}
-        onSavePress={() => handleSave(item)} 
-        isSaved={true} 
+        onSavePress={() => handleSave(item)}
+        isSaved={true}
       />
     </Box>
   );
@@ -69,25 +74,33 @@ const MySaves = ({ navigation }) => {
   }
 
   return (
-    <Box backgroundColor="mainwhite" flex={1} >
-      <Box flexDirection="row" padding="m" alignItems="center" gap="s">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Back />
-        </TouchableOpacity>
-        <Text variant="body" textAlign="center" color="mainblack">
-          My Saves
-        </Text>
-      </Box>
+    <Box backgroundColor="mainwhite" flex={1}>
+      <Header
+        backgroundColor="white"
+        statusBarProps={{
+          hidden: true,
+        }}
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Box gap={'m'} alignItems="center" flexDirection="row">
+              <Back />
+              <Text color={'mainblack'}> My Saves</Text>
+            </Box>
+          </TouchableOpacity>
+        }
+      />
+
       <Box flex={1}>
-        {savedItems.length > 0 ? (
+
           <FlatList
+          ListEmptyComponent={
+            <Text textAlign='center'> No Saves Yet </Text>
+          }
             data={savedItems}
             renderItem={renderItem}
             keyExtractor={(item, index) => `${item.imageUrl}_${index}`}
           />
-        ) : (
-          <Text variant="body">No Saves Yet</Text>
-        )}
+
       </Box>
     </Box>
   );

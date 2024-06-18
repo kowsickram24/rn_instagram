@@ -29,7 +29,7 @@ const BottomNavigator = ({navigation, getData}) => {
   const fetchUserData = async () => {
     try {
       const userDoc = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', user?.email)
         .get();
 
@@ -91,12 +91,12 @@ const BottomNavigator = ({navigation, getData}) => {
               <Avatar
                 avatarStyle={{borderRadius: 18}}
                 containerStyle={{width: 36, height: 36}}
-                source={{uri: currentUser?.profilepic}}
+                source={{uri: currentUser?.avatar}}
               />
             ),
           }}
           name="Profile">
-          {props => <Profile {...props} currentUser={currentUser} />}
+          {props => <Profile {...props} User={currentUser} />}
         </BottomTab.Screen>
       </BottomTab.Navigator>
 

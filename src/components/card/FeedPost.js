@@ -188,6 +188,7 @@ const FeedPost = ({
             {isSaved ? <Save_f /> : <Save />}
           </TouchableOpacity>
         </Box>
+          <Text padding={'s'} color={'mainblack'} fontWeight={'600'}>{likedUsers?.length > 0 && likedUsers?.length } likes</Text>
         <Box paddingHorizontal={'s'}>
           <Text variant={'Liked'}>Liked by {likedUsers}</Text>
         </Box>

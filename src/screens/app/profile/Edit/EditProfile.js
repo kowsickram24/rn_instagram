@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Button, Input} from '@rneui/themed';
+import {Button, Header, Input} from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
@@ -11,24 +11,26 @@ import {useSelector} from 'react-redux';
 import config from '../../../../config';
 import {Back} from '../../../../constants/assets';
 import {Box, Text} from '../../../../theme';
-import Container, { Toast } from 'toastify-react-native';
+import {Toast} from 'toastify-react-native';
 const {width, height} = Dimensions.get('screen');
 import ToastManager from 'toastify-react-native';
+import {Loader} from '../../../../components/loader/Loader';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
   region: config.REGION,
 });
-const EditProfile = ({navigation}) => {
-  const [newImage, setNewImage] = useState(null);
+const EditProfile = ({navigation, route}) => {
+  const currentUser = route?.params;
   const user = useSelector(state => state.user.user);
+  const [newImage, setNewImage] = useState(null);
   const [userData, setUserData] = useState({});
   const RBSheetref = useRef();
-
+  const [isLoading, setIsLoading] = useState(false);
   const fetchUserData = async () => {
     try {
       const userDoc = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', user?.email)
         .get();
       if (!userDoc.empty) {
@@ -91,20 +93,21 @@ const EditProfile = ({navigation}) => {
   const updateFirestore = async imageUrl => {
     try {
       const userDoc = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', user?.email)
         .get();
 
       if (!userDoc.empty) {
         const userDocRef = userDoc.docs[0].ref;
         await userDocRef.update({
-          profilepic: imageUrl,
-          username: userData.username,
+          avatar: imageUrl || userData?.avatar,
+          username: userData?.username,
+          fullname: userData?.fullname,
           bio: userData.bio,
         });
-        setUserData(prevState => ({...prevState, profilepic: imageUrl}));
+        setUserData(prevState => ({...prevState, avatar: imageUrl}));
         //Toast
-        Toast.success('Update Successful')
+        Toast.success('Update Successful');
         console.log('User profile updated successfully');
       } else {
         console.log('No matching documents.');
@@ -116,7 +119,7 @@ const EditProfile = ({navigation}) => {
 
   const handleSaveChanges = async () => {
     try {
-      let imageUrl = userData.profilepic;
+      let imageUrl = userData.avatar;
       if (newImage) {
         imageUrl = await uploadImageToS3(newImage);
       }
@@ -129,17 +132,24 @@ const EditProfile = ({navigation}) => {
   };
 
   return (
-    <Box flex={1} padding={'m'} backgroundColor={'mainwhite'}>
+    <Box flex={1} backgroundColor={'mainwhite'}>
+      <Header
+        backgroundColor="white"
+        statusBarProps={{
+          hidden: true,
+        }}
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Box gap={'m'} alignItems="center" flexDirection="row">
+              <Back />
+              <Text color={'mainblack'}>Edit </Text>
+            </Box>
+          </TouchableOpacity>
+        }
+      />
       <ToastManager position="top" />
-      <Box flexDirection="row" alignItems="center" gap={'l'}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Back />
-        </TouchableOpacity>
-        <Text color={'mainblack'} fontSize={18}>
-          Edit Profile
-        </Text>
-      </Box>
-      <Box flex={1} paddingVertical={'l'}>
+
+      <Box padding={'m'} flex={1} paddingVertical={'l'}>
         <Image
           resizeMode="cover"
           style={{
@@ -148,17 +158,34 @@ const EditProfile = ({navigation}) => {
             height: 100,
             borderRadius: 50,
           }}
-          source={{uri: newImage || userData?.profilepic}}
+          source={{uri: newImage || currentUser?.avatar}}
         />
         <TouchableOpacity onPress={() => RBSheetref.current.open()}>
-          <Text color="primaryBlue" textAlign="center">
+          <Text padding={'s'} color="primaryBlue" textAlign="center">
             Edit Picture
           </Text>
         </TouchableOpacity>
+        <Text color={'lightgrey'} textAlign="left">
+          {' '}
+          Username
+        </Text>
         <Input
           value={userData?.username}
           onChangeText={text => setUserData({...userData, username: text})}
         />
+        <Text color={'lightgrey'} textAlign="left">
+          {' '}
+          Fullname
+        </Text>
+        <Input
+          placeholder="Bio"
+          value={userData?.fullname}
+          onChangeText={text => setUserData({...userData, fullname: text})}
+        />
+        <Text color={'lightgrey'} textAlign="left">
+          {' '}
+          Bio
+        </Text>
         <Input
           placeholder="Bio"
           value={userData?.bio}

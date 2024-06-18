@@ -14,7 +14,7 @@ const ChatBox = ({navigation}) => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const usersCollection = firestore().collection('instagram');
+      const usersCollection = firestore().collection('users');
 
       try {
         const snapshot = await usersCollection.get();
@@ -64,7 +64,7 @@ const ChatBox = ({navigation}) => {
                 alignItems="center"
                 marginRight="m">
                 <Image
-                  source={{uri: item.profilepic}}
+                  source={{uri: item.avatar}}
                   style={{width: 50, height: 50, borderRadius: 25}}
                 />
                 <Text color={'mainblack'}>{item.username}</Text>

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {FlatList, TouchableOpacity} from 'react-native';
 import {createBox, createText} from '@shopify/restyle';
-import {Input, Avatar, ListItem} from '@rneui/themed';
+import {Input, Avatar, ListItem, Header} from '@rneui/themed';
 import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
 import {Search_uf} from '../../../constants/assets';
 import {ActivityIndicator} from 'react-native';
@@ -42,6 +42,7 @@ const Explore = ({ navigation }) => {
 
   return (
     <Box flex={1} padding={'s'} backgroundColor={'mainwhite'}>
+
       <Input
         leftIcon={<Search_uf />}
         leftIconContainerStyle={{ marginRight: 8, padding: 6 }}

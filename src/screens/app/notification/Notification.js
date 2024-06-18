@@ -1,7 +1,8 @@
 import React from 'react';
-import { FlatList, TouchableOpacity, Image } from 'react-native';
-import { createBox, createText } from '@shopify/restyle';
+import {FlatList, TouchableOpacity, Image} from 'react-native';
+import {createBox, createText} from '@shopify/restyle';
 import Push from '../../../services/notification/Push';
+import {Header} from '@rneui/themed';
 
 const Box = createBox();
 const Text = createText();
@@ -32,25 +33,21 @@ const notifications = [
   },
 ];
 
-const NotificationItem = ({ item }) => (
-  <Box
-    flexDirection="row"
-    alignItems="center"
-    padding="s"
-  >
+const NotificationItem = ({item}) => (
+  <Box flexDirection="row" alignItems="center" padding="s">
     <Image
-      source={{ uri: item.userProfile }}
-      style={{ width: 40, height: 40, borderRadius: 20 }}
+      source={{uri: item.userProfile}}
+      style={{width: 40, height: 40, borderRadius: 20}}
     />
     <Box flex={1} marginLeft="s">
-      <Text >
-        <Text >{item.user}</Text> {item.message}
+      <Text>
+        <Text>{item.user}</Text> {item.message}
       </Text>
     </Box>
     {item.type !== 'follow' && (
       <Image
-        source={{ uri: item.postImage }}
-        style={{ width: 40, height: 40, borderRadius: 5 }}
+        source={{uri: item.postImage}}
+        style={{width: 40, height: 40, borderRadius: 5}}
       />
     )}
   </Box>
@@ -59,13 +56,25 @@ const NotificationItem = ({ item }) => (
 const Notification = () => {
   return (
     <Box flex={1} backgroundColor="mainwhite">
-      <Box padding="m" >
-        <Text variant={'title'} >Notifications</Text>
-      </Box>
+      <Header
+        barStyle="default"
+        statusBarProps={{
+          hidden: true,
+        }}
+        leftContainerStyle={{
+         padding:8
+        }}
+        leftComponent={{
+          text: 'Notifications',
+          style: {color: '#000', fontSize: 16, width:300},
+        }}
+        backgroundColor="white"
+      />
+
       <FlatList
         data={notifications}
-        renderItem={({ item }) => <NotificationItem item={item} />}
-        keyExtractor={(item) => item.id}
+        renderItem={({item}) => <NotificationItem item={item} />}
+        keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
       />
       {/* <Push /> */}

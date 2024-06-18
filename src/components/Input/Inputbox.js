@@ -24,6 +24,10 @@ const Inputbox = ({
       inputStyle={{
         padding: 10,
       }}
+      errorStyle={{
+        textAlign:'right',
+        padding:2,
+      }}
       value={value}
       placeholder={placeholder}
       errorMessage={errorMessage}

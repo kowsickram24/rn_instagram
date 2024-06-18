@@ -15,45 +15,38 @@ const Box = createBox();
 const Text = createText();
 const {width} = Dimensions.get('screen');
 
-const MyPosts = ({navigation}) => {
+const MyPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentuser = useSelector(state => state.user.user);
 
-  const fetchPosts = async () => {
-    try {
-      const userDocRef = firestore()
-        .collection('instagram')
-        .where('email', '==', currentuser.email);
-
-      const querySnapshot = await userDocRef.get();
-
-      if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0];
-        const userData = userDoc.data();
-        setPosts(userData.posts || []);
-      } else {
-        console.error('User document not found');
-      }
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const unsubscribe = firestore()
+      .collection('posts')
+      .where('userId', '==', currentuser.userId)
+      .onSnapshot(querySnapshot => {
+        const userPosts = querySnapshot.docs.map(doc => doc.data());
+        setPosts(userPosts);
+        setLoading(false);
+      }, error => {
+        console.error('Error fetching posts:', error);
+        setLoading(false);
+      });
 
-  const renderPostItem = ({item}) => (
+    // Clean up the subscription on unmount
+    return () => unsubscribe();
+  }, [currentuser.userId]);
+
+
+
+  const renderPostItem = ({ item }) => (
     <Box>
       <TouchableOpacity
-        onPress={() => navigation.navigate('PostDesc', { posts})}>
+        onPress={() => navigation.navigate('PostDesc', { post: item })}>
         <Image
           resizeMode="cover"
-          style={{width: width / 3, height: 125}}
-          source={{uri: item?.imageUrl}}
+          style={{ width: width / 3, height: 125 }}
+          source={{ uri: item?.imageUrl }}
         />
       </TouchableOpacity>
     </Box>
@@ -61,7 +54,7 @@ const MyPosts = ({navigation}) => {
 
   const renderSkeletonItem = () => (
     <Skeleton
-    animation='pulse'
+      animation="pulse"
       style={{
         width: width / 3,
         height: 125,
@@ -87,7 +80,7 @@ const MyPosts = ({navigation}) => {
       ) : (
         <FlatList
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={fetchPosts} />
+            <RefreshControl refreshing={loading}  />
           }
           data={posts}
           renderItem={renderPostItem}
@@ -106,5 +99,6 @@ const MyPosts = ({navigation}) => {
     </Box>
   );
 };
+
 
 export default MyPosts;

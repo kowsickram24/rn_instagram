@@ -83,7 +83,7 @@ const PostInfo = ({route}) => {
       if (!isSaved) {
         const updatedSaves = [...currentUser.saves, item];
         const userQuery = await firestore()
-          .collection('instagram')
+          .collection('posts')
           .where('email', '==', currentUser.email)
           .get();
 
@@ -129,7 +129,7 @@ const PostInfo = ({route}) => {
         setPosts(updatedPosts);
 
         const userQuery = await firestore()
-          .collection('instagram')
+          .collection('posts')
           .where('email', '==', User?.email)
           .get();
 

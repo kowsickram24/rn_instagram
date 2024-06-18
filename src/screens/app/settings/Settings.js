@@ -6,7 +6,7 @@ import {createBox, createText} from '@shopify/restyle';
 import {logout} from '../../../store/slices/userSlice';
 import {Back} from '../../../constants/assets';
 import auth from '@react-native-firebase/auth';
-import {Overlay, Button} from '@rneui/themed';
+import {Overlay, Button, Header} from '@rneui/themed';
 import ToastManager, {Toast} from 'toastify-react-native';
 import {Loader} from '../../../components/loader/Loader';
 
@@ -39,20 +39,29 @@ const Settings = ({navigation, getData}) => {
   };
 
   return (
-    <Box flex={1} padding="m" gap={'m'} backgroundColor="mainwhite">
+    <Box flex={1} gap={'m'} backgroundColor="mainwhite">
+
+      <Header
+      backgroundColor='white'
+        statusBarProps={{
+          hidden: true,
+        }}
+        leftComponent={
+          
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Box gap={'m'}  alignItems='center' flexDirection='row'> 
+            <Back />
+            <Text color={'mainblack'}> Settings  </Text>
+          </Box>
+          </TouchableOpacity>
+        }
+      />
       {loading ? (
         <Loader />
       ) : (
         <>
-          <ToastManager position="top" />
-          <Box flexDirection="row" alignItems="center" gap={'m'}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Back />
-            </TouchableOpacity>
-            <Text color={'mainblack'}>Settings and Privacy</Text>
-          </Box>
-
-          <Box padding={'s'} gap={'xl'}>
+          <Box padding={'m'} gap={'xl'}>
+            <ToastManager position={'top'} />
             <Text color={'mainblack'}>Settings and Privacy</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('AccountCenter')}>

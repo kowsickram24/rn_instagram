@@ -1,7 +1,7 @@
 import {ActivityIndicator} from 'react-native';
-import {Box} from '../../theme';
+import {Box, Text} from '../../theme';
 
-export const Loader = () => {
+export const Loader = ({text}) => {
   return (
     <Box
       flex={1}
@@ -9,6 +9,7 @@ export const Loader = () => {
       justifyContent="center"
       alignItems="center">
       <ActivityIndicator size="large" color="primary" />
+      <Text textAlign='center'  color={'mainblack'}>{text}</Text>
     </Box>
   );
 };

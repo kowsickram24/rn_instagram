@@ -1,7 +1,7 @@
-import {Divider} from '@rneui/themed';
+import {Divider, Header} from '@rneui/themed';
 import {createBox, createText} from '@shopify/restyle';
 import React, {useState, useEffect} from 'react';
-import {FlatList, TouchableOpacity} from 'react-native';
+import {FlatList, ScrollView, TouchableOpacity} from 'react-native';
 import config from '../../../config';
 import {
   Camera,
@@ -23,13 +23,15 @@ const Home = ({navigation}) => {
 
   useEffect(() => {
     const unsubscribe = firestore()
-      .collection('instagram')
+      .collection('posts')
       .onSnapshot(snapshot => {
         const postsData = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
         setPosts(postsData);
+        console.log('postsData: ', postsData);
+
         setLoading(false);
       });
 
@@ -38,50 +40,58 @@ const Home = ({navigation}) => {
 
   const renderItem = ({item}) => (
     <>
-      {console.log(item.posts)}
       <FeedPost
-        ProfileUrl={item.profilepic}
+        ProfileUrl={item.avatar}
         Caption={item.caption}
-        location={item.posts[0]?.location}
-        imageSrc={item.posts[0]?.imageUrl}
-        user={item.username}
+        // location={item.posts[0]?.location}
+        // imageSrc={item.posts[0]?.imageUrl}
+        // user={item.username}
       />
     </>
   );
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
-      <Box
-        paddingVertical={'s'}
-        paddingHorizontal={'m'}
-        flexDirection="row"
-        alignItems="center"
-        alignContent="center"
-        justifyContent="space-between">
-        <Camera />
-        <Box al="center">
-          <Insta_Typo_logo width="120" />
-        </Box>
-        <Box flexDirection="row" gap={'l'}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Notifications')}>
-            <Heaty_uf />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
-            <Share />
-          </TouchableOpacity>
-        </Box>
-      </Box>
+      <Header
+        placement="center"
+        barStyle="default"
+        statusBarProps={{
+          hidden: true,
+        }}
+        containerStyle={{
+          paddingVertical:12
+        }}
+        leftComponent={<Camera />}
+        centerComponent={<Insta_Typo_logo width="120" />}
+        backgroundColor="white"
+        rightComponent={
+          <Box flexDirection="row" gap={'m'}>
+            <Box>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Notifications')}>
+                <Heaty_uf />
+              </TouchableOpacity>
+            </Box>
+            <Box>
+              <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
+                <Share />
+              </TouchableOpacity>
+            </Box>
+          </Box>
+        }
+      />
       <Divider />
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <FlatList
-          data={posts}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          ListEmptyComponent={<Text> No More Posts </Text>}
-        />
+        <ScrollView>
+          <FlatList
+            data={posts}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            ListEmptyComponent={<Text> No More Posts </Text>}
+          />
+        </ScrollView>
       )}
     </Box>
   );

@@ -4,13 +4,13 @@ import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, SafeAreaView, ScrollView} from 'react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
 import {Fb_logo, Insta_Typo_logo, Line} from '../../constants/assets';
 import {Box, Text} from '../../theme';
 import {LoginSchema} from '../../utils/validation';
-import  {Toast} from 'toastify-react-native';
+import {Toast} from 'toastify-react-native';
 import ToastManager from 'toastify-react-native';
 import {useDispatch} from 'react-redux';
 import {login} from '../../store/slices/userSlice';
@@ -23,9 +23,7 @@ const LoginScreen = ({navigation, getData}) => {
   const handleForgotPassword = async email => {
     if (!email) {
       // Toast
-      Toast.info('Enter Your Email', {
-        icon: <Icon name="check" size={24} color="green" />,
-      });
+      Toast.info('Enter Your Email');
       return;
     }
     try {
@@ -75,7 +73,7 @@ const LoginScreen = ({navigation, getData}) => {
     try {
       setLoading(true);
       const userQuerySnapshot = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', values.email)
         .get();
 
@@ -116,75 +114,73 @@ const LoginScreen = ({navigation, getData}) => {
   };
 
   return (
-    <Box
-      backgroundColor={'mainwhite'}
-      flex={1}
-      justifyContent="space-evenly"
-      padding={'l'}>
+    <Box backgroundColor={'mainwhite'} flex={1} padding={'l'}>
       {loading ? (
         <Loader />
       ) : (
         <>
-          <ToastManager position="top" />
-          <Box alignSelf="center" marginVertical={'l'}>
-            <Insta_Typo_logo />
-          </Box>
-          <Formik
-            initialValues={{email: '', password: ''}}
-            validationSchema={LoginSchema}
-            onSubmit={handleLogin}>
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-              isSubmitting,
-            }) => (
-              <Box>
-                <Inputbox
-                  placeholder={t('Auth.emailPlaceholder')}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  errorMessage={touched.email && errors.email}
-                />
-                <Inputbox
-                  secureTextEntry
-                  placeholder={t('Auth.passwordPlaceholder')}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  errorMessage={touched.password && errors.password}
-                />
-                <Box style={{alignSelf: 'flex-end'}}>
-                  <TouchableOpacity
-                    onPress={() => handleForgotPassword(values.email)}>
-                    <Text fontSize={14} color={'primaryBlue'}>
-                      {t('Auth.forgetPassword')}
-                    </Text>
-                  </TouchableOpacity>
-                </Box>
-                <Authbutton
-                  title={t('Auth.loginButton')}
-                  onPress={handleSubmit}
-                  disabled={isSubmitting}
-                />
-              </Box>
-            )}
-          </Formik>
-          <TouchableOpacity>
-            <Box
-              flexDirection="row"
-              justifyContent="center"
-              alignItems="center"
-              gap={'s'}>
-              <Fb_logo />
-              <Text color={'primaryBlue'}>{t('Auth.loginWithFacebook')}</Text>
+          <Box gap={'xl'}>
+            <ToastManager position="top" />
+            <Box alignSelf="center" marginVertical={'l'}>
+              <Insta_Typo_logo />
             </Box>
-          </TouchableOpacity>
-          <Box gap={'l'}>
+            <Formik
+              initialValues={{email: '', password: ''}}
+              validationSchema={LoginSchema}
+              onSubmit={handleLogin}>
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+                isSubmitting,
+              }) => (
+                <Box>
+                  <Inputbox
+                    placeholder={t('Auth.emailPlaceholder')}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    errorMessage={touched.email && errors.email}
+                  />
+                  <Inputbox
+                    secureTextEntry
+                    placeholder={t('Auth.passwordPlaceholder')}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    errorMessage={touched.password && errors.password}
+                  />
+                  <Box style={{alignSelf: 'flex-end'}}>
+                    <TouchableOpacity
+                      onPress={() => handleForgotPassword(values.email)}>
+                      <Text fontSize={14} color={'primaryBlue'}>
+                        {t('Auth.forgetPassword')}
+                      </Text>
+                    </TouchableOpacity>
+                  </Box>
+                  <Authbutton
+                    title={t('Auth.loginButton')}
+                    onPress={handleSubmit}
+                    disabled={isSubmitting}
+                  />
+                </Box>
+              )}
+            </Formik>
+          </Box>
+          <Box gap={'xl'}>
+            {/* <TouchableOpacity>
+          <Box
+          flexDirection="row"
+          justifyContent="center"
+          alignItems="center"
+            gap={'s'}>
+            <Fb_logo />
+            <Text color={'primaryBlue'}>{t('Auth.loginWithFacebook')}</Text>
+          </Box>
+          </TouchableOpacity> */}
             <Box
               flexDirection="row"
               justifyContent="center"
@@ -194,17 +190,20 @@ const LoginScreen = ({navigation, getData}) => {
               <Text>{t('Auth.OR')} </Text>
               <Line />
             </Box>
-            <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <Text color={'lightgrey'}>{t('Auth.DontHaveAccount')} </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text color={'primaryBlue'} fontSize={14}>
-                  {t('Auth.Signup')}
-                </Text>
-              </TouchableOpacity>
+            <Box margin={'xl'} gap={'l'}>
+              <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
+                <Text color={'lightgrey'}>{t('Auth.DontHaveAccount')} </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}>
+                  <Text color={'primaryBlue'} fontSize={14}>
+                    {t('Auth.Signup')}
+                  </Text>
+                </TouchableOpacity>
+              </Box>
             </Box>
           </Box>
-          <Box>
-            <Text textAlign="center" fontSize={12}>
+          <Box flex={2} justifyContent="flex-end">
+            <Text paddingTop={'xl'} textAlign="center" fontSize={12}>
               {t('Auth.footerText')}
             </Text>
           </Box>

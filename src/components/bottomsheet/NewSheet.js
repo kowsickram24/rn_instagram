@@ -4,10 +4,14 @@ import {forwardRef} from 'react';
 import {Dimensions} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {Grid} from '../../constants/assets';
+import { Box } from '../../theme';
 const NewSheet = forwardRef(({navigation}, ref) => {
   const Height = Dimensions.get('screen').height;
 
   return (
+    <Box >
+
+
     <RBSheet
       ref={ref}
       height={Height / 2}
@@ -54,6 +58,7 @@ const NewSheet = forwardRef(({navigation}, ref) => {
         </TouchableOpacity>
       </View>
     </RBSheet>
+    </Box>
   );
 });
 
