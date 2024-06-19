@@ -3,6 +3,7 @@ const TopTab = createMaterialTopTabNavigator();
 import Followers from '../../screens/app/reach/followers';
 import Following from '../../screens/app/reach/following';
 const ReachTab = ({userData}) => {
+  console.log('userData: ', userData);
   return (
     <TopTab.Navigator
       screenOptions={{

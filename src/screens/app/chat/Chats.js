@@ -6,7 +6,6 @@ import firestore from '@react-native-firebase/firestore';
 import {Box, Text} from '../../../theme';
 import {useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
-import MessageCard from '../../../components/card/messageCard';
 
 const ChatBox = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);

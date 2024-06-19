@@ -14,97 +14,18 @@ const {width, height} = Dimensions.get('screen');
 const Box = createBox();
 const Text = createText();
 
-const PostDesc = ({route, navigation}) => {
+const PostDesc = ({ route, navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const [selectedPost, setSelectedPost] = useState();
   const RBref = useRef();
   const CmtRef = useRef();
-  const [commentText, setCommentText] = useState('');
   const [posts, setPosts] = useState([route.params.post]);
+  console.log('posts: ', posts);
 
   const handleOptions = data => {
     RBref.current.open();
     setSelectedPost(data);
   };
-
-  const handleComment = async () => {
-    try {
-      if (selectedPost && commentText) {
-        const postIndex = posts.findIndex(
-          post => post.imageUrl === selectedPost.imageUrl,
-        );
-        if (postIndex !== -1) {
-          const updatedPosts = [...posts];
-          const post = updatedPosts[postIndex];
-          const newComment = {
-            username: currentUser.username,
-            profilepic: currentUser.profilepic,
-            comment: commentText,
-            date: new Date().toISOString(),
-          };
-          post.comments.push(newComment);
-          setPosts(updatedPosts);
-
-          const postRef = firestore()
-            .collection('posts')
-            .doc(selectedPost.postId);
-          await postRef.update({comments: post.comments});
-
-          setCommentText('');
-          CmtRef.current.close();
-        }
-      }
-    } catch (error) {
-      console.error('Error adding comment:', error);
-    }
-  };
-
-  const handleCommentPress = item => {
-    CmtRef.current.open();
-    setSelectedPost(item);
-  };
-  const handleLikePress = async postId => {
-    try {
-      const postRef = firestore().collection('posts').doc(postId);
-
-      if (selectedPost.likes.includes(currentUser.userId)) {
-        await postRef.update({
-          likes: firestore.FieldValue.arrayRemove(currentUser.userId),
-        });
-      } else {
-        await postRef.update({
-          likes: firestore.FieldValue.arrayUnion(currentUser.userId),
-        });
-      }
-
-      // Assuming you update the state of 'posts' or fetch updated data after this action
-    } catch (error) {
-      console.error('Error toggling like:', error);
-    }
-  };
-
-  const handleSavePress = async (postId) => {
-    try {
-      console.log(postId)
-      const userRef = firestore().collection('users').doc(currentUser?.userId);
-      if (currentUser && selectedPost) {
-        if (!currentUser.savedposts.includes(postId)) {
-          await userRef.update({
-            savedposts: firestore.FieldValue.arrayUnion(postId),
-          });
-        } else {
-          await userRef.update({
-            savedposts: firestore.FieldValue.arrayRemove(postId),
-          });
-        }
-      } else {
-        console.error('Current user or selected post is undefined');
-      }
-    } catch (error) {
-      console.error('Error saving post:', error);
-    }
-  };
-  
 
   const handleDeletePost = async () => {
     Alert.alert(
@@ -141,11 +62,11 @@ const PostDesc = ({route, navigation}) => {
           style: 'destructive',
         },
       ],
-      {cancelable: false},
+      { cancelable: false }
     );
   };
 
-  const renderPostItem = ({item}) => (
+  const renderPostItem = ({ item }) => (
     <Box marginVertical="m">
       <FeedPost
         onOptionpress={() => handleOptions(item)}
@@ -153,30 +74,13 @@ const PostDesc = ({route, navigation}) => {
         Caption={item?.caption}
         imageSrc={item?.imageUrl}
         comments={item?.comments}
-        user={currentUser?.username}
-        ProfileUrl={currentUser?.avatar}
-        isSaved={currentUser.savedposts?.includes(item.postId)}
-        isLiked={item.likes?.includes(currentUser?.userId)}
+        user={item?.user?.username}
+        ProfileUrl={item?.user?.avatar}
         ViewCmnt={() => CmtRef.current.open()}
-        onLikePress={() => handleLikePress(item.postId)}
-        oncommentPress={() => handleCommentPress(item)}
-        onSavePress={() => handleSavePress(item?.postId)}
         likedUsers={item.likes}
+        userId={currentUser?.userId}  // Passing userId
+        postId={item?.postId}         // Passing postId
       />
-    </Box>
-  );
-
-  const renderComments = ({item}) => (
-    <Box padding="s" flexDirection="row" alignItems="center" gap="s">
-      <Avatar size="medium" source={{uri: item?.avatar}} rounded />
-      <Box>
-        <Text fontSize={12} color="mainblack">
-          {item?.username}
-        </Text>
-        <Text fontSize={14} color="mainblack">
-          {item?.comment}
-        </Text>
-      </Box>
     </Box>
   );
 
@@ -198,20 +102,23 @@ const PostDesc = ({route, navigation}) => {
           },
         }}
         height={250}
-        ref={RBref}>
+        ref={RBref}
+      >
         <Box alignItems="center" gap="xl" flex={1}>
           <Box marginVertical="l">
             <Text
               fontSize={18}
               fontWeight="bold"
               textAlign="center"
-              color="mainblack">
+              color="mainblack"
+            >
               Post
             </Text>
           </Box>
           <Box gap="xl" alignItems="center">
             <TouchableOpacity
-              onPress={() => navigation.navigate('Editpost', {selectedPost})}>
+              onPress={() => navigation.navigate('Editpost', { selectedPost })}
+            >
               <Box flexDirection="row" gap="s" alignItems="center">
                 <Pencil />
                 <Text fontSize={18} textAlign="center" color="mainblack">
@@ -228,57 +135,6 @@ const PostDesc = ({route, navigation}) => {
               </Box>
             </TouchableOpacity>
           </Box>
-        </Box>
-      </RBSheet>
-      <RBSheet
-        customStyles={{
-          container: {
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-            justifyContent: 'center',
-          },
-        }}
-        closeOnPressBack
-        ref={CmtRef}
-        height={height / 2}>
-        <Box flex={1} padding="s">
-          <Text
-            padding="s"
-            fontWeight="bold"
-            fontSize={12}
-            textAlign="center"
-            color="mainblack">
-            Comments
-          </Text>
-          <Divider />
-          <FlatList
-            data={selectedPost?.comments}
-            renderItem={renderComments}
-            keyExtractor={item => item.id.toString()}
-            ListEmptyComponent={
-              <Text paddingVertical="s" textAlign="center">
-                No comments yet
-              </Text>
-            }
-          />
-          <Input
-            leftIcon={
-              <Avatar
-                source={{uri: currentUser?.avatar}}
-                size="small"
-                rounded
-              />
-            }
-            rightIcon={
-              <TouchableOpacity onPress={handleComment}>
-                <Cmt_Share />
-              </TouchableOpacity>
-            }
-            value={commentText}
-            onChangeText={setCommentText}
-            inputContainerStyle={{borderBottomWidth: 0}}
-            placeholder="Write a comment"
-          />
         </Box>
       </RBSheet>
     </Box>

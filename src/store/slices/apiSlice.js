@@ -18,7 +18,7 @@ export const apiSlice = createApi({
     searchUsers: builder.query({
       queryFn: async (searchQuery) => {
         try {
-          const usersRef = firestore().collection('instagram');
+          const usersRef = firestore().collection('users');
           const snapshot = await usersRef
             .where('username', '>=', searchQuery)
             .where('username', '<=', searchQuery + '\uf8ff')

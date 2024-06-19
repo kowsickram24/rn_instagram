@@ -85,12 +85,12 @@ const Home = ({navigation}) => {
         <Text>Loading...</Text>
       ) : (
         <ScrollView>
-          <FlatList
+          {/* <FlatList
             data={posts}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             ListEmptyComponent={<Text> No More Posts </Text>}
-          />
+          /> */}
         </ScrollView>
       )}
     </Box>

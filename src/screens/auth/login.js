@@ -15,23 +15,22 @@ import ToastManager from 'toastify-react-native';
 import {useDispatch} from 'react-redux';
 import {login} from '../../store/slices/userSlice';
 import {Loader} from '../../components/loader/Loader';
-import Icon from 'react-native-vector-icons/FontAwesome';
-const LoginScreen = ({navigation, getData}) => {
+
+const LoginScreen = ({ navigation, getData }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
+  const [isForget, setIsForget] = useState(false);
+
   const handleForgotPassword = async email => {
     if (!email) {
-      // Toast
       Toast.info('Enter Your Email');
       return;
     }
     try {
       await auth().sendPasswordResetEmail(email);
-      //Toast
-      Toast.info('Check You Mail');
+      setIsForget(true);
     } catch (error) {
-      //Toast
       Toast.error('Invalid Email');
     }
   };
@@ -39,11 +38,8 @@ const LoginScreen = ({navigation, getData}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userCollection = await firestore().collection('instagram').get();
-        console.log(
-          'Users collection: ',
-          userCollection.docs.map(doc => doc.data()),
-        );
+        const userCollection = await firestore().collection('users').get();
+        console.log('Users collection: ', userCollection.docs.map(doc => doc.data()));
       } catch (error) {
         console.error('Error fetching users: ', error);
       }
@@ -52,71 +48,66 @@ const LoginScreen = ({navigation, getData}) => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = await AsyncStorage.getItem('user');
-        if (user) {
-          console.log(user, 'old user');
-        } else {
-          console.log('No user data found');
-        }
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const user = await AsyncStorage.getItem('user');
+  //       if (user) {
+  //         console.log(user, 'old user');
+  //       } else {
+  //         console.log('No user data found');
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to fetch user data:', error);
+  //     }
+  //   };
 
-    fetchUserData();
-  }, []);
+  //   fetchUserData();
+  // }, []);
 
-  const handleLogin = async (values, {setSubmitting, setErrors}) => {
+  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+    const { email, password } = values;
     try {
-      setLoading(true);
+
+      setSubmitting(true);
+
+      await auth().signInWithEmailAndPassword(email, password).then(() => console.log('Authenticated'));
+
       const userQuerySnapshot = await firestore()
         .collection('users')
-        .where('email', '==', values.email)
+        .where('email', '==', email)
         .get();
 
       if (userQuerySnapshot.empty) {
-        setErrors({email: 'Incorrect email'});
-        setSubmitting(false);
-        setLoading(false);
+        setErrors({ email: 'User data not found in Firestore' });
+      } else {
+        const userDoc = userQuerySnapshot.docs[0];
+        const userData = userDoc.data();
+
+        await AsyncStorage.setItem('user', JSON.stringify(userData));
+        console.log('User authenticated:', email);
+
+        dispatch(login(userData));
+        await getData();
+        navigation.navigate('User');
       }
-      const {email, password} = values;
-      Toast.success('Login Success');
-      await auth().signInWithEmailAndPassword(email, password);
-
-      const userDoc = userQuerySnapshot.docs[0];
-      const userData = userDoc.data();
-      console.log(userData, '/userData');
-
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
-      //Toast
-      console.log('User authenticated:', email);
-
-      dispatch(login(userData));
-      await getData();
-      navigation.navigate('User');
     } catch (error) {
       console.error('Error logging in:', error);
 
-      if (
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password'
-      ) {
-        setErrors({password: 'Incorrect Credentials'});
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        setErrors({ password: 'Invalid Credentials' });
       } else {
-        setErrors({email: 'Error logging in. Please try again later.'});
+        setErrors({ password: 'Invalid Credentials. Please try again ' });
       }
+    } finally {
+      setSubmitting(false);
     }
-    setLoading(false);
-    setSubmitting(false);
   };
 
   return (
     <Box backgroundColor={'mainwhite'} flex={1} padding={'l'}>
       {loading ? (
-        <Loader />
+        <Loader text={'Logging In'} />
       ) : (
         <>
           <Box gap={'xl'}>
@@ -125,9 +116,10 @@ const LoginScreen = ({navigation, getData}) => {
               <Insta_Typo_logo />
             </Box>
             <Formik
-              initialValues={{email: '', password: ''}}
+              initialValues={{ email: '', password: '' }}
               validationSchema={LoginSchema}
-              onSubmit={handleLogin}>
+              onSubmit={handleLogin}
+            >
               {({
                 handleChange,
                 handleBlur,
@@ -153,10 +145,18 @@ const LoginScreen = ({navigation, getData}) => {
                     value={values.password}
                     errorMessage={touched.password && errors.password}
                   />
-                  <Box style={{alignSelf: 'flex-end'}}>
+                  {isForget && (
+                    <Box borderRadius={'m'} borderWidth={0.5} padding={'s'}>
+                      <Text textAlign="center" color={'primaryBlue'}>
+                        Check Your mail for reset password
+                      </Text>
+                    </Box>
+                  )}
+                  <Box paddingVertical={'m'}>
                     <TouchableOpacity
-                      onPress={() => handleForgotPassword(values.email)}>
-                      <Text fontSize={14} color={'primaryBlue'}>
+                      onPress={() => handleForgotPassword(values.email)}
+                    >
+                      <Text textAlign='right' fontSize={14} color={'primaryBlue'}>
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
@@ -171,30 +171,20 @@ const LoginScreen = ({navigation, getData}) => {
             </Formik>
           </Box>
           <Box gap={'xl'}>
-            {/* <TouchableOpacity>
-          <Box
-          flexDirection="row"
-          justifyContent="center"
-          alignItems="center"
-            gap={'s'}>
-            <Fb_logo />
-            <Text color={'primaryBlue'}>{t('Auth.loginWithFacebook')}</Text>
-          </Box>
-          </TouchableOpacity> */}
             <Box
               flexDirection="row"
               justifyContent="center"
               alignItems="center"
-              gap={'s'}>
+              gap={'s'}
+            >
               <Line />
               <Text>{t('Auth.OR')} </Text>
               <Line />
             </Box>
             <Box margin={'xl'} gap={'l'}>
-              <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <Box style={{ flexDirection: 'row', justifyContent: 'center' }}>
                 <Text color={'lightgrey'}>{t('Auth.DontHaveAccount')} </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Register')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                   <Text color={'primaryBlue'} fontSize={14}>
                     {t('Auth.Signup')}
                   </Text>

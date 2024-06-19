@@ -17,13 +17,14 @@ const ProfileView = ({route, navigation}) => {
   const {userId} = route.params;
   const [selectedUser, setSelectedUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
+  
 
   const isSameUser = currentUser?.username === selectedUser?.username;
-
+  
   const fetchUserDetails = async () => {
     try {
       const userDoc = await firestore()
-        .collection('instagram')
+        .collection('users')
         .doc(userId)
         .get();
 
@@ -46,11 +47,11 @@ const ProfileView = ({route, navigation}) => {
   const handleFollow = async () => {
     try {
       const userQuerySnapshot = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', selectedUser?.email)
         .get();
       const currentUserQuerySnapshot = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', currentUser?.email)
         .get();
 
@@ -61,25 +62,27 @@ const ProfileView = ({route, navigation}) => {
         const userData = { ...userQuerySnapshot.docs[0].data() };
         const currentUserData = { ...currentUserQuerySnapshot.docs[0].data() };
 
+        
+
         const updatedFollowers = isFollowed
-          ? userData.followers.filter(
-              follower => follower.username !== currentUser.username,
-            )
-          : [
-              ...userData.followers,
-              {
+        ? userData.followers.filter(
+          follower => follower.username !== currentUser.username,
+        )
+        : [
+          ...userData.followers,
+          {
                 username: currentUser.username,
-                profilepic: currentUser.profilepic,
+                profilepic: currentUser.avatar,
               },
             ];
-
+            
         const updatedFollowing = isFollowed
           ? currentUserData.following.filter(
               following => following.username !== userData.username,
             )
           : [
               ...currentUserData.following,
-              { username: userData.username, profilepic: userData.profilepic },
+              { username: userData.username, profilepic: userData.avatar },
             ];
 
         await firestore().runTransaction(async transaction => {
@@ -129,7 +132,7 @@ const ProfileView = ({route, navigation}) => {
         <Avatar
           avatarStyle={{borderRadius: 40}}
           containerStyle={{width: 80, height: 80}}
-          source={{uri: selectedUser?.profilepic}}
+          source={{uri: selectedUser?.avatar}}
         />
         <Box flexDirection="row" gap={'xl'}>
           <Box alignSelf="center">
@@ -156,6 +159,7 @@ const ProfileView = ({route, navigation}) => {
       </Box>
       <Box padding={'m'}>
         <Text variant={'userName'}>{selectedUser?.username}</Text>
+        <Text variant={'userName'}>{selectedUser?.fullname}</Text>
         <Text variant={'userName'}>{selectedUser?.bio}</Text>
       </Box>
       <Box justifyContent="center" flexDirection="row" padding={'s'} gap={'s'}>

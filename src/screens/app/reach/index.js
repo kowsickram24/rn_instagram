@@ -14,7 +14,7 @@ const AccountReach = ({navigation}) => {
   const fetchUser = async () => {
     try {
       const userQuery = await firestore()
-        .collection('instagram')
+        .collection('users')
         .where('email', '==', currentUser.email)
         .get();
 
@@ -35,7 +35,7 @@ const AccountReach = ({navigation}) => {
   return (
     <Box backgroundColor={'mainwhite'} flex={1}>
       <Box flexDirection="row" padding={'m'} gap={'m'} alignItems="center">
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Back />
         </TouchableOpacity>
         <Text color={'mainblack'}>{userData?.username}</Text>

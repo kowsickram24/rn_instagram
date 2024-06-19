@@ -32,8 +32,8 @@ const Explore = ({ navigation }) => {
   }, [searchQuery]);
 
   const renderItem = ({ item }) => (
-    <ListItem onPress={() => navigation.navigate('ProfileView', { userId: item.id })}>
-      <Avatar size={'medium'} source={{ uri: item.profilepic }} rounded />
+    <ListItem onPress={() => navigation.navigate('ProfileView', { userId: item.userId })}>
+      <Avatar size={'medium'} source={{ uri: item.avatar }} rounded />
       <ListItem.Content>
         <ListItem.Title>{item.username}</ListItem.Title>
       </ListItem.Content>

@@ -7,7 +7,7 @@ import {FlatList, Image, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {ActivityIndicator} from 'react-native';
 import {Header} from '@rneui/themed';
-const MySaves = ({navigation}) => {
+const MySaves = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const [savedItems, setSavedItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,20 +16,22 @@ const MySaves = ({navigation}) => {
     const fetchSavedItems = async () => {
       setLoading(true);
       try {
-        const userRef = firestore()
-          .collection('instagram')
-          .where('email', '==', currentUser.email);
-        const snapshot = await userRef.get();
-        if (!snapshot.empty) {
-          const userData = snapshot.docs[0].data();
-          if (userData.saves) {
-            setSavedItems(userData.saves);
-          } else {
-            setSavedItems([]);
+        const savedPosts = currentUser?.savedposts || [];
+        const postPromises = savedPosts.map(async postId => {
+          const postSnapshot = await firestore().collection('posts').doc(postId).get();
+          if (postSnapshot.exists) {
+            const postData = postSnapshot.data();
+            const userSnapshot = await firestore().collection('users').doc(postData.userId).get();
+            if (userSnapshot.exists) {
+              const userData = userSnapshot.data();
+              return { ...postData, user: userData };
+            }
           }
-        } else {
-          setSavedItems([]);
-        }
+          return null;
+        });
+
+        const posts = await Promise.all(postPromises);
+        setSavedItems(posts.filter(post => post !== null));
       } catch (error) {
         console.error('Error fetching saved items: ', error);
       } finally {
@@ -42,25 +44,38 @@ const MySaves = ({navigation}) => {
     }
   }, [currentUser]);
 
-  const renderItem = ({item}) => (
+  const handleLike = (item) => {
+    // Handle like logic here
+  };
+
+  const OpenCmtBox = (item) => {
+    // Handle open comment box logic here
+  };
+
+  const OpenShareSheet = (item) => {
+    // Handle open share sheet logic here
+  };
+
+  const handleSave = (item) => {
+    // Handle save logic here
+  };
+
+  const renderItem = ({ item }) => (
     <Box marginBottom="m">
       <FeedPost
-        ProfileUrl={item.profilepic}
-        user={item.username}
+        ProfileUrl={item.user.avatar}
+        user={item.user.username}
         location={item.location}
         Caption={item.caption}
         imageSrc={item.imageUrl}
-        isLiked={item.likes.some(
-          like => like.username === currentUser.username,
-        )}
+        isLiked={item.likes.some(like => like.username === currentUser.username)}
         likedUsers={item.likes.map(like => like.username).join(', ')}
         onLikePress={() => handleLike(item)}
-        oncommentPress={() => OpenCmtBox(item)}
+        onCommentPress={() => OpenCmtBox(item)}
         onSharePress={() => OpenShareSheet(item)}
         ViewCmnt={() => OpenCmtBox(item)}
         comments={item?.comments}
         onSavePress={() => handleSave(item)}
-        isSaved={true}
       />
     </Box>
   );
@@ -89,21 +104,19 @@ const MySaves = ({navigation}) => {
           </TouchableOpacity>
         }
       />
-
       <Box flex={1}>
-
-          <FlatList
+        <FlatList
           ListEmptyComponent={
             <Text textAlign='center'> No Saves Yet </Text>
           }
-            data={savedItems}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => `${item.imageUrl}_${index}`}
-          />
-
+          data={savedItems}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => `${item.id}_${index}`}
+        />
       </Box>
     </Box>
   );
 };
+
 
 export default MySaves;

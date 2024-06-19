@@ -17,7 +17,7 @@ const AccountCenter = ({navigation}) => {
 
       <Box borderRadius={'l'} borderColor={'fadedblack'} borderWidth={1} flex={1} padding={'l'}>
         <Image
-          source={{uri: CurrentUser.profilepic}}
+          source={{uri: CurrentUser.avatar}}
           style={{
             alignSelf: 'center',
             width: 150,

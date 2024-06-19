@@ -16,6 +16,8 @@ import EditPost from '../../../screens/app/profile/Edit/editPost';
 import MySaves from '../../../screens/app/saves/Mysave';
 import AccountCenter from '../../../screens/app/settings/AccountCenter';
 import ChatBox from '../../../screens/app/chat/ChatBox';
+import likedUsers from '../../../screens/app/explore/LikedUsers';
+import LikedUsers from '../../../screens/app/explore/LikedUsers';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
@@ -44,10 +46,12 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="Editpost" component={EditPost} />
 
       <Stack.Screen name="Reach" component={AccountReach} />
+      <Stack.Screen name="LikedUsers" component={LikedUsers} />
+      
       <Stack.Screen name="MySaves" component={MySaves} />
       <Stack.Screen name="AccountCenter" component={AccountCenter} />
     </Stack.Navigator>
   );
 };
-
 export default UserStack;
+

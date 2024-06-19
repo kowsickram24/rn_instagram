@@ -22,6 +22,7 @@ const s3 = new S3({
 });
 const EditProfile = ({navigation, route}) => {
   const currentUser = route?.params;
+  console.log('route?.params: ', route?.params);
   const user = useSelector(state => state.user.user);
   const [newImage, setNewImage] = useState(null);
   const [userData, setUserData] = useState({});

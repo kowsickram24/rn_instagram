@@ -70,6 +70,9 @@ const Settings = ({navigation, getData}) => {
             <TouchableOpacity onPress={() => navigation.navigate('MySaves')}>
               <Text color={'mainblack'}>My Saves</Text>
             </TouchableOpacity>
+            {/* <TouchableOpacity onPress={() => navigation.navigate('MySaves')}> */}
+              <Text color={'mainblack'}>Liked Posts</Text>
+            {/* </TouchableOpacity> */}
             <Box>
               <TouchableOpacity onPress={toggleOverlay}>
                 <Text variant="Logout">Logout</Text>

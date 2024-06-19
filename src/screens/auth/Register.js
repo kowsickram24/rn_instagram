@@ -30,17 +30,17 @@ const RegisterScreen = ({navigation, getData}) => {
 
   const handleRegister = async (values, {setSubmitting, setErrors}) => {
     try {
-      setLoading(true);
+
       setSubmitting(true)
       const usersCollectionRef = firestore().collection('users');
       const userQuerySnapshot = await usersCollectionRef
         .where('email', '==', values.email)
         .get();
-
+      console.log(userQuerySnapshot);
       if (!userQuerySnapshot.empty) {
         setErrors({email: 'Email already exists'});
         setSubmitting(false)
-        setLoading(false)
+
       } else {
         const {email, password, username, fullname} = values;
         const FirebaseAuth = await auth().createUserWithEmailAndPassword(
@@ -65,8 +65,6 @@ const RegisterScreen = ({navigation, getData}) => {
           likedPosts: [],
           createdAt: firestore.FieldValue.serverTimestamp(),
         };
-
-        Toast.success('Register Success');
         await usersCollectionRef.doc(userId).set(userData); 
         await AsyncStorage.setItem('user', JSON.stringify(userData));
         dispatch(login(userData));
@@ -75,9 +73,9 @@ const RegisterScreen = ({navigation, getData}) => {
       }
     } catch (error) {
       console.error('Error registering user:', error);
-      setErrors({general: 'Registration failed. Please try again.'});
+     
     } finally {
-      setLoading(false);
+      setLoading(false)
       setSubmitting(false);
     }
   };
@@ -85,7 +83,7 @@ const RegisterScreen = ({navigation, getData}) => {
   return (
     <Box backgroundColor={'mainwhite'} padding={'xl'} flex={1}>
       {loading ? (
-        <Loader />
+        <Loader text={'Registering user'} />
       ) : (
         <Box>
           <ToastManager position="Top" />

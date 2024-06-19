@@ -9,7 +9,8 @@ import TopNavigator from '../../../navigation/TopTab/TopTab';
 const Box = createBox();
 const Text = createText();
 const Profile = ({navigation, User}) => {
-  const [currentUser, setCurrentUser] = useState(User);
+  console.log('User: ', User);
+
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Header
@@ -31,21 +32,20 @@ const Profile = ({navigation, User}) => {
           avatarStyle={{borderRadius: 40}}
           containerStyle={{width: 80, height: 80}}
           source={{
-            uri:
-              currentUser?.avatar 
+            uri: User?.avatar,
           }}
         />
         <Box flexDirection="row" gap={'xl'}>
           <Box alignSelf="center">
             <Text variant={'ProCount'} textAlign="center">
-              {currentUser?.posts.length}
+              {User?.posts.length}
             </Text>
             <Text variant={'ProInfo'}>Posts</Text>
           </Box>
           <Box alignSelf="center">
             <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
               <Text variant={'ProCount'} textAlign="center">
-                {currentUser?.followers.length}
+                {User?.followers.length}
               </Text>
               <Text variant={'ProInfo'}>Followers</Text>
             </TouchableOpacity>
@@ -53,7 +53,7 @@ const Profile = ({navigation, User}) => {
           <Box alignSelf="center">
             <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
               <Text variant={'ProCount'} textAlign="center">
-                {currentUser?.following.length}
+                {User?.following.length}
               </Text>
               <Text variant={'ProInfo'}>Following</Text>
             </TouchableOpacity>
@@ -61,13 +61,19 @@ const Profile = ({navigation, User}) => {
         </Box>
       </Box>
       <Box padding={'m'}>
-        <Text fontSize={14} color={'mainblack'}>{currentUser?.username}</Text>
-        <Text fontSize={14} color={'mainblack'}>{currentUser?.fullname}</Text>
-        <Text fontSize={14} color={'mainblack'}>{currentUser?.bio}</Text>
+        <Text fontSize={14} color={'mainblack'}>
+          {User?.username}
+        </Text>
+        <Text fontSize={14} color={'mainblack'}>
+          {User?.fullname}
+        </Text>
+        <Text fontSize={14} color={'mainblack'}>
+          {User?.bio}
+        </Text>
       </Box>
       <Box padding={'s'}>
         <Button
-          onPress={() => navigation.navigate('EditProfile',currentUser)}
+          onPress={() => navigation.navigate('EditProfile', User)}
           title={'Edit Profile'}
           containerStyle={{
             borderWidth: 0.5,

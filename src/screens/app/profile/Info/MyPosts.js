@@ -10,6 +10,7 @@ import {createBox, createText} from '@shopify/restyle';
 import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
 import {Skeleton} from '@rneui/themed';
+import { ActivityIndicator } from 'react-native';
 
 const Box = createBox();
 const Text = createText();
@@ -18,31 +19,42 @@ const {width} = Dimensions.get('screen');
 const MyPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const currentuser = useSelector(state => state.user.user);
+  const currentUser = useSelector(state => state.user.user);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const postSnapshot = await firestore()
+        .collection('posts')
+        .where('userId', '==', currentUser?.userId)
+        .get();
+
+      const userPosts = await Promise.all(
+        postSnapshot.docs.map(async doc => {
+          const postData = doc.data();
+          const userSnapshot = await firestore().collection('users').doc(postData.userId).get();
+          const userData = userSnapshot.exists ? userSnapshot.data() : {};
+          return { ...postData, user: userData };
+        })
+      );
+
+      setPosts(userPosts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('posts')
-      .where('userId', '==', currentuser.userId)
-      .onSnapshot(querySnapshot => {
-        const userPosts = querySnapshot.docs.map(doc => doc.data());
-        setPosts(userPosts);
-        setLoading(false);
-      }, error => {
-        console.error('Error fetching posts:', error);
-        setLoading(false);
-      });
-
-    // Clean up the subscription on unmount
-    return () => unsubscribe();
-  }, [currentuser.userId]);
-
-
+    if (currentUser) {
+      fetchPosts();
+    }
+  }, [currentUser]);
 
   const renderPostItem = ({ item }) => (
     <Box>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('PostDesc', { post: item })}>
+      <TouchableOpacity onPress={() => navigation.navigate('PostDesc', { post: item })}>
         <Image
           resizeMode="cover"
           style={{ width: width / 3, height: 125 }}
@@ -65,6 +77,14 @@ const MyPosts = ({ navigation }) => {
     />
   );
 
+  if (loading) {
+    return (
+      <Box flex={1} justifyContent="center" alignItems="center">
+        <ActivityIndicator size="large" />
+      </Box>
+    );
+  }
+
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       {loading ? (
@@ -80,7 +100,7 @@ const MyPosts = ({ navigation }) => {
       ) : (
         <FlatList
           refreshControl={
-            <RefreshControl refreshing={loading}  />
+            <RefreshControl refreshing={loading} onRefresh={fetchPosts} />
           }
           data={posts}
           renderItem={renderPostItem}
