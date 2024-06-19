@@ -1,13 +1,9 @@
-import firestore from '@react-native-firebase/firestore';
-import {Avatar, Button, Divider, Header} from '@rneui/themed';
-import {createBox, createText} from '@shopify/restyle';
-import React, {useEffect, useState} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {useSelector} from 'react-redux';
-import {Menu, New_story} from '../../../constants/assets';
+import { Avatar, Button, Header } from '@rneui/themed';
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
+import { Menu } from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-const Box = createBox();
-const Text = createText();
+import { Box, Text } from '../../../theme';
 const Profile = ({navigation, User}) => {
   console.log('User: ', User);
 
@@ -27,47 +23,53 @@ const Profile = ({navigation, User}) => {
       <Box
         flexDirection="row"
         marginVertical={'s'}
-        justifyContent="space-evenly">
+        justifyContent="space-around">
         <Avatar
-          avatarStyle={{borderRadius: 40}}
-          containerStyle={{width: 80, height: 80}}
+          rounded
+          size={'large'}
           source={{
             uri: User?.avatar,
           }}
         />
         <Box flexDirection="row" gap={'xl'}>
           <Box alignSelf="center">
-            <Text variant={'ProCount'} textAlign="center">
+            <Text color={'mainblack'} fontSize={20} textAlign="center">
               {User?.posts.length}
             </Text>
-            <Text variant={'ProInfo'}>Posts</Text>
+            <Text color={'mainblack'} fontSize={12}>
+              posts
+            </Text>
           </Box>
           <Box alignSelf="center">
             <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
-              <Text variant={'ProCount'} textAlign="center">
+              <Text color={'mainblack'} fontSize={20} textAlign="center">
                 {User?.followers.length}
               </Text>
-              <Text variant={'ProInfo'}>Followers</Text>
+              <Text color={'mainblack'} fontSize={12}>
+                followers
+              </Text>
             </TouchableOpacity>
           </Box>
           <Box alignSelf="center">
             <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
-              <Text variant={'ProCount'} textAlign="center">
+              <Text color={'mainblack'} fontSize={20} textAlign="center">
                 {User?.following.length}
               </Text>
-              <Text variant={'ProInfo'}>Following</Text>
+              <Text color={'mainblack'} fontSize={12}>
+                following
+              </Text>
             </TouchableOpacity>
           </Box>
         </Box>
       </Box>
-      <Box padding={'m'}>
-        <Text fontSize={14} color={'mainblack'}>
+      <Box margin={'m'}>
+        <Text fontSize={12} color={'mainblack'}>
           {User?.username}
         </Text>
-        <Text fontSize={14} color={'mainblack'}>
+        <Text fontSize={12} color={'mainblack'}>
           {User?.fullname}
         </Text>
-        <Text fontSize={14} color={'mainblack'}>
+        <Text fontSize={12} color={'mainblack'}>
           {User?.bio}
         </Text>
       </Box>
@@ -76,21 +78,20 @@ const Profile = ({navigation, User}) => {
           onPress={() => navigation.navigate('EditProfile', User)}
           title={'Edit Profile'}
           containerStyle={{
-            borderWidth: 0.5,
             borderRadius: 10,
             marginVertical: 6,
           }}
-          titleStyle={{color: '#000'}}
+          titleStyle={{color: '#000', fontWeight:'100' ,fontSize: 14}}
           buttonStyle={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'lightgrey',
           }}
         />
       </Box>
-      <Box padding={'s'}>
+      {/* <Box padding={'s'}>
         <New_story />
-        <Text color={'mainblack'}> New</Text>
+        <Text color={'mainblack'}>New</Text>
       </Box>
-      <Divider />
+      <Divider /> */}
       <TopNavigator navigation={navigation} />
     </Box>
   );

@@ -19,6 +19,7 @@ import Notification from '../../screens/app/notification/Notification';
 import Profile from '../../screens/app/profile/Profile';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import {Box} from '../../theme';
 const BottomTab = createBottomTabNavigator();
 
 const BottomNavigator = ({navigation, getData}) => {
@@ -71,7 +72,9 @@ const BottomNavigator = ({navigation, getData}) => {
           options={{
             tabBarIcon: ({focused}) => (
               <TouchableOpacity onPress={() => refRBSheet.current.open()}>
-                <Plus />
+                <Box padding={'m'} borderRadius={'xl'} >
+                  <Plus />
+                </Box>
               </TouchableOpacity>
             ),
           }}

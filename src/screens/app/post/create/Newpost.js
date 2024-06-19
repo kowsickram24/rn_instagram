@@ -1,29 +1,24 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import {
-  Image,
-  StyleSheet,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-} from 'react-native';
-import {createBox, createText} from '@shopify/restyle';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import {Button} from '@rneui/themed';
-const Box = createBox();
-const Text = createText();
-import {Dimensions} from 'react-native';
-import S3 from 'aws-sdk/clients/s3';
-import RNFS from 'react-native-fs';
-import {Buffer} from 'buffer';
-import {Input} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
-import {Image_Fill, Rt_Arrow, Loc, Back} from '../../../../constants/assets';
-import {useFocusEffect} from '@react-navigation/native';
+import { Button, Header, Input } from '@rneui/themed';
+import S3 from 'aws-sdk/clients/s3';
+import { Buffer } from 'buffer';
+import React, { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
+import RNFS from 'react-native-fs';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import { useSelector } from 'react-redux';
+import { Loader } from '../../../../components/loader/Loader';
+import config from '../../../../config';
+import { Back, Image_Fill } from '../../../../constants/assets';
+import { Box, Text } from '../../../../theme';
 const Height = Dimensions.get('screen').height;
 const Width = Dimensions.get('screen').width;
-import config from '../../../../config';
-import {Header} from '@rneui/themed';
-import {useSelector} from 'react-redux';
-import { Loader } from '../../../../components/loader/Loader';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
@@ -32,19 +27,12 @@ const s3 = new S3({
 
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
- console.log(currentuser?.id,'hiiiiii')
+  console.log(currentuser?.id, 'hiiiiii');
   const [userData, setUserData] = useState();
   const [postImage, setPostImage] = useState(null);
-  const [location, setLocation] = useState('');
   const [caption, setCaption] = useState('');
+  const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
-  useFocusEffect(
-    useCallback(() => {
-      if (route.params?.location) {
-        setLocation(route.params.location);
-      }
-    }, [route.params?.location]),
-  );
 
   const fetchUser = async () => {
     try {
@@ -56,7 +44,7 @@ const NewPost = ({navigation, route, getData}) => {
       if (!userQuery.empty) {
         const userDoc = userQuery.docs[0];
         const userData = userDoc.data();
-        setUserData(userData)
+        setUserData(userData);
         console.log('userData ', userData.id);
       } else {
         console.error('User document not found');
@@ -119,14 +107,13 @@ const NewPost = ({navigation, route, getData}) => {
       });
     });
   };
-  
-  console.log('currentuser: ', currentuser);
+
   const handleCreatePost = async () => {
     if (postImage) {
       try {
         setLoading(true);
         const imageUrl = await UploadToAWS();
-        const newPostRef = firestore().collection('posts').doc(); // Create a new post document reference with an auto-generated ID
+        const newPostRef = firestore().collection('posts').doc();
         const newPostId = newPostRef.id;
         const newPost = {
           postId: newPostId,
@@ -138,12 +125,10 @@ const NewPost = ({navigation, route, getData}) => {
           comments: [],
           time: new Date().toLocaleString(),
         };
-          console.log('newPost: ', newPost);
+        console.log('newPost: ', newPost);
 
-        // Add the post to the posts collection
         await newPostRef.set(newPost);
 
-        // Update the user's posts array with the new post ID
         const userDocRef = firestore()
           .collection('users')
           .doc(currentuser.userId);
@@ -157,84 +142,81 @@ const NewPost = ({navigation, route, getData}) => {
       } catch (error) {
         console.error('Error creating post:', error);
       } finally {
-        setLoading(false); // End loading
+        setLoading(false);
       }
     }
   };
 
   return (
-    <Box flex={1} backgroundColor={'mainwhite'}>
-      <Header
-        backgroundColor="white"
-        statusBarProps={{
-          hidden: true,
-        }}
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box gap={'m'} alignItems="center" flexDirection="row">
-              <Back />
-              <Text color={'mainblack'}> New Post </Text>
-            </Box>
-          </TouchableOpacity>
-        }
-      />
-      {loading ? (<Loader text={'Uploading Post'}/>) :(
-
+    <Box style={{flex: 1, backgroundColor: 'white'}}>
+      {loading ? (
+        <Loader text={'Uploading Post'} />
+      ) : (
         <>
-        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-          {postImage ? (
-            <Image source={{uri: postImage}} style={styles.image} />
-          ) : (
-            <Image_Fill />
-          )}
-        </TouchableOpacity>
-        <KeyboardAvoidingView enabled behavior="height">
-          <Box padding={'m'} gap={'l'}>
-            <Input
-              inputStyle={{
-                borderBottomWidth: 0,
-              }}
-              value={caption}
-              onChangeText={setCaption}
-              containerStyle={{
-                borderRadius: 10,
-                borderWidth: 0.5,
-                borderBottomWidth: 0.5,
-              }}
-              multiline
-              placeholder="Caption"
+          <Header
+            backgroundColor="white"
+            statusBarProps={{
+              hidden: true,
+            }}
+            leftContainerStyle={{flex: 3}}
+            leftComponent={
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Box gap={'m'} alignItems="center" flexDirection="row">
+                  <Back />
+                  <Text fontSize={14} color={'mainblack'}>
+                    New Post
+                  </Text>
+                </Box>
+              </TouchableOpacity>
+            }
+          />
+          <ScrollView>
+            <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+              {postImage ? (
+                <Image source={{uri: postImage}} style={styles.image} />
+              ) : (
+                <Image_Fill />
+              )}
+            </TouchableOpacity>
+            <Box padding={'s'}>
+              <Input
+                inputStyle={{
+                  padding: 12,
+                  height: 100,
+                  verticalAlign: 'top',
+                  fontSize: 14,
+                }}
+                value={caption}
+                onChangeText={setCaption}
+                inputContainerStyle={{
+                  borderColor: 'grey',
+                  borderRadius: 10,
+                  borderWidth: 0.5,
+                  borderBottomWidth: 0.5,
+                }}
+                multiline
+                placeholder="Caption"
               />
-            <Box>
-              <Box margin={'s'} borderWidth={0.5} borderRadius={'s'}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Addlocation')}>
-                  <Box
-                    padding={'s'}
-                    flexDirection="row"
-                    align
-                    alignItems="center"
-                    justifyContent="space-between">
-                    <Text color={'mainblack'}>Add location</Text>
-                    <Rt_Arrow />
-                  </Box>
-                </TouchableOpacity>
-              </Box>
-              <Text padding={'s'} color={'mainblack'}>
-                {location && location}
-              </Text>
+              <Input
+                inputStyle={{
+                  padding: 12,
+                  fontSize: 14,
+                }}
+                value={location}
+                onChangeText={setLocation}
+                inputContainerStyle={{
+                  borderColor: 'grey',
+                  borderRadius: 10,
+                  borderWidth: 0.5,
+                  borderBottomWidth: 0.5,
+                }}
+                placeholder="Location"
+              />
             </Box>
-            {/* <TouchableOpacity onPress={() => navigation.navigate('Tagpeople')}>
-        <Box
-        flexDirection="row"
-        align
-        alignItems="center"
-        justifyContent="space-between">
-        <Text color={'mainblack'}>Tag People</Text>
-        <Rt_Arrow />
-        </Box>
-        </TouchableOpacity> */}
-          </Box>
+          </ScrollView>
           <Button
+            titleStyle={{fontSize: 14}}
+            loading={'true' ? loading : 'false'}
             containerStyle={{
               paddingHorizontal: 20,
               paddingVertical: 10,
@@ -244,10 +226,9 @@ const NewPost = ({navigation, route, getData}) => {
             }}
             title="Share"
             onPress={handleCreatePost}
-            />
-        </KeyboardAvoidingView>
-      </>
-  )}
+          />
+        </>
+      )}
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 import {Skeleton, Card} from '@rneui/themed';
-import {Box, Text} from '../../theme';
+import {Box} from '../../theme';
 
 const SkeletonCard = () => {
   return (
@@ -28,7 +28,7 @@ const SkeletonCard = () => {
                 height={10}
               />
             </Box>
-            <Skeleton animation="pulse" width={30} height={10} />
+            <Skeleton animation="pulse" width={10} height={25} />
           </Box>
         </Box>
         <Skeleton animation="pulse" height={400} width="100%" />

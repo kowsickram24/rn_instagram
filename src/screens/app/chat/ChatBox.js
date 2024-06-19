@@ -7,15 +7,11 @@ import {Box, Text} from '../../../theme';
 import {useSelector} from 'react-redux';
 
 const ChatBox = () => {
-  const currentUser = useSelector(state => state.user.user);
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
-      <Box>
-        <Text color={'mainblack'}> {currentUser?.username}</Text>
-      </Box>
       <Box flex={1} justifyContent="flex-end">
         <Input
-          placeholder="Send Message"
+          placeholder="Message..."
           rightIconContainerStyle={{
             margin: 10,
           }}

@@ -1,13 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {FlatList, TouchableOpacity} from 'react-native';
-import {createBox, createText} from '@shopify/restyle';
-import {Input, Avatar, ListItem, Header} from '@rneui/themed';
-import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
-import {Search_uf} from '../../../constants/assets';
-import {ActivityIndicator} from 'react-native';
-
-const Box = createBox();
-const Text = createText();
+import { Avatar, Input, ListItem } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList } from 'react-native';
+import { Search_uf } from '../../../constants/assets';
+import { useSearchUsersQuery } from '../../../store/slices/apiSlice';
+import { Box, Text } from '../../../theme';
 
 const Explore = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');

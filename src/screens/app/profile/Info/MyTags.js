@@ -1,8 +1,6 @@
 import React from 'react';
-import {createBox, createText} from '@shopify/restyle';
+import { Box, Text } from '../../../../theme';
 
-const Box = createBox();
-const Text = createText();
 const MyTags = () => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>

@@ -16,10 +16,10 @@ import {useDispatch} from 'react-redux';
 import {login} from '../../store/slices/userSlice';
 import {Loader} from '../../components/loader/Loader';
 
-const LoginScreen = ({ navigation, getData }) => {
+const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [isForget, setIsForget] = useState(false);
 
   const handleForgotPassword = async email => {
@@ -39,7 +39,10 @@ const LoginScreen = ({ navigation, getData }) => {
     const fetchData = async () => {
       try {
         const userCollection = await firestore().collection('users').get();
-        console.log('Users collection: ', userCollection.docs.map(doc => doc.data()));
+        console.log(
+          'Users collection: ',
+          userCollection.docs.map(doc => doc.data()),
+        );
       } catch (error) {
         console.error('Error fetching users: ', error);
       }
@@ -65,13 +68,15 @@ const LoginScreen = ({ navigation, getData }) => {
   //   fetchUserData();
   // }, []);
 
-  const handleLogin = async (values, { setSubmitting, setErrors }) => {
-    const { email, password } = values;
+  const handleLogin = async (values, {setSubmitting, setErrors}) => {
+    const {email, password} = values;
     try {
-
       setSubmitting(true);
 
-      await auth().signInWithEmailAndPassword(email, password).then(() => console.log('Authenticated'));
+      // Authenticate user
+      await auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => console.log('Authenticated'));
 
       const userQuerySnapshot = await firestore()
         .collection('users')
@@ -79,7 +84,7 @@ const LoginScreen = ({ navigation, getData }) => {
         .get();
 
       if (userQuerySnapshot.empty) {
-        setErrors({ email: 'User data not found in Firestore' });
+        setErrors({email: 'User data not found in Firestore'});
       } else {
         const userDoc = userQuerySnapshot.docs[0];
         const userData = userDoc.data();
@@ -88,18 +93,23 @@ const LoginScreen = ({ navigation, getData }) => {
         console.log('User authenticated:', email);
 
         dispatch(login(userData));
+
         await getData();
-        navigation.navigate('User');
       }
     } catch (error) {
       console.error('Error logging in:', error);
 
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        setErrors({ password: 'Invalid Credentials' });
+      // Handle specific authentication errors
+      if (
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password'
+      ) {
+        setErrors({password: 'Invalid Credentials'});
       } else {
-        setErrors({ password: 'Invalid Credentials. Please try again ' });
+        setErrors({password: 'Invalid Credentials. Please try again '});
       }
     } finally {
+      // Ensure submitting state is reset
       setSubmitting(false);
     }
   };
@@ -116,10 +126,9 @@ const LoginScreen = ({ navigation, getData }) => {
               <Insta_Typo_logo />
             </Box>
             <Formik
-              initialValues={{ email: '', password: '' }}
+              initialValues={{email: '', password: ''}}
               validationSchema={LoginSchema}
-              onSubmit={handleLogin}
-            >
+              onSubmit={handleLogin}>
               {({
                 handleChange,
                 handleBlur,
@@ -154,9 +163,11 @@ const LoginScreen = ({ navigation, getData }) => {
                   )}
                   <Box paddingVertical={'m'}>
                     <TouchableOpacity
-                      onPress={() => handleForgotPassword(values.email)}
-                    >
-                      <Text textAlign='right' fontSize={14} color={'primaryBlue'}>
+                      onPress={() => handleForgotPassword(values.email)}>
+                      <Text
+                        textAlign="right"
+                        fontSize={14}
+                        color={'primaryBlue'}>
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
@@ -175,16 +186,16 @@ const LoginScreen = ({ navigation, getData }) => {
               flexDirection="row"
               justifyContent="center"
               alignItems="center"
-              gap={'s'}
-            >
+              gap={'s'}>
               <Line />
               <Text>{t('Auth.OR')} </Text>
               <Line />
             </Box>
             <Box margin={'xl'} gap={'l'}>
-              <Box style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
                 <Text color={'lightgrey'}>{t('Auth.DontHaveAccount')} </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}>
                   <Text color={'primaryBlue'} fontSize={14}>
                     {t('Auth.Signup')}
                   </Text>

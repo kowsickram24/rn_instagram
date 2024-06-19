@@ -11,7 +11,7 @@ export const PrimaryBtn = ({title, onPress}) => {
         marginVertical: 6,
         flex:1
         }}
-        titleStyle={{color: '#fff'}}
+        titleStyle={{color: '#fff', fontSize:14}}
         buttonStyle={{
         backgroundColor: '#3797EF',
       }}

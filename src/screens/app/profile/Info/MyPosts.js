@@ -1,19 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { Skeleton } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Dimensions,
   FlatList,
   Image,
-  TouchableOpacity,
   RefreshControl,
-  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
-import {createBox, createText} from '@shopify/restyle';
-import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
-import {Skeleton} from '@rneui/themed';
-import { ActivityIndicator } from 'react-native';
-
-const Box = createBox();
-const Text = createText();
+import { useSelector } from 'react-redux';
+import { Box, Text } from '../../../../theme';
 const {width} = Dimensions.get('screen');
 
 const MyPosts = ({ navigation }) => {

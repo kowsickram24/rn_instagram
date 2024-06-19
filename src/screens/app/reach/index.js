@@ -1,12 +1,10 @@
-import {createBox, createText} from '@shopify/restyle';
-import React, {useState, useEffect} from 'react';
-import ReachTab from '../../../navigation/TopTab/ReachTab';
-import {Back} from '../../../constants/assets';
-import {TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
-const Box = createBox();
-const Text = createText();
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { useSelector } from 'react-redux';
+import { Back } from '../../../constants/assets';
+import ReachTab from '../../../navigation/TopTab/ReachTab';
+import { Box, Text } from '../../../theme';
 
 const AccountReach = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);

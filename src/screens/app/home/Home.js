@@ -1,19 +1,14 @@
-import {Divider, Header} from '@rneui/themed';
-import {createBox, createText} from '@shopify/restyle';
-import React, {useState, useEffect} from 'react';
-import {FlatList, ScrollView, TouchableOpacity} from 'react-native';
-import config from '../../../config';
+import firestore from '@react-native-firebase/firestore';
+import { Divider, Header } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import { ScrollView,FlatList, TouchableOpacity } from 'react-native';
 import {
   Camera,
   Heaty_uf,
-  IGTV,
   Insta_Typo_logo,
-  Share,
+  Msg_Icon
 } from '../../../constants/assets';
-import firestore from '@react-native-firebase/firestore';
-import notifee from '@notifee/react-native';
-const Box = createBox();
-const Text = createText();
+import { Box, Text } from '../../../theme';
 
 import FeedPost from '../../../components/card/FeedPost';
 
@@ -59,7 +54,7 @@ const Home = ({navigation}) => {
           hidden: true,
         }}
         containerStyle={{
-          paddingVertical:12
+          paddingVertical: 12,
         }}
         leftComponent={<Camera />}
         centerComponent={<Insta_Typo_logo width="120" />}
@@ -74,7 +69,7 @@ const Home = ({navigation}) => {
             </Box>
             <Box>
               <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
-                <Share />
+                <Msg_Icon />
               </TouchableOpacity>
             </Box>
           </Box>
@@ -85,12 +80,12 @@ const Home = ({navigation}) => {
         <Text>Loading...</Text>
       ) : (
         <ScrollView>
-          {/* <FlatList
+          <FlatList
             data={posts}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             ListEmptyComponent={<Text> No More Posts </Text>}
-          /> */}
+          />
         </ScrollView>
       )}
     </Box>

@@ -62,7 +62,7 @@ const PostHeader = ({
       <Box flex={1} flexDirection="row" justifyContent="space-between">
         <Box flexDirection="column">
           <TouchableOpacity onPress={onProfilePress}>
-            <Text fontWeight={'600'} color={'mainblack'}>
+            <Text fontWeight={'500'} color={'mainblack'}>
               {user}
             </Text>
           </TouchableOpacity>
@@ -84,12 +84,11 @@ const FeedPost = ({
   ProfileUrl,
   imageSrc,
   Caption,
-  likedUsers,
   onOptionpress,
-  ViewCmnt,
+
   comments,
-  userId,  
-  postId   
+  userId,
+  postId,
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
@@ -97,6 +96,62 @@ const FeedPost = ({
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [likedUsers, setLikedUsers] = useState([]);
+  const [likedId, setLikedId] = useState([]);
+
+  useEffect(() => {
+    const fetchPostData = async () => {
+      try {
+        const postRef = firestore().collection('posts').doc(postId);
+        const postDoc = await postRef.get();
+
+        if (postDoc.exists) {
+          const postData = postDoc.data();
+          setIsLiked(postData.likes.includes(userId));
+
+          const userRef = firestore().collection('users').doc(userId);
+          const userDoc = await userRef.get();
+
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            setIsSaved(userData.savedPosts.includes(postId));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+      }
+    };
+
+    fetchPostData();
+  }, [postId, userId]);
+
+  useEffect(() => {
+    const fetchLikedUsers = async () => {
+      const postRef = firestore().collection('posts').doc(postId);
+
+      const unsubscribe = postRef.onSnapshot(async postDoc => {
+        if (postDoc.exists) {
+          const postData = postDoc.data();
+          const likedUserIds = postData.likes || [];
+          setLikedId(likedUserIds);
+          const userPromises = likedUserIds.map(async id => {
+            const userDoc = await firestore().collection('users').doc(id).get();
+            if (userDoc.exists) {
+              return userDoc.data().username;
+            }
+            return null;
+          });
+
+          const usernames = await Promise.all(userPromises);
+          setLikedUsers(usernames.filter(username => username !== null));
+        }
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchLikedUsers();
+  }, [postId]);
 
   const fetchUsers = async () => {
     try {
@@ -106,7 +161,6 @@ const FeedPost = ({
         id: doc.id,
         ...doc.data(),
       }));
-      console.log('fetchedUsers: ', fetchedUsers);
     } catch (error) {
       console.error('Error fetching posts: ', error);
     }
@@ -120,7 +174,6 @@ const FeedPost = ({
         id: doc.id,
         ...doc.data(),
       }));
-      console.log('fetchedPosts: ', fetchedPosts);
     } catch (error) {
       console.error('Error fetching posts: ', error);
     }
@@ -134,7 +187,9 @@ const FeedPost = ({
   const oncommentPress = () => {
     CmtRef.current.open();
   };
-
+  const ViewCmnt = () => {
+    CmtRef.current.open();
+  };
   const onSharePress = () => {
     Shareref?.current?.open();
   };
@@ -152,15 +207,26 @@ const FeedPost = ({
           throw 'Document does not exist!';
         }
 
-        const newLikes = postDoc.data().likes + (isLiked ? -1 : 1);
-        transaction.update(postRef, { likes: newLikes });
+        const likes = postDoc.data().likes || [];
+        let newLikes;
 
-        const likedPosts = userDoc.data().likedPosts || [];
-        if (isLiked) {
+        if (likes.includes(userId)) {
+          // Unlike the post
+          newLikes = likes.filter(id => id !== userId);
+          transaction.update(postRef, {likes: newLikes});
+
+          // Remove postId from user's likedPosts
+          const likedPosts = userDoc.data().likedPosts || [];
           transaction.update(userRef, {
             likedPosts: likedPosts.filter(id => id !== postId),
           });
         } else {
+          // Like the post
+          newLikes = [...likes, userId];
+          transaction.update(postRef, {likes: newLikes});
+
+          // Add postId to user's likedPosts
+          const likedPosts = userDoc.data().likedPosts || [];
           transaction.update(userRef, {
             likedPosts: [...likedPosts, postId],
           });
@@ -173,7 +239,7 @@ const FeedPost = ({
     }
   };
 
- const onSavePress = async () => {
+  const onSavePress = async () => {
     try {
       const userRef = firestore().collection('users').doc(userId);
 
@@ -201,7 +267,6 @@ const FeedPost = ({
       console.error('Error updating saved posts: ', error);
     }
   };
-
 
   const onProfilePress = () => {
     navigation.navigate('Profile');
@@ -241,7 +306,7 @@ const FeedPost = ({
             height: 400,
             width: '100%',
           }}
-          source={{ uri: imageSrc }}
+          source={{uri: imageSrc}}
         />
         <Box
           flexDirection="row"
@@ -259,18 +324,22 @@ const FeedPost = ({
               <Share />
             </TouchableOpacity>
           </Box>
-          <TouchableOpacity onPress={onSavePress} style={{ padding: 10 }}>
+          <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
             {isSaved ? <Save_f /> : <Save />}
           </TouchableOpacity>
         </Box>
-        <TouchableOpacity onPress={() => navigation.navigate('LikedUsers')}>
-          <Text padding={'s'} color={'mainblack'} fontWeight={'500'}>
-            {likedUsers?.length > 0 && likedUsers?.length} likes
-          </Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+          {likedUsers != 0 ? (
+            <Box paddingHorizontal={'s'}>
+              <Text color={'mainblack'}>
+                {likedUsers.length !== 0
+                  ? `Liked by ${likedUsers.join(', ')}`
+                  : null}
+              </Text>
+            </Box>
+          ) : null}
         </TouchableOpacity>
-        <Box paddingHorizontal={'s'}>
-          <Text variant={'Liked'}>Liked by {likedUsers}</Text>
-        </Box>
         <Box paddingVertical={'s'} paddingHorizontal={'s'}>
           <Text width={300} numberOfLines={1} variant={'Desc'}>
             {user} {Caption}
@@ -312,16 +381,20 @@ const FeedPost = ({
         </Box>
       ))}
       <ShareBox ref={Shareref} />
-      <CommentBox ref={CmtRef} />
+      <CommentBox
+        navigation={navigation}
+        ref={CmtRef}
+        postId={postId}
+        userId={userId}
+      />
     </Box>
   );
 };
 
-
-const ShareBox = forwardRef(({ currentPost }, ref) => {
+const ShareBox = forwardRef(({currentPost}, ref) => {
   const generateDeepLink = (postId, username) => {
     const deepLink = `instagram://library?Local=share&Text=${encodeURIComponent(
-      'Check out this post on Instagram:'
+      'Check out this post on Instagram:',
     )}&Link=instagram.com/post/${postId}&Owner=${encodeURIComponent(username)}`;
     return deepLink;
   };
@@ -336,7 +409,6 @@ const ShareBox = forwardRef(({ currentPost }, ref) => {
       }
 
       const deepLink = generateDeepLink(postId, username);
-      console.log(deepLink);
 
       const result = await Share.share({
         title: 'Instagram Post',
@@ -366,38 +438,29 @@ const ShareBox = forwardRef(({ currentPost }, ref) => {
         }}
         closeOnPressBack
         ref={ref}
-        height={height / 5}
-      >
+        height={height / 5}>
         <Box flex={1} padding="s">
           <Text
             fontWeight="bold"
             padding="s"
             fontSize={16}
             textAlign="center"
-            color="mainblack"
-          >
+            color="mainblack">
             Share
           </Text>
-          <Box
-            margin="l"
-            justifyContent="center"
-            flexDirection="row"
-            gap="l"
-          >
+          <Box margin="l" justifyContent="center" flexDirection="row" gap="l">
             <TouchableOpacity
               onPress={() => {
                 ref.current.close();
                 console.log('Share within Instagram');
-              }}
-            >
+              }}>
               <Box
                 justifyContent="center"
                 alignItems="center"
                 backgroundColor="dullwhite"
                 height={50}
                 width={50}
-                borderRadius="xl"
-              >
+                borderRadius="xl">
                 <Within />
               </Box>
               <Text fontSize={12}>Instagram</Text>
@@ -409,8 +472,7 @@ const ShareBox = forwardRef(({ currentPost }, ref) => {
                 backgroundColor="dullwhite"
                 height={50}
                 width={50}
-                borderRadius="xl"
-              >
+                borderRadius="xl">
                 <LInk />
               </Box>
               <Text fontSize={12}>Other Apps</Text>
@@ -422,25 +484,186 @@ const ShareBox = forwardRef(({ currentPost }, ref) => {
   );
 });
 
-
-const CommentBox = forwardRef(({postId, currentUser}, ref) => {
+const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
   const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState([]);
+  const [userAvatar, setUserAvatar] = useState('');
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const postRef = firestore().collection('posts').doc(postId);
+
+      const unsubscribe = postRef.onSnapshot(doc => {
+        if (doc.exists) {
+          const postData = doc.data();
+          setComments(postData.comments || []);
+        }
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchComments();
+  }, [postId]);
+
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      try {
+        const userDoc = await firestore().collection('users').doc(userId).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          setUserAvatar(userData.avatar || '');
+        } else {
+          setUserAvatar('');
+        }
+      } catch (error) {
+        console.error('Error fetching user avatar: ', error);
+      }
+    };
+
+    fetchUserAvatar();
+  }, [userId]);
 
   const handleComment = async () => {
     if (commentText.trim() === '') return;
 
     try {
       const newComment = {
-        userId: currentUser?.userId,
+        userId: userId,
         comment: commentText,
-        createdAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date().toISOString(),
+        likes: [],
+        replies: [],
       };
-      await firestore.collection('posts').doc(postId).add(newComment);
+
+      await firestore()
+        .collection('posts')
+        .doc(postId)
+        .update({
+          comments: firestore.FieldValue.arrayUnion(newComment),
+        });
+
       setCommentText('');
     } catch (error) {
       console.error('Error adding comment: ', error);
     }
   };
+
+  const handleLikeComment = async (comment, isLiked) => {
+    try {
+      const updatedLikes = isLiked
+        ? comment.likes.filter(id => id !== userId)
+        : [...comment.likes, userId];
+
+      await firestore()
+        .collection('posts')
+        .doc(postId)
+        .update({
+          comments: comments.map(c =>
+            c.createdAt === comment.createdAt ? {...c, likes: updatedLikes} : c,
+          ),
+        });
+    } catch (error) {
+      console.error('Error liking comment: ', error);
+    }
+  };
+
+  const handleReply = async (comment, replyText) => {
+    if (replyText.trim() === '') return;
+
+    try {
+      const newReply = {
+        userId: userId,
+        comment: replyText,
+        createdAt: new Date().toISOString(),
+        likes: [],
+      };
+
+      const updatedReplies = [...comment.replies, newReply];
+
+      await firestore()
+        .collection('posts')
+        .doc(postId)
+        .update({
+          comments: comments.map(c =>
+            c.createdAt === comment.createdAt
+              ? {...c, replies: updatedReplies}
+              : c,
+          ),
+        });
+    } catch (error) {
+      console.error('Error replying to comment: ', error);
+    }
+  };
+
+  const renderCommentItem = ({item}) => (
+    <Box
+      justifyContent="space-evenly"
+      key={item.createdAt}
+      paddingHorizontal="m"
+      paddingVertical="s">
+      {console.log('item: ', item)}
+      <Box flexDirection="row" alignItems="center">
+        <Avatar
+          avatarStyle={{backgroundColor: 'red'}}
+          source={{uri: item?.avatar}}
+          size="small"
+          rounded
+        />
+        <Box marginLeft="s">
+          <TouchableOpacity
+            onPress={() =>
+              navigation.push('ProfileView', {userId: item?.userId})
+            }>
+            <Text fontSize={14} color={'mainblack'} fontWeight={'400'}>
+              {item?.userId}
+            </Text>
+          </TouchableOpacity>
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between">
+            <Text fontSize={14} color={'mainblack'}>
+              {item.comment}
+            </Text>
+            <TouchableOpacity
+              onPress={() =>
+                handleLikeComment(item, item.likes.includes(userId))
+              }>
+              <Text>
+                {item.likes.includes(userId) ? (
+                  <Heaty_uf height="10" width="10" />
+                ) : (
+                  <Heaty_f height="10" width="10" />
+                )}
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        </Box>
+      </Box>
+      <TouchableOpacity onPress={() => handleReply(item, 'Reply text')}>
+        <Text fontSize={12}>Reply</Text>
+      </TouchableOpacity>
+
+      {item.replies && item.replies.length > 0 && (
+        <Box marginLeft="l">
+          {item.replies.map(reply => (
+            <Box
+              key={reply.createdAt}
+              flexDirection="row"
+              alignItems="center"
+              marginTop="s">
+              <Avatar source={{uri: reply.avatar}} size="small" rounded />
+              <Box marginLeft="s">
+                <Text fontWeight="bold">{reply.username}</Text>
+                <Text>{reply.comment}</Text>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      )}
+    </Box>
+  );
 
   return (
     <RBSheet
@@ -453,7 +676,7 @@ const CommentBox = forwardRef(({postId, currentUser}, ref) => {
       }}
       closeOnPressBack
       ref={ref}
-      height={height / 2}>
+      height={400}>
       <Box flex={1}>
         <Text
           padding="s"
@@ -463,23 +686,18 @@ const CommentBox = forwardRef(({postId, currentUser}, ref) => {
           color="mainblack">
           Comments
         </Text>
-        <Divider bold />
         <FlatList
-          // data={comments}
-          // renderItem={renderComments}
-          keyExtractor={item => item.id.toString()}
+          data={comments}
+          renderItem={renderCommentItem}
+          keyExtractor={item => item.createdAt.toString()}
           ListEmptyComponent={
             <Text paddingVertical="s" textAlign="center">
               No comments yet
             </Text>
           }
         />
-        {/* <EmojiReactions /> */}
-        <Divider bold />
         <Input
-          leftIcon={
-            <Avatar source={{uri: currentUser?.avatar}} size="small" rounded />
-          }
+          leftIcon={<Avatar source={{uri: userAvatar}} size="small" rounded />}
           rightIcon={
             <TouchableOpacity onPress={handleComment}>
               <Cmt_Share />
@@ -496,5 +714,3 @@ const CommentBox = forwardRef(({postId, currentUser}, ref) => {
 });
 
 export default FeedPost;
-
-

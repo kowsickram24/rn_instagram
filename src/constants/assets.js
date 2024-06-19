@@ -29,6 +29,7 @@ export {default as Pencil} from '../assets/pencil.svg'
 export {default as Dustbin} from '../assets/bin.svg'
 export {default as Within} from '../assets/within.svg'
 export {default as LInk} from '../assets/link.svg'
+export {default as Msg_Icon} from '../assets/message.svg'
 
 export {default as Def_pp} from '../assets/default_pp.jpg'
 

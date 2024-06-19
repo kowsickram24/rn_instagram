@@ -1,18 +1,13 @@
-import {createBox, createText} from '@shopify/restyle';
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList, Dimensions, TouchableOpacity} from 'react-native';
-import FeedPost from '../../../../components/card/FeedPost';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import {Cmt_Share, Dustbin, Pencil} from '../../../../constants/assets';
-import {useSelector} from 'react-redux';
-import {Divider} from 'react-native-paper';
-import {Input, Avatar} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
-import {Alert} from 'react-native';
-import ToastManager, {Toast} from 'toastify-react-native';
+import React, { useRef, useState } from 'react';
+import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
+import ToastManager from 'toastify-react-native';
+import FeedPost from '../../../../components/card/FeedPost';
+import { Dustbin, Pencil } from '../../../../constants/assets';
+import { Box, Text } from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
-const Box = createBox();
-const Text = createText();
 
 const PostDesc = ({ route, navigation }) => {
   const currentUser = useSelector(state => state.user.user);
@@ -78,8 +73,8 @@ const PostDesc = ({ route, navigation }) => {
         ProfileUrl={item?.user?.avatar}
         ViewCmnt={() => CmtRef.current.open()}
         likedUsers={item.likes}
-        userId={currentUser?.userId}  // Passing userId
-        postId={item?.postId}         // Passing postId
+        userId={currentUser?.userId}  
+        postId={item?.postId}         
       />
     </Box>
   );

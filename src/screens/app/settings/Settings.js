@@ -1,17 +1,20 @@
-import React, {useState} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createBox, createText} from '@shopify/restyle';
-import {logout} from '../../../store/slices/userSlice';
-import {Back} from '../../../constants/assets';
 import auth from '@react-native-firebase/auth';
-import {Overlay, Button, Header} from '@rneui/themed';
-import ToastManager, {Toast} from 'toastify-react-native';
-import {Loader} from '../../../components/loader/Loader';
+import { Button, Header, Overlay } from '@rneui/themed';
+import React, { useState } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
+import ToastManager from 'toastify-react-native';
+import { Loader } from '../../../components/loader/Loader';
+import {
+  Back,
+  Heaty_uf,
+  Rt_Arrow,
+  Save
+} from '../../../constants/assets';
+import { logout } from '../../../store/slices/userSlice';
 
-const Box = createBox();
-const Text = createText();
+import { Box, Text } from '../../../theme';
 
 const Settings = ({navigation, getData}) => {
   const [visible, setVisible] = useState(false);
@@ -23,14 +26,12 @@ const Settings = ({navigation, getData}) => {
   };
 
   const handleLogout = async () => {
-    setLoading(true); // Show loader
+    setLoading(true);
     try {
       await auth().signOut();
-      Toast.success('Logged out');
       await AsyncStorage.removeItem('user');
       dispatch(logout());
       await getData();
-      navigation.navigate('Auth');
     } catch (error) {
       console.error('Error logging out: ', error);
     } finally {
@@ -40,19 +41,17 @@ const Settings = ({navigation, getData}) => {
 
   return (
     <Box flex={1} gap={'m'} backgroundColor="mainwhite">
-
       <Header
-      backgroundColor='white'
+        backgroundColor="white"
         statusBarProps={{
           hidden: true,
         }}
         leftComponent={
-          
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box gap={'m'}  alignItems='center' flexDirection='row'> 
-            <Back />
-            <Text color={'mainblack'}> Settings  </Text>
-          </Box>
+            <Box gap={'m'} alignItems="center" flexDirection="row">
+              <Back />
+              <Text color={'mainblack'}> Settings </Text>
+            </Box>
           </TouchableOpacity>
         }
       />
@@ -65,17 +64,47 @@ const Settings = ({navigation, getData}) => {
             <Text color={'mainblack'}>Settings and Privacy</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('AccountCenter')}>
-              <Text color={'mainblack'}>Accounts Center</Text>
+              <Box flexDirection="row" justifyContent="space-between">
+                <Text fontSize={14} color={'mainblack'}>
+                  Accounts Center
+                </Text>
+                <Rt_Arrow />
+              </Box>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('MySaves')}>
-              <Text color={'mainblack'}>My Saves</Text>
+              <Box flexDirection="row" justifyContent="space-between">
+                <Box flexDirection="row" alignItems="center" gap={'s'}>
+                  <Save />
+                  <Text fontSize={14} color={'mainblack'}>
+                    Saves
+                  </Text>
+                </Box>
+                <Rt_Arrow />
+              </Box>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => navigation.navigate('MySaves')}> */}
-              <Text color={'mainblack'}>Liked Posts</Text>
-            {/* </TouchableOpacity> */}
+            <TouchableOpacity onPress={() => navigation.navigate('LikedPosts')}>
+              <Box flexDirection="row" justifyContent="space-between">
+                <Box flexDirection="row" alignItems="center" gap={'s'}>
+                  <Heaty_uf />
+                  <Text fontSize={14} color={'mainblack'}>
+                    Likes
+                  </Text>
+                </Box>
+                <Rt_Arrow />
+              </Box>
+            </TouchableOpacity>
             <Box>
               <TouchableOpacity onPress={toggleOverlay}>
-                <Text variant="Logout">Logout</Text>
+                <Box
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  gap={'s'}>
+                  <Text fontSize={14} color={'red'}>
+                    Logout
+                  </Text>
+                  <Rt_Arrow />
+                </Box>
               </TouchableOpacity>
             </Box>
           </Box>

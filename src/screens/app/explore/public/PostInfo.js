@@ -7,9 +7,12 @@ import firestore from '@react-native-firebase/firestore';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import FeedPost from '../../../../components/card/FeedPost';
 import { Box, Text } from '../../../../theme';
+import { currentuser } from '../../../../constants/data';
+import { useSelector } from 'react-redux';
 const {width, height} = Dimensions.get('screen');
 
 const PostInfo = ({ route }) => {
+  const currentUser = useSelector(state => state.user.user);
   const RBref = useRef();
   const Optionref = useRef();
   const { item: post } = route.params;
@@ -50,6 +53,8 @@ const PostInfo = ({ route }) => {
         imageSrc={item.imageUrl}
         onOptionpress={handleOption}
         comments={item.comments}
+        userId={currentUser?.userId}
+        postId={item?.postId}
       />
     </Box>
   );

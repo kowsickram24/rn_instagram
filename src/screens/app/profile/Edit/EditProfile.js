@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Button, Header, Input} from '@rneui/themed';
+import {Avatar, Button, Header, Input} from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
@@ -139,11 +139,14 @@ const EditProfile = ({navigation, route}) => {
         statusBarProps={{
           hidden: true,
         }}
+        leftContainerStyle={{
+          flex: 3,
+        }}
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Box gap={'m'} alignItems="center" flexDirection="row">
               <Back />
-              <Text color={'mainblack'}>Edit </Text>
+              <Text fontSize={14} color={'mainblack'}>Edit profile </Text>
             </Box>
           </TouchableOpacity>
         }
@@ -151,76 +154,87 @@ const EditProfile = ({navigation, route}) => {
       <ToastManager position="top" />
 
       <Box padding={'m'} flex={1} paddingVertical={'l'}>
-        <Image
-          resizeMode="cover"
-          style={{
-            alignSelf: 'center',
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-          }}
+        <Avatar
+          containerStyle={{alignSelf: 'center'}}
+          rounded
+          size={'large'}
           source={{uri: newImage || currentUser?.avatar}}
         />
         <TouchableOpacity onPress={() => RBSheetref.current.open()}>
-          <Text padding={'s'} color="primaryBlue" textAlign="center">
+          <Text
+            padding={'s'}
+            fontSize={12}
+            color="primaryBlue"
+            textAlign="center">
             Edit Picture
           </Text>
         </TouchableOpacity>
-        <Text color={'lightgrey'} textAlign="left">
-          {' '}
-          Username
+        <Text fontSize={12} color={'lightgrey'} textAlign="left">
+          Name
         </Text>
         <Input
+          inputContainerStyle={{
+            borderBottomWidth: 0.5,
+          }}
+          inputStyle={{padding: 2, fontSize: 14}}
           value={userData?.username}
           onChangeText={text => setUserData({...userData, username: text})}
         />
-        <Text color={'lightgrey'} textAlign="left">
-          {' '}
-          Fullname
+        <Text fontSize={12} color={'lightgrey'} textAlign="left">
+          Username
         </Text>
         <Input
+          inputContainerStyle={{
+            borderBottomWidth: 0.5,
+          }}
+          inputStyle={{padding: 2, fontSize: 14}}
           placeholder="Bio"
           value={userData?.fullname}
           onChangeText={text => setUserData({...userData, fullname: text})}
         />
-        <Text color={'lightgrey'} textAlign="left">
-          {' '}
+        <Text fontSize={12} color={'lightgrey'} textAlign="left">
           Bio
         </Text>
         <Input
+          inputContainerStyle={{
+            borderBottomWidth: 0.5,
+          }}
+          inputStyle={{padding: 2, fontSize: 14}}
           placeholder="Bio"
           value={userData?.bio}
           onChangeText={text => setUserData({...userData, bio: text})}
         />
         <Button
-          containerStyle={{paddingVertical: 24}}
+titleStyle={{fontSize:14}}
+buttonStyle={{
+            borderRadius: 6,
+
+          }}
+          containerStyle={{paddingVertical: 12, }}
           title={'Save Changes'}
           onPress={handleSaveChanges}
         />
       </Box>
       <RBSheet
+        closeOnPressBack
+        draggable
         ref={RBSheetref}
-        height={height / 3}
+        height={height / 4}
         openDuration={100}
         customStyles={{
           container: {
-            borderTopRightRadius: 35,
-            borderTopLeftRadius: 35,
+            borderTopRightRadius: 25,
+            borderTopLeftRadius: 25,
           },
         }}>
-        <Box
-          flex={1}
-          padding={'l'}
-          alignItems="center"
-          justifyContent="center"
-          gap={'xl'}>
+        <Box flex={1} justifyContent="center" padding={'l'} gap={'xl'}>
           <TouchableOpacity onPress={pickImage}>
-            <Text fontSize={18} color={'mainblack'}>
+            <Text fontSize={14} color={'mainblack'}>
               New profile picture
             </Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text fontSize={18} color={'red'}>
+            <Text fontSize={14} color={'red'}>
               Remove current picture
             </Text>
           </TouchableOpacity>

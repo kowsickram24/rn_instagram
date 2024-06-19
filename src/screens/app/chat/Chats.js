@@ -30,6 +30,11 @@ const ChatBox = ({navigation}) => {
     fetchUsers();
   }, []);
 
+const RenderChats = ({item}) => {
+
+}
+
+
   return (
     <Box padding="s" flex={1} backgroundColor="mainwhite">
       <Input

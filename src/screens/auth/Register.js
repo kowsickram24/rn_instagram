@@ -63,7 +63,7 @@ const RegisterScreen = ({navigation, getData}) => {
           following: [],
           savedPosts: [],
           likedPosts: [],
-          createdAt: firestore.FieldValue.serverTimestamp(),
+          createdAt: new Date().toLocaleString()
         };
         await usersCollectionRef.doc(userId).set(userData); 
         await AsyncStorage.setItem('user', JSON.stringify(userData));
