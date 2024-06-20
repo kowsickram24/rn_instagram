@@ -1,20 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
-import { Button, Header, Overlay } from '@rneui/themed';
-import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
+import {Button, Header, Overlay} from '@rneui/themed';
+import React, {useState} from 'react';
+import {TouchableOpacity} from 'react-native';
+import {useDispatch} from 'react-redux';
 import ToastManager from 'toastify-react-native';
-import { Loader } from '../../../components/loader/Loader';
-import {
-  Back,
-  Heaty_uf,
-  Rt_Arrow,
-  Save
-} from '../../../constants/assets';
-import { logout } from '../../../store/slices/userSlice';
-
-import { Box, Text } from '../../../theme';
+import {Loader} from '../../../components/loader/Loader';
+import {Back, Heaty_uf, Rt_Arrow, Save} from '../../../constants/assets';
+import {logout} from '../../../store/slices/userSlice';
+import BackBtn from '../../../components/buttons/backButton';
+import {Box, Text} from '../../../theme';
 
 const Settings = ({navigation, getData}) => {
   const [visible, setVisible] = useState(false);
@@ -47,12 +42,10 @@ const Settings = ({navigation, getData}) => {
           hidden: true,
         }}
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box gap={'m'} alignItems="center" flexDirection="row">
-              <Back />
-              <Text color={'mainblack'}> Settings </Text>
-            </Box>
-          </TouchableOpacity>
+          <Box gap={'m'} alignItems="center" flexDirection="row">
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text color={'mainblack'}> Settings </Text>
+          </Box>
         }
       />
       {loading ? (

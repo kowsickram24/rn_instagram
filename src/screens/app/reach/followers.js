@@ -1,16 +1,45 @@
-import {FlatList} from 'react-native';
+import {FlatList, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
-import {Avatar, ListItem} from '@rneui/themed';
+import {Avatar, Button, ListItem} from '@rneui/themed';
 import {Box, Text} from '../../../theme';
+import Animated from 'react-native-reanimated';
 
-const renderItem = ({item}) => (
-  <ListItem>
-    <Avatar size={'medium'} source={{uri: item.profilepic}} rounded />
-    <ListItem.Content>
-      <ListItem.Title>{item?.username}</ListItem.Title>
-    </ListItem.Content>
-  </ListItem>
-);
+import firestore from '@react-native-firebase/firestore';
+
+const renderItem = ({item}) => {
+  const handleRemoveFollower = async () => {
+    try {
+      const userRef = firestore().collection('users').doc(item.userId);
+
+      await userRef.update({
+        followers: firestore.FieldValue.arrayRemove({
+          username: item.username,
+          profilepic: item.profilepic,
+        }),
+      });
+
+      console.log('Follower removed successfully');
+    } catch (error) {
+      console.error('Error removing follower: ', error);
+    }
+  };
+
+  return (
+    <ListItem>
+      <Avatar size={'medium'} source={{uri: item?.profilepic}} rounded />
+      <ListItem.Content>
+        <ListItem.Title>{item?.username}</ListItem.Title>
+      </ListItem.Content>
+      <Button
+        onPress={handleRemoveFollower}
+        containerStyle={{borderRadius: 6}}
+        titleStyle={{color: 'black'}}
+        buttonStyle={{backgroundColor: 'lightgrey'}}
+        title={'remove'}
+      />
+    </ListItem>
+  );
+};
 
 const Followers = ({userData}) => {
   return (

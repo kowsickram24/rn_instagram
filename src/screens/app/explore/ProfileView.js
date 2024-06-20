@@ -1,14 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
-import { Avatar, Divider } from '@rneui/themed';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
+import {Avatar, Divider} from '@rneui/themed';
+import {useEffect, useState} from 'react';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {useSelector} from 'react-redux';
 import {
   PrimaryBtn,
   SecondaryBtn,
 } from '../../../components/buttons/primaryButton';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
 import Profile from '../profile/Profile';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -133,29 +133,39 @@ const ProfileView = ({route, navigation}) => {
             </Text>
           </Box>
           <Box alignSelf="center">
-            <TouchableOpacity onPress={() => navigation.replace('Reach')}>
+            <TouchableOpacity
+              onPress={() => navigation.replace('Reach', {User: selectedUser})}>
               <Text color={'mainblack'} fontSize={20} textAlign="center">
                 {selectedUser?.followers.length}
               </Text>
+              <Text color={'mainblack'} fontSize={12}>
+                followers
+              </Text>
             </TouchableOpacity>
-            <Text color={'mainblack'} fontSize={12}>
-              followers
-            </Text>
           </Box>
           <Box alignSelf="center">
-            <Text color={'mainblack'} fontSize={20} textAlign="center">
-              {selectedUser?.following.length}
-            </Text>
-            <Text color={'mainblack'} fontSize={12}>
-              following
-            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.replace('Reach', {User: selectedUser})}>
+              <Text color={'mainblack'} fontSize={20} textAlign="center">
+                {selectedUser?.following.length}
+              </Text>
+              <Text color={'mainblack'} fontSize={12}>
+                following
+              </Text>
+            </TouchableOpacity>
           </Box>
         </Box>
       </Box>
       <Box margin={'m'}>
-        <Text fontSize={12} color={'mainblack'}>{selectedUser?.username}</Text>
-        <Text fontSize={12} color={'mainblack'}>{selectedUser?.fullname}</Text>
-        <Text fontSize={12} color={'mainblack'}>{selectedUser?.bio}</Text>
+        <Text fontSize={12} color={'mainblack'}>
+          {selectedUser?.username}
+        </Text>
+        <Text fontSize={12} color={'mainblack'}>
+          {selectedUser?.fullname}
+        </Text>
+        <Text fontSize={12} color={'mainblack'}>
+          {selectedUser?.bio}
+        </Text>
       </Box>
       <Box justifyContent="center" flexDirection="row" padding={'s'} gap={'s'}>
         {isFollowed ? (

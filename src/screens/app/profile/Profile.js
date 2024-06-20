@@ -1,9 +1,9 @@
-import { Avatar, Button, Header } from '@rneui/themed';
+import {Avatar, Button, Header} from '@rneui/themed';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Menu } from '../../../constants/assets';
+import {TouchableOpacity} from 'react-native';
+import {Menu} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
 const Profile = ({navigation, User}) => {
   console.log('User: ', User);
 
@@ -41,7 +41,8 @@ const Profile = ({navigation, User}) => {
             </Text>
           </Box>
           <Box alignSelf="center">
-            <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Reach', {User: User})}>
               <Text color={'mainblack'} fontSize={20} textAlign="center">
                 {User?.followers.length}
               </Text>
@@ -51,7 +52,8 @@ const Profile = ({navigation, User}) => {
             </TouchableOpacity>
           </Box>
           <Box alignSelf="center">
-            <TouchableOpacity onPress={() => navigation.navigate('Reach')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Reach', {User: User})}>
               <Text color={'mainblack'} fontSize={20} textAlign="center">
                 {User?.following.length}
               </Text>
@@ -62,7 +64,7 @@ const Profile = ({navigation, User}) => {
           </Box>
         </Box>
       </Box>
-      <Box margin={'m'}>
+      <Box padding={'s'}>
         <Text fontSize={12} color={'mainblack'}>
           {User?.username}
         </Text>
@@ -81,7 +83,7 @@ const Profile = ({navigation, User}) => {
             borderRadius: 10,
             marginVertical: 6,
           }}
-          titleStyle={{color: '#000', fontWeight:'100' ,fontSize: 14}}
+          titleStyle={{color: '#000', fontWeight: '100', fontSize: 14}}
           buttonStyle={{
             backgroundColor: 'lightgrey',
           }}

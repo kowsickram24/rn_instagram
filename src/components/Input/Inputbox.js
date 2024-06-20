@@ -23,6 +23,7 @@ const Inputbox = ({
       }}
       inputStyle={{
         padding: 10,
+        fontSize:14
       }}
       errorStyle={{
         textAlign:'right',

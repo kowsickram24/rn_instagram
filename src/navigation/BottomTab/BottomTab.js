@@ -22,33 +22,40 @@ import firestore from '@react-native-firebase/firestore';
 import {Box} from '../../theme';
 const BottomTab = createBottomTabNavigator();
 
-const BottomNavigator = ({navigation, getData}) => {
+const BottomNavigator = ({navigation}) => {
   const user = useSelector(state => state.user.user);
-
   const [currentUser, setCurrentUser] = useState();
   const refRBSheet = useRef();
-  const fetchUserData = async () => {
-    try {
-      const userDoc = await firestore()
-        .collection('users')
-        .where('email', '==', user?.email)
-        .get();
 
-      if (!userDoc.empty) {
-        const userDocRef = userDoc.docs[0].ref;
-        const userDataSnapshot = await userDocRef.get();
-        const userData = userDataSnapshot.data();
-        setCurrentUser(userData);
-      } else {
-        console.log('No matching documents.');
-      }
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    if (user?.email) {
+      const unsubscribe = firestore()
+        .collection('users')
+        .where('email', '==', user.email)
+        .onSnapshot(
+          querySnapshot => {
+            if (!querySnapshot.empty) {
+              const userDocRef = querySnapshot.docs[0].ref;
+              userDocRef.onSnapshot(docSnapshot => {
+                if (docSnapshot.exists) {
+                  setCurrentUser(docSnapshot.data());
+                  console.log(currentUser,'sdsdasd')
+                } else {
+                  console.log('No such document!');
+                }
+              });
+            } else {
+              console.log('No matching documents.');
+            }
+          },
+          error => {
+            console.error('Error fetching user data: ', error);
+          },
+        );
+
+      return () => unsubscribe();
+    }
+  }, [user?.email]);
 
   return (
     <>
@@ -72,7 +79,7 @@ const BottomNavigator = ({navigation, getData}) => {
           options={{
             tabBarIcon: ({focused}) => (
               <TouchableOpacity onPress={() => refRBSheet.current.open()}>
-                <Box padding={'m'} borderRadius={'xl'} >
+                <Box padding={'m'} borderRadius={'xl'}>
                   <Plus />
                 </Box>
               </TouchableOpacity>

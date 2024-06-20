@@ -2,36 +2,36 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import S3 from 'aws-sdk/clients/s3';
-import { Formik } from 'formik';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
-import ToastManager, { Toast } from 'toastify-react-native';
+import {Formik} from 'formik';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {TouchableOpacity} from 'react-native';
+import {useDispatch} from 'react-redux';
+import ToastManager, {Toast} from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import { Loader } from '../../components/loader/Loader';
+import {Loader} from '../../components/loader/Loader';
 import config from '../../config';
-import { Back, Insta_Typo_logo } from '../../constants/assets';
-import { login } from '../../store/slices/userSlice';
-import { Box, Text } from '../../theme';
-import { RegSchema } from '../../utils/validation';
+import {Back, Insta_Typo_logo} from '../../constants/assets';
+import {login} from '../../store/slices/userSlice';
+import {Box, Text} from '../../theme';
+import {RegSchema} from '../../utils/validation';
+import {Divider} from '@rneui/themed';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
   region: config.REGION,
 });
-const Defaultimage = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png'
+const Defaultimage =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png';
 const RegisterScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {t} = useTranslation();
 
-
   const handleRegister = async (values, {setSubmitting, setErrors}) => {
     try {
-
-      setSubmitting(true)
+      setSubmitting(true);
       const usersCollectionRef = firestore().collection('users');
       const userQuerySnapshot = await usersCollectionRef
         .where('email', '==', values.email)
@@ -39,8 +39,7 @@ const RegisterScreen = ({navigation, getData}) => {
       console.log(userQuerySnapshot);
       if (!userQuerySnapshot.empty) {
         setErrors({email: 'Email already exists'});
-        setSubmitting(false)
-
+        setSubmitting(false);
       } else {
         const {email, password, username, fullname} = values;
         const FirebaseAuth = await auth().createUserWithEmailAndPassword(
@@ -49,23 +48,23 @@ const RegisterScreen = ({navigation, getData}) => {
         );
         const userId = FirebaseAuth.user.uid;
         console.log('userId: ', userId);
-        
+
         const userData = {
           userId: userId,
           username: username,
           email: email,
           fullname: fullname,
-          posts:[],
-          chats:[],
+          posts: [],
+          chats: [],
           avatar: Defaultimage,
           bio: '',
           followers: [],
           following: [],
           savedPosts: [],
           likedPosts: [],
-          createdAt: new Date().toLocaleString()
+          createdAt: new Date().toLocaleString(),
         };
-        await usersCollectionRef.doc(userId).set(userData); 
+        await usersCollectionRef.doc(userId).set(userData);
         await AsyncStorage.setItem('user', JSON.stringify(userData));
         dispatch(login(userData));
         await getData();
@@ -73,9 +72,8 @@ const RegisterScreen = ({navigation, getData}) => {
       }
     } catch (error) {
       console.error('Error registering user:', error);
-     
     } finally {
-      setLoading(false)
+      setLoading(false);
       setSubmitting(false);
     }
   };
@@ -110,24 +108,23 @@ const RegisterScreen = ({navigation, getData}) => {
                 handleBlur,
                 handleSubmit,
                 values,
+
                 errors,
                 touched,
                 isSubmitting,
               }) => (
                 <>
                   <Inputbox
-                    placeholder={t('Auth.usernamePlaceholder')}
-                    value={values.username}
-                    onChangeText={handleChange('username')}
-                    onBlur={handleBlur('username')}
+                    placeholder={t('Auth.emailPlaceholder')}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
                     errorMessage={
-                      touched.username && errors.username
-                        ? errors.username
-                        : null
+                      touched.email && errors.email ? errors.email : null
                     }
                   />
                   <Inputbox
-                    placeholder={'Fullname'}
+                    placeholder={'Full Name'}
                     value={values.fullname}
                     onChangeText={handleChange('fullname')}
                     onBlur={handleBlur('fullname')}
@@ -138,12 +135,14 @@ const RegisterScreen = ({navigation, getData}) => {
                     }
                   />
                   <Inputbox
-                    placeholder={t('Auth.emailPlaceholder')}
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
+                    placeholder={t('Auth.usernamePlaceholder')}
+                    value={values.username}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
                     errorMessage={
-                      touched.email && errors.email ? errors.email : null
+                      touched.username && errors.username
+                        ? errors.username
+                        : null
                     }
                   />
                   <Inputbox
@@ -158,6 +157,7 @@ const RegisterScreen = ({navigation, getData}) => {
                         : null
                     }
                   />
+                  <Divider />
                   <Authbutton
                     title={t('Auth.Signup')}
                     onPress={handleSubmit}

@@ -4,11 +4,11 @@ import {Back} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Avatar, Button, Header} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
-import {PrimaryBtn} from '../../../components/buttons/primaryButton';
+import {useSelector} from 'react-redux';
 
 const LikedUsers = ({navigation, route}) => {
+  const currentUser = useSelector(state => state.user.user);
   const {likedId} = route.params;
-  console.log('likedUsers: ', likedId);
   const [users, setUsers] = useState([]);
   const [isFollowed, setIsFollowed] = useState(false);
 
@@ -30,10 +30,10 @@ const LikedUsers = ({navigation, route}) => {
           console.error('Error fetching liked users:', error);
         },
       );
-
-    // Clean up the listener on unmount
     return () => unsubscribe();
   }, [likedId]);
+
+
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
@@ -46,18 +46,16 @@ const LikedUsers = ({navigation, route}) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Box gap={'m'} alignItems="center" flexDirection="row">
               <Back />
-              <Text color={'mainblack'}>Likes </Text>
+              <Text color={'mainblack'}>Likes</Text>
             </Box>
           </TouchableOpacity>
         }
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Box padding={'s'} backgroundColor={'dullwhite'}>
-          <Text textAlign='center' color={'mainblack'}>
-            {users?.length}
-            {' '}likes
+          <Text textAlign="center" color={'mainblack'}>
+            {users?.length} likes
           </Text>
-          {console.log('item?.length: ', users.length)}
         </Box>
         <FlatList
           data={users}
@@ -89,7 +87,7 @@ const LikedUsers = ({navigation, route}) => {
                       </Text>
                     </Box>
                   </Box>
-                  {isFollowed ? (
+                  {/* {isFollowed ? (
                     <Button
                       containerStyle={{width: 150, paddingHorizontal: 6}}
                       titleStyle={{
@@ -112,7 +110,7 @@ const LikedUsers = ({navigation, route}) => {
                       title={'Follow'}
                       onPress={() => setIsFollowed(!isFollowed)}
                     />
-                  )}
+                  )} */}
                 </Box>
               </TouchableOpacity>
             </>

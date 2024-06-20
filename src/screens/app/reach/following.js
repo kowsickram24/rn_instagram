@@ -7,7 +7,7 @@ const renderItem = ({item}) => (
   <ListItem>
     <Avatar
       size={'medium'}
-      source={{uri: item.profilepic}}
+      source={{uri: item?.profilepic}}
       rounded
     />
     <ListItem.Content>

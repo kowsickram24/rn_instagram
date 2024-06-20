@@ -85,7 +85,6 @@ const FeedPost = ({
   imageSrc,
   Caption,
   onOptionpress,
-
   comments,
   userId,
   postId,
@@ -358,28 +357,7 @@ const FeedPost = ({
           </Box>
         )}
       </Card>
-      {comments?.map((comment, index) => (
-        <Box
-          key={index}
-          paddingHorizontal={'s'}
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between">
-          <TouchableOpacity onPress={ViewCmnt}>
-            <Box marginLeft="s" flexDirection="row" gap={'s'}>
-              <Text fontSize={14} color={'mainblack'}>
-                {comment?.username}
-              </Text>
-              <Text fontSize={14} color={'mainblack'}>
-                {comment?.comment}
-              </Text>
-            </Box>
-          </TouchableOpacity>
-          <Box>
-            <Heaty_uf height="10" width="10" />
-          </Box>
-        </Box>
-      ))}
+
       <ShareBox ref={Shareref} />
       <CommentBox
         navigation={navigation}
@@ -392,13 +370,6 @@ const FeedPost = ({
 };
 
 const ShareBox = forwardRef(({currentPost}, ref) => {
-  const generateDeepLink = (postId, username) => {
-    const deepLink = `instagram://library?Local=share&Text=${encodeURIComponent(
-      'Check out this post on Instagram:',
-    )}&Link=instagram.com/post/${postId}&Owner=${encodeURIComponent(username)}`;
-    return deepLink;
-  };
-
   const handleShareOtherApps = async () => {
     try {
       const postId = currentPost?.id;
@@ -488,7 +459,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [userAvatar, setUserAvatar] = useState('');
-
+  const [replyTxt, setReplyTxt] = useState([]) 
   useEffect(() => {
     const fetchComments = async () => {
       const postRef = firestore().collection('posts').doc(postId);
@@ -604,12 +575,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
       paddingVertical="s">
       {console.log('item: ', item)}
       <Box flexDirection="row" alignItems="center">
-        <Avatar
-          avatarStyle={{backgroundColor: 'red'}}
-          source={{uri: item?.avatar}}
-          size="small"
-          rounded
-        />
+        <Avatar source={{uri: ''}} size="small" rounded />
         <Box marginLeft="s">
           <TouchableOpacity
             onPress={() =>
