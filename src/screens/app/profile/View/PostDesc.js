@@ -71,7 +71,6 @@ const PostDesc = ({ route, navigation }) => {
         comments={item?.comments}
         user={item?.user?.username}
         ProfileUrl={item?.user?.avatar}
-        ViewCmnt={() => CmtRef.current.open()}
         likedUsers={item.likes}
         userId={currentUser?.userId}  
         postId={item?.postId}         

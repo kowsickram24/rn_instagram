@@ -12,13 +12,14 @@ import {Box, Text} from '../../../theme';
 import {Back} from '../../../constants/assets';
 import firestore from '@react-native-firebase/firestore';
 
-import { useSelector } from 'react-redux';
-const {width, height} = Dimensions.get('screen')
+import {useSelector} from 'react-redux';
+const {width, height} = Dimensions.get('screen');
 const LikedPosts = ({navigation}) => {
   const [likedPosts, setLikedPosts] = useState([]);
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log('posts: ', posts);
 
   useEffect(() => {
     const unsubscribe = firestore()
@@ -93,16 +94,21 @@ const LikedPosts = ({navigation}) => {
 
       <ScrollView>
         <FlatList
-        horizontal
+          horizontal
           data={posts}
           keyExtractor={item => item.id}
           ListEmptyComponent={<Text>No Liked Posts Yet</Text>}
           renderItem={({item}) => (
-            <Image
-            resizeMode='cover'
-              source={{uri: item?.imageUrl}}
-              style={{width: width /3, height: width /3}}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('PostPage');
+              }}>
+              <Image
+                resizeMode="cover"
+                source={{uri: item?.imageUrl}}
+                style={{width: width / 3, height: width / 3}}
+              />
+            </TouchableOpacity>
           )}
         />
       </ScrollView>

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {ScrollView, FlatList, TouchableOpacity} from 'react-native';
-import {Back} from '../../../constants/assets';
+import {Back, Heaty_uf} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Avatar, Button, Header} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
@@ -52,9 +52,10 @@ const LikedUsers = ({navigation, route}) => {
         }
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Box padding={'s'} backgroundColor={'dullwhite'}>
+        <Box alignItems='center' gap={'s'} padding={'s'} backgroundColor={'dullwhite'}>
+          <Heaty_uf />
           <Text textAlign="center" color={'mainblack'}>
-            {users?.length} likes
+            {users?.length} likes 
           </Text>
         </Box>
         <FlatList

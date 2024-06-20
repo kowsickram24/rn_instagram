@@ -125,7 +125,8 @@ const EditProfile = ({navigation, route}) => {
         imageUrl = await uploadImageToS3(newImage);
       }
       await updateFirestore(imageUrl);
-      setNewImage(null); // Clear new image after updating
+      setNewImage(null); 
+      navigation.navigate('Profile')
     } catch (error) {
       console.error('Error saving changes: ', error);
       alert('Failed to update profile. Please try again.');
@@ -146,7 +147,9 @@ const EditProfile = ({navigation, route}) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Box gap={'m'} alignItems="center" flexDirection="row">
               <Back />
-              <Text fontSize={14} color={'mainblack'}>Edit profile </Text>
+              <Text fontSize={14} color={'mainblack'}>
+                Edit profile{' '}
+              </Text>
             </Box>
           </TouchableOpacity>
         }
@@ -205,12 +208,11 @@ const EditProfile = ({navigation, route}) => {
           onChangeText={text => setUserData({...userData, bio: text})}
         />
         <Button
-titleStyle={{fontSize:14}}
-buttonStyle={{
+          titleStyle={{fontSize: 14}}
+          buttonStyle={{
             borderRadius: 6,
-
           }}
-          containerStyle={{paddingVertical: 12, }}
+          containerStyle={{paddingVertical: 12}}
           title={'Save Changes'}
           onPress={handleSaveChanges}
         />

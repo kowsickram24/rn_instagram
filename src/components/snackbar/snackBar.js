@@ -1,18 +1,27 @@
 import React from 'react';
 import {Snackbar} from 'react-native-paper';
-import {Box, Text} from '../../theme'; // Assuming Box and Text components are defined in your theme file
+import {Box, Text} from '../../theme';
 
-export const SnackBar = ({
-  visible,
-  content,
-  duration = 3000,
-  onDismiss,
-}) => {
+const SnackBar = ({visible, content, duration = 3000, onDismiss}) => {
   return (
     <Box>
-      <Snackbar visible={visible} duration={duration} onDismiss={onDismiss}>
-        <Text>{content}</Text>
+      <Snackbar
+        style={{backgroundColor: '#fff'}}
+        visible={visible}
+        duration={duration}
+        onDismiss={onDismiss}
+        action={{
+          mode:'text',
+          labelStyle: {color: 'darkviolet'},
+          label: 'Ok',
+          onPress: onDismiss,
+        }}>
+        <Text fontSize={14} color={'mainblack'}>
+          {content}
+        </Text>
       </Snackbar>
     </Box>
   );
 };
+
+export default SnackBar;

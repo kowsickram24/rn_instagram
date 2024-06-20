@@ -1,18 +1,22 @@
 import firestore from '@react-native-firebase/firestore';
-import { Divider, Header } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
-import { ScrollView,FlatList, TouchableOpacity } from 'react-native';
+import {Badge, Divider, Header} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, FlatList, TouchableOpacity} from 'react-native';
 import {
   Camera,
   Heaty_uf,
   Insta_Typo_logo,
-  Msg_Icon
+  Msg_Icon,
 } from '../../../constants/assets';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
 
 import FeedPost from '../../../components/card/FeedPost';
+import StoryAvatar from '../../../components/avatar/StoryAvatar';
+import {StoryData} from '../../../utils/randomData';
+import {useSelector} from 'react-redux';
 
 const Home = ({navigation}) => {
+  const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,12 +40,26 @@ const Home = ({navigation}) => {
   const renderItem = ({item}) => (
     <>
       <FeedPost
-        ProfileUrl={item.avatar}
+        location={item?.location}
+        ProfileUrl={item.user?.avatar}
         Caption={item.caption}
+        userId={currentUser?.userId}
+        postId={item?.postId}
         // location={item.posts[0]?.location}
-        // imageSrc={item.posts[0]?.imageUrl}
-        // user={item.username}
+        imageSrc={item?.imageUrl}
+        user={item?.user?.username}
+        comments={item?.comments}
       />
+    </>
+  );
+  const renderStory = ({item}) => (
+    <>
+      <Box alignItems="center">
+        <StoryAvatar source={item?.Url} />
+        <Text fontSize={12} color={'mainblack'} textAlign="center">
+          {item?.name}
+        </Text>
+      </Box>
     </>
   );
 
@@ -69,6 +87,13 @@ const Home = ({navigation}) => {
             </Box>
             <Box>
               <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
+                <Badge
+                
+                  badgeStyle={{backgroundColor: 'red'}}
+                  value={10}
+                  textStyle={{color:'white', fontSize:10}}
+                  containerStyle={{position: 'absolute', bottom: 12, left: 12}}
+                />
                 <Msg_Icon />
               </TouchableOpacity>
             </Box>
@@ -76,16 +101,28 @@ const Home = ({navigation}) => {
         }
       />
       <Divider />
+      <Box paddingVertical={'s'}>
+        <ScrollView>
+          <FlatList
+            scrollEnabled
+            horizontal
+            keyExtractor={item => item.id}
+            renderItem={renderStory}
+            data={StoryData}
+          />
+        </ScrollView>
+      </Box>
+      <Divider />
       {loading ? (
         <Text>Loading...</Text>
       ) : (
         <ScrollView>
-          {/* <FlatList
+          <FlatList
             data={posts}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             ListEmptyComponent={<Text> No More Posts </Text>}
-          /> */}
+          />
         </ScrollView>
       )}
     </Box>

@@ -331,7 +331,7 @@ const FeedPost = ({
           onPress={() => navigation.navigate('LikedUsers', {likedId})}>
           {likedUsers != 0 ? (
             <Box paddingHorizontal={'s'}>
-              <Text color={'mainblack'}>
+              <Text fontSize={14} color={'mainblack'}>
                 {likedUsers.length !== 0
                   ? `Liked by ${likedUsers.join(', ')}`
                   : null}
@@ -365,6 +365,7 @@ const FeedPost = ({
         postId={postId}
         userId={userId}
       />
+      <Divider />
     </Box>
   );
 };
@@ -459,7 +460,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [userAvatar, setUserAvatar] = useState('');
-  const [replyTxt, setReplyTxt] = useState([]) 
+  const [replyTxt, setReplyTxt] = useState([]);
   useEffect(() => {
     const fetchComments = async () => {
       const postRef = firestore().collection('posts').doc(postId);
@@ -598,9 +599,9 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
               }>
               <Text>
                 {item.likes.includes(userId) ? (
-                  <Heaty_uf height="10" width="10" />
-                ) : (
                   <Heaty_f height="10" width="10" />
+                ) : (
+                  <Heaty_uf height="10" width="10" />
                 )}
               </Text>
             </TouchableOpacity>
@@ -663,6 +664,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
           }
         />
         <Input
+          inputStyle={{fontSize: 14}}
           leftIcon={<Avatar source={{uri: userAvatar}} size="small" rounded />}
           rightIcon={
             <TouchableOpacity onPress={handleComment}>

@@ -12,7 +12,7 @@ import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
 import {Loader} from '../../components/loader/Loader';
 import config from '../../config';
-import {Back, Insta_Typo_logo} from '../../constants/assets';
+import {Back, Eye, Eye_Slash, Insta_Typo_logo} from '../../constants/assets';
 import {login} from '../../store/slices/userSlice';
 import {Box, Text} from '../../theme';
 import {RegSchema} from '../../utils/validation';
@@ -28,7 +28,7 @@ const RegisterScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {t} = useTranslation();
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleRegister = async (values, {setSubmitting, setErrors}) => {
     try {
       setSubmitting(true);
@@ -108,7 +108,6 @@ const RegisterScreen = ({navigation, getData}) => {
                 handleBlur,
                 handleSubmit,
                 values,
-
                 errors,
                 touched,
                 isSubmitting,
@@ -146,17 +145,24 @@ const RegisterScreen = ({navigation, getData}) => {
                     }
                   />
                   <Inputbox
+                    rightIcon={
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <Eye /> : <Eye_Slash />}
+                      </TouchableOpacity>
+                    }
                     placeholder={t('Auth.passwordPlaceholder')}
                     value={values.password}
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
-                    secureTextEntry
+                    secureTextEntry={!showPassword} 
                     errorMessage={
                       touched.password && errors.password
                         ? errors.password
                         : null
                     }
                   />
+
                   <Divider />
                   <Authbutton
                     title={t('Auth.Signup')}

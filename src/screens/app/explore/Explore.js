@@ -1,11 +1,12 @@
-import { Avatar, Input, ListItem } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList } from 'react-native';
-import { Search_uf } from '../../../constants/assets';
-import { useSearchUsersQuery } from '../../../store/slices/apiSlice';
-import { Box, Text } from '../../../theme';
+import {Avatar, Input, ListItem} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, FlatList} from 'react-native';
+import {Search_uf} from '../../../constants/assets';
+import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
+import {Box, Text} from '../../../theme';
+import {Loader} from '../../../components/loader/Loader';
 
-const Explore = ({ navigation }) => {
+const Explore = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -27,22 +28,23 @@ const Explore = ({ navigation }) => {
     };
   }, [searchQuery]);
 
-  const renderItem = ({ item }) => (
-    <ListItem onPress={() => navigation.navigate('ProfileView', { userId: item.userId })}>
-      <Avatar size={'medium'} source={{ uri: item.avatar }} rounded />
+  const renderItem = ({item}) => (
+    <ListItem
+      onPress={() => navigation.navigate('ProfileView', {userId: item.userId})}>
+      <Avatar size={'medium'} source={{uri: item.avatar}} rounded />
       <ListItem.Content>
-        <ListItem.Title>{item.username}</ListItem.Title>
+        <Text color={'mainblack'}>{item.username}</Text>
+        <Text fontSize={14} color={'lightgrey'}>{item.fullname}</Text>
       </ListItem.Content>
     </ListItem>
   );
 
   return (
     <Box flex={1} padding={'s'} backgroundColor={'mainwhite'}>
-
       <Input
         leftIcon={<Search_uf />}
-        leftIconContainerStyle={{ marginRight: 8, padding: 6 }}
-        containerStyle={{ paddingVertical: 12 }}
+        leftIconContainerStyle={{marginRight: 8, padding: 6}}
+        containerStyle={{paddingVertical: 12}}
         inputContainerStyle={{
           borderBottomWidth: 0,
           backgroundColor: '#FAFAFA',
@@ -53,7 +55,7 @@ const Explore = ({ navigation }) => {
         onChangeText={setSearchQuery}
         onSubmitEditing={() => setDebouncedQuery(searchQuery)}
       />
-      {isLoading && <ActivityIndicator />}
+      {isLoading && <Loader />}
       {isError && <Text>Error fetching data</Text>}
       <FlatList
         data={searchResults}
@@ -63,6 +65,5 @@ const Explore = ({ navigation }) => {
     </Box>
   );
 };
-
 
 export default Explore;

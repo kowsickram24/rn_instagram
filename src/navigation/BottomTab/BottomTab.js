@@ -31,7 +31,7 @@ const BottomNavigator = ({navigation}) => {
     if (user?.email) {
       const unsubscribe = firestore()
         .collection('users')
-        .where('email', '==', user.email)
+        .where('email', '==', user?.email)
         .onSnapshot(
           querySnapshot => {
             if (!querySnapshot.empty) {

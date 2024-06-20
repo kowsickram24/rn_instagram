@@ -49,7 +49,7 @@ const Settings = ({navigation, getData}) => {
         }
       />
       {loading ? (
-        <Loader />
+        <Loader text={'Logging Out'} />
       ) : (
         <>
           <Box padding={'m'} gap={'xl'}>

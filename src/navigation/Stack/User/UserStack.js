@@ -17,6 +17,7 @@ import LikedUsers from '../../../screens/app/explore/LikedUsers';
 import AccountCenter from '../../../screens/app/settings/AccountCenter';
 import SavedPosts from '../../../screens/app/saves/savedPosts';
 import LikedPosts from '../../../screens/app/saves/LikedPosts';
+import PostPage from '../../../screens/app/saves/postPage';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
@@ -26,8 +27,12 @@ const UserStack = ({getData}) => {
         {props => <BottomNavigator {...props} getData={getData} />}
       </Stack.Screen>
       <Stack.Screen name="Notifications" component={Notification} />
+
+
       <Stack.Screen name="Chats" component={Chats} />
       <Stack.Screen name="ChatBox" component={ChatBox} />
+
+      
       <Stack.Screen name="Settings">
         {props => <Settings {...props} getData={getData} />}
       </Stack.Screen>
@@ -47,6 +52,7 @@ const UserStack = ({getData}) => {
 
       <Stack.Screen name="MySaves" component={SavedPosts} />
       <Stack.Screen name="LikedPosts" component={LikedPosts} />
+      <Stack.Screen name="PostPage" component={PostPage} />
       <Stack.Screen name="AccountCenter" component={AccountCenter} />
     </Stack.Navigator>
   );
