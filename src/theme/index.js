@@ -1,7 +1,7 @@
 import {createTheme} from '@shopify/restyle';
 import {createBox, createText} from '@shopify/restyle';
-import { Dimensions } from 'react-native';
-export const { width, height } = Dimensions.get('screen');
+import {Dimensions} from 'react-native';
+export const {width, height} = Dimensions.get('screen');
 export const Box = createBox();
 export const Text = createText();
 
@@ -32,7 +32,7 @@ export const theme = createTheme({
     primaryBlue: '#3797EF',
     mainwhite: '#ffffff',
     dullwhite: '#FAFAFA',
-    lightgrey: '#767680',
+    lightgrey: '#F3F3F3',
     mainblack: '#000000',
     fadedblack: '#121212',
     darkgrey: '#262626',
@@ -67,46 +67,6 @@ export const theme = createTheme({
       fontSize: 18,
       color: 'mainblack',
       fontWeight: 'bold',
-    },
-    FBcnt: {
-      fontSize: 14,
-      color: 'primaryBlue',
-    },
-    Pass: {
-      fontSize: 14,
-      color: 'primaryBlue',
-    },
-    Linkcnt: {
-      fontSize: 14,
-      color: 'lightgrey',
-    },
-    Linktxt: {
-      fontSize: 14,
-      color: 'primaryBlue',
-    },
-    ProInfo: {
-      fontSize: 14,
-      color: 'mainblack',
-    },
-    ProCount: {
-      fontSize: 18,
-      color: 'mainblack',
-    },
-    userName: {
-      fontSize: 16,
-      color: 'mainblack',
-    },
-    Logout: {
-      fontSize: 16,
-      color: 'red',
-    },
-    Liked: {
-      fontSize: 14,
-      color: 'mainblack',
-    },
-    Desc: {
-      fontSize: 14,
-      color: 'mainblack',
     },
   },
   breakpoints: {

@@ -12,7 +12,7 @@ import {Box, Text} from '../../../theme';
 
 import FeedPost from '../../../components/card/FeedPost';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
-import {StoryData} from '../../../utils/randomData';
+import {Data} from '../../../utils/randomData';
 import {useSelector} from 'react-redux';
 
 const Home = ({navigation}) => {
@@ -45,7 +45,6 @@ const Home = ({navigation}) => {
         Caption={item.caption}
         userId={currentUser?.userId}
         postId={item?.postId}
-        // location={item.posts[0]?.location}
         imageSrc={item?.imageUrl}
         user={item?.user?.username}
         comments={item?.comments}
@@ -66,16 +65,13 @@ const Home = ({navigation}) => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Header
-        placement="center"
-        barStyle="default"
         statusBarProps={{
           hidden: true,
         }}
         containerStyle={{
           paddingVertical: 12,
         }}
-        leftComponent={<Camera />}
-        centerComponent={<Insta_Typo_logo width="120" />}
+        leftComponent={<Insta_Typo_logo width="120" />}
         backgroundColor="white"
         rightComponent={
           <Box flexDirection="row" gap={'m'}>
@@ -88,10 +84,9 @@ const Home = ({navigation}) => {
             <Box>
               <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
                 <Badge
-                
                   badgeStyle={{backgroundColor: 'red'}}
                   value={10}
-                  textStyle={{color:'white', fontSize:10}}
+                  textStyle={{color: 'white', fontSize: 10}}
                   containerStyle={{position: 'absolute', bottom: 12, left: 12}}
                 />
                 <Msg_Icon />
@@ -104,11 +99,11 @@ const Home = ({navigation}) => {
       <Box paddingVertical={'s'}>
         <ScrollView>
           <FlatList
-            scrollEnabled
+            showsHorizontalScrollIndicator={false}
             horizontal
             keyExtractor={item => item.id}
             renderItem={renderStory}
-            data={StoryData}
+            data={Data}
           />
         </ScrollView>
       </Box>

@@ -13,11 +13,43 @@ import Profile from '../profile/Profile';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
-  console.log('userId: ', userId);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
 
   const isSameUser = currentUser?.username === selectedUser?.username;
+
+  const handleChat = async () => {
+    try {
+      // Check if a chat already exists
+      const chatQuerySnapshot = await firestore()
+        .collection('chats')
+        .where('members', 'array-contains', currentUser.userId)
+        .get();
+
+      let chatDoc;
+      chatQuerySnapshot.forEach(doc => {
+        const chatData = doc.data();
+        if (chatData.members.includes(userId)) {
+          chatDoc = doc;
+        }
+      });
+
+      if (!chatDoc) {
+        // Create a new chat
+        chatDoc = await firestore().collection('chats').add({
+          members: [currentUser.userId, userId],
+          lastMessage: {},
+          messages: []
+        });
+      }
+
+      navigation.navigate('ChatBox', {
+        params: { chatId: chatDoc.id },
+      });
+    } catch (error) {
+      console.error('Error handling chat: ', error);
+    }
+  };
 
   const fetchUserDetails = async () => {
     try {
@@ -173,10 +205,7 @@ const ProfileView = ({route, navigation}) => {
         ) : (
           <PrimaryBtn title={'Follow'} onPress={handleFollow} />
         )}
-        <SecondaryBtn
-          title={'Message'}
-          onPress={() => navigation.navigate('Chats')}
-        />
+        <SecondaryBtn title={'Message'} onPress={handleChat} />
       </Box>
       <Divider />
       <ProfileTab user={selectedUser} />

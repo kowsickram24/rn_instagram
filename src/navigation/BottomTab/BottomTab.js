@@ -26,37 +26,36 @@ const BottomNavigator = ({navigation}) => {
   const user = useSelector(state => state.user.user);
   const [currentUser, setCurrentUser] = useState();
   const refRBSheet = useRef();
-
+  
   useEffect(() => {
-    if (user?.email) {
-      const unsubscribe = firestore()
-        .collection('users')
-        .where('email', '==', user?.email)
-        .onSnapshot(
-          querySnapshot => {
-            if (!querySnapshot.empty) {
-              const userDocRef = querySnapshot.docs[0].ref;
-              userDocRef.onSnapshot(docSnapshot => {
-                if (docSnapshot.exists) {
-                  setCurrentUser(docSnapshot.data());
-                  console.log(currentUser,'sdsdasd')
-                } else {
-                  console.log('No such document!');
-                }
-              });
-            } else {
-              console.log('No matching documents.');
-            }
-          },
-          error => {
-            console.error('Error fetching user data: ', error);
-          },
-        );
+    const fetchUser = async () => {
+      if (user?.email) {
+        try {
+          const querySnapshot = await firestore()
+            .collection('users')
+            .where('email', '==', user.email)
+            .get();
 
-      return () => unsubscribe();
-    }
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            setCurrentUser(userDoc.data());
+          } else {
+            console.log('No matching documents.');
+          }
+        } catch (error) {
+          console.error('Error fetching user data: ', error);
+        }
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      // Cleanup function if needed
+    };
   }, [user?.email]);
-
+  console.log('currentUser: ', currentUser);
+  
   return (
     <>
       <BottomTab.Navigator

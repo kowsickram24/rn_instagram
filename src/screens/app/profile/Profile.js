@@ -26,12 +26,13 @@ const Profile = ({navigation, User}) => {
         justifyContent="space-around">
         <Avatar
           rounded
+          onLongPress={() => console.log('LongPress')}
           size={'large'}
           source={{
             uri: User?.avatar,
           }}
         />
-        <Box flexDirection="row" gap={'xl'}>
+        <Box  flexDirection="row" gap={'xl'}>
           <Box alignSelf="center">
             <Text color={'mainblack'} fontSize={20} textAlign="center">
               {User?.posts.length}
@@ -68,7 +69,7 @@ const Profile = ({navigation, User}) => {
         <Text fontSize={12} color={'mainblack'}>
           {User?.username}
         </Text>
-        <Text fontSize={12} color={'mainblack'}>
+        <Text  fontSize={12} color={'mainblack'}>
           {User?.fullname}
         </Text>
         <Text fontSize={12} color={'mainblack'}>
@@ -89,11 +90,7 @@ const Profile = ({navigation, User}) => {
           }}
         />
       </Box>
-      {/* <Box padding={'s'}>
-        <New_story />
-        <Text color={'mainblack'}>New</Text>
-      </Box>
-      <Divider /> */}
+
       <TopNavigator navigation={navigation} />
     </Box>
   );

@@ -66,7 +66,9 @@ const PostHeader = ({
               {user}
             </Text>
           </TouchableOpacity>
-          <Text variant={'ProInfo'}>{location}</Text>
+          <Text color={'mainblack'} fontSize={12}>
+            {location}
+          </Text>
         </Box>
         <TouchableOpacity onPress={onOptionpress}>
           <Box flex={1} padding={'s'} justifyContent="center">
@@ -305,6 +307,7 @@ const FeedPost = ({
             height: 400,
             width: '100%',
           }}
+          alt="Post Image"
           source={{uri: imageSrc}}
         />
         <Box
@@ -340,7 +343,7 @@ const FeedPost = ({
           ) : null}
         </TouchableOpacity>
         <Box paddingVertical={'s'} paddingHorizontal={'s'}>
-          <Text width={300} numberOfLines={1} variant={'Desc'}>
+          <Text width={300} fontSize={14} color={'mainblack'} numberOfLines={1}>
             {user} {Caption}
           </Text>
         </Box>

@@ -16,10 +16,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const RegSchema = yup.object({
   username: yup
     .string()
-    .matches(
-      /^[a-z0-9_.]+$/,
-      'Username must be in lowercase, can include_, .',
-    )
+    .matches(/^[a-z0-9_.]+$/, 'Username must be in lowercase, can include_, .')
     .required('Name is required'),
   email: yup
     .string()

@@ -33,6 +33,9 @@ export {default as Dustbin} from '../assets/icons/bin.svg';
 export {default as Within} from '../assets/icons/within.svg';
 export {default as LInk} from '../assets/icons/link.svg';
 export {default as Msg_Icon} from '../assets/icons/message.svg';
+export {default as White_cam_Fill} from '../assets/icons/cam_white_f.svg';
+export {default as Info} from '../assets/icons/info.svg';
+export {default as User} from '../assets/icons/user.svg';
 
 // Bottom Tab
 export {default as Plus} from '../assets/icons/plus.svg';

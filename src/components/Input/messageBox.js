@@ -1,29 +1,42 @@
-import {Input} from '@rneui/themed';
-import {Box, Text} from '../../theme';
-import {Camera, Search_f} from '../../constants/assets';
-import {TouchableOpacity} from 'react-native';
+import { Input } from '@rneui/themed';
+import { TouchableOpacity } from 'react-native';
+import { Image_Fill, White_cam_Fill } from '../../constants/assets';
+import { Box, Text } from '../../theme';
 
-const MessageBox = ({onChangeText, value, IconPress}) => {
+const MessageBox = ({onChangeText,OnMedia, value, CamPress, OnSend}) => {
   return (
     <Input
       leftIconContainerStyle={{
-        margin: 6,
-        padding: 10,
-        backgroundColor: '#3797EF',
-        alignSelf: 'center',
-        borderRadius: 80,
+        padding: 6,
+        borderRadius: 50,
         alignContent: 'center',
       }}
       leftIcon={
-        <TouchableOpacity onPress={IconPress}>
-          <Camera />
+        <TouchableOpacity onPress={CamPress}>
+          <White_cam_Fill />
         </TouchableOpacity>
       }
       inputContainerStyle={{
         borderBottomWidth: 0,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: 'white',
         borderRadius: 100,
+        elevation:2,
+        marginVertical:10
       }}
+      rightIcon={
+        <>
+          <Box flexDirection="row" gap={'s'}>
+            <TouchableOpacity onPress={OnMedia}>
+              <Image_Fill />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={OnSend}>
+              <Text color={'primaryBlue'}>Send</Text>
+            </TouchableOpacity>
+          </Box>
+        </>
+      }
+      renderErrorMessage={false}
+      rightIconContainerStyle={{margin: 8, padding: 10, borderRadius: 20}}
       containerStyle={{padding: 0, margin: 0}}
       value={value}
       onChangeText={onChangeText}
