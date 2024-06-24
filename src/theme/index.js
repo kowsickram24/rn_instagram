@@ -1,4 +1,4 @@
-import {createTheme} from '@shopify/restyle';
+import {backgroundColor, color, createTheme} from '@shopify/restyle';
 import {createBox, createText} from '@shopify/restyle';
 import {Dimensions} from 'react-native';
 export const {width, height} = Dimensions.get('screen');
@@ -74,3 +74,14 @@ export const theme = createTheme({
     tablet: 768,
   },
 });
+
+export const CHATTHEME = {
+  BLUE: {
+    color: '#3797EF',
+    backgroundColor: 'lightblue',
+  },
+  GREEN: {
+    color: 'lightgreen',
+    backgroundColor: 'green',
+  },
+};

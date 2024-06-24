@@ -36,6 +36,12 @@ export {default as Msg_Icon} from '../assets/icons/message.svg';
 export {default as White_cam_Fill} from '../assets/icons/cam_white_f.svg';
 export {default as Info} from '../assets/icons/info.svg';
 export {default as User} from '../assets/icons/user.svg';
+export {default as MagicPen} from '../assets/icons/magicpen.svg';
+export {default as Video_Icon} from '../assets/icons/video.svg';
+export {default as Gal_Video} from '../assets/icons/gallery_video.svg';
+export {default as Gal_Image} from '../assets/icons/gallery_image.svg';
+export {default as Gallery_Icon} from '../assets/icons/gallery.svg';
+export {default as Log_out} from '../assets/icons/logout.svg';
 
 // Bottom Tab
 export {default as Plus} from '../assets/icons/plus.svg';

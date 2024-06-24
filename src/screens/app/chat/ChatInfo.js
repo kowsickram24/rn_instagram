@@ -1,7 +1,7 @@
 import {Avatar, Card, Divider, Header} from '@rneui/themed';
 import {Box, Text} from '../../../theme';
 import BackBtn from '../../../components/buttons/backButton';
-import {Image_Fill, User} from '../../../constants/assets';
+import {Image_Fill, MagicPen, User} from '../../../constants/assets';
 import {TouchableOpacity} from 'react-native';
 import {height, width} from '../../../theme';
 import RBSheet from 'react-native-raw-bottom-sheet';
@@ -48,12 +48,13 @@ const ChatInfo = ({navigation, route}) => {
           <Box flexDirection="row" gap={'m'} alignItems="center">
             <User />
             <Text textAlign="left" color={'mainblack'}>
-              View Profile
+              Profile
             </Text>
           </Box>
         </TouchableOpacity>
       </Card>
       <Card
+      
         wrapperStyle={{padding: 10}}
         containerStyle={{
           padding: 0,
@@ -63,29 +64,35 @@ const ChatInfo = ({navigation, route}) => {
         }}>
         <TouchableOpacity onPress={() => ThemeRef.current.open()}>
           <Box flexDirection="row" gap={'m'} alignItems="center">
-            <Image_Fill />
+            <MagicPen />
             <Text textAlign="left" color={'mainblack'}>
-              Change Theme
+              Theme
             </Text>
           </Box>
         </TouchableOpacity>
       </Card>
-      <RBSheet customStyles={
-        {
-            container:{
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-            }
-        }
-      } closeOnPressBack draggable ref={ThemeRef}>
+      <RBSheet
+      height={height/2}
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          },
+        }}
+        closeOnPressBack
+        draggable
+        ref={ThemeRef}>
         <Box>
-          <Text
-            textAlign="center"
-            fontSize={12}
-            fontWeight={'bold'}
-            color={'mainblack'}>
+          <Text textAlign="center" fontSize={14} color={'mainblack'}>
             Theme
           </Text>
+          <Box padding={'m'} gap={'s'}>
+          <Text fontSize={14}  color={'mainblack'}>Green</Text>
+          <Text fontSize={14}  color={'mainblack'}>Blue</Text>
+          <Text fontSize={14}  color={'mainblack'}>Sky Blue</Text>
+          <Text fontSize={14}  color={'mainblack'}>Black</Text>
+          <Text fontSize={14}  color={'mainblack'}>Grey</Text>
+          </Box>
         </Box>
       </RBSheet>
     </Box>

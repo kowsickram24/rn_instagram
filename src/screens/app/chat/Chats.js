@@ -13,16 +13,6 @@ import BackBtn from '../../../components/buttons/backButton';
 const ChatBox = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [chats, setChats] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [snackVisible, setSnackVisible] = useState(false);
-
-  const showSnackBar = () => {
-    setSnackVisible(true);
-  };
-
-  const dismissSnackBar = () => {
-    setSnackVisible(false);
-  };
 
   useEffect(() => {
     const unsubscribe = firestore()
@@ -57,7 +47,13 @@ const ChatBox = ({navigation}) => {
       <ChatCard
         ProfileUrl={item.secondUser.avatar}
         Username={item.secondUser.username}
-        LastMessage={item.lastMessage.message}
+        LastMessage={
+          item?.lastMessage.messageType === 'image'
+            ? 'Sent a photo'
+            : item?.lastMessage.messageType === 'video'
+            ? 'Sent a video'
+            : item?.lastMessage.message
+        }
       />
     </TouchableOpacity>
   );
@@ -77,7 +73,7 @@ const ChatBox = ({navigation}) => {
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
         statusBarProps={{hidden: true}}
       />
-      <ChatSearch />
+      <ChatSearch value={'Steve'} onChangeText={''} />
       <FlatList
         ListEmptyComponent={<Text> No Chat Yet</Text>}
         data={chats}

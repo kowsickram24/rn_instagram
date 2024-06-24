@@ -2,6 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import { Button, Header, Input } from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
 import { Buffer } from 'buffer';
+import RNFS from 'react-native-fs';
 import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -10,15 +11,12 @@ import {
   StyleSheet,
   TouchableOpacity
 } from 'react-native';
-import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { useSelector } from 'react-redux';
 import { Loader } from '../../../../components/loader/Loader';
 import config from '../../../../config';
 import { Back, Image_Fill } from '../../../../constants/assets';
 import { Box, Text } from '../../../../theme';
-const Height = Dimensions.get('screen').height;
-const Width = Dimensions.get('screen').width;
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,

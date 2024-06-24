@@ -6,7 +6,11 @@ import {Skeleton} from '@rneui/themed';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Divider} from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
-
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 const {width, height} = Dimensions.get('screen');
 import {
   Cmt_Share,
@@ -286,90 +290,98 @@ const FeedPost = ({
   }
 
   return (
-    <Box>
-      <Card
-        containerStyle={{
-          padding: 0,
-          margin: 0,
-          elevation: 0,
-          borderWidth: 0,
-        }}>
-        <PostHeader
-          user={user}
-          location={location}
-          onOptionpress={onOptionpress}
-          ProfileUrl={ProfileUrl}
-          onProfilePress={onProfilePress}
-        />
-        <Image
-          resizeMode="cover"
-          style={{
-            height: 400,
-            width: '100%',
-          }}
-          alt="Post Image"
-          source={{uri: imageSrc}}
-        />
-        <Box
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          padding={'s'}>
-          <Box flexDirection="row" justifyContent="center" gap={'m'}>
-            <TouchableOpacity onPress={onLikePress}>
-              {isLiked ? <Heaty_f /> : <Heaty_uf />}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={oncommentPress}>
-              <Comment />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onSharePress}>
-              <Share />
-            </TouchableOpacity>
-          </Box>
-          <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
-            {isSaved ? <Save_f /> : <Save />}
-          </TouchableOpacity>
-        </Box>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-          {likedUsers != 0 ? (
-            <Box paddingHorizontal={'s'}>
-              <Text fontSize={14} color={'mainblack'}>
-                {likedUsers.length !== 0
-                  ? `Liked by ${likedUsers.join(', ')}`
-                  : null}
-              </Text>
+    <GestureHandlerRootView>
+      <Box>
+        <Card
+          containerStyle={{
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <PostHeader
+            user={user}
+            location={location}
+            onOptionpress={onOptionpress}
+            ProfileUrl={ProfileUrl}
+            onProfilePress={onProfilePress}
+          />
+          <TapGestureHandler onActivated={onLikePress} numberOfTaps={2}>
+            <Image
+              resizeMode="cover"
+              style={{
+                height: 400,
+                width: '100%',
+              }}
+              alt="Post Image"
+              source={{uri: imageSrc}}
+            />
+          </TapGestureHandler>
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            padding={'s'}>
+            <Box flexDirection="row" justifyContent="center" gap={'m'}>
+              <TouchableOpacity onPress={onLikePress}>
+                {isLiked ? <Heaty_f /> : <Heaty_uf />}
+              </TouchableOpacity>
+              <TouchableOpacity onPress={oncommentPress}>
+                <Comment />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onSharePress}>
+                <Share />
+              </TouchableOpacity>
             </Box>
-          ) : null}
-        </TouchableOpacity>
-        <Box paddingVertical={'s'} paddingHorizontal={'s'}>
-          <Text width={300} fontSize={14} color={'mainblack'} numberOfLines={1}>
-            {user} {Caption}
-          </Text>
-        </Box>
-        {comments?.length > 0 && (
-          <Box paddingVertical="s" paddingHorizontal="s">
-            <TouchableOpacity onPress={ViewCmnt}>
-              <Text fontSize={14}>
-                View{' '}
-                {comments?.length > 1
-                  ? `${comments?.length} comments`
-                  : 'comment'}
-              </Text>
+            <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
+              {isSaved ? <Save_f /> : <Save />}
             </TouchableOpacity>
           </Box>
-        )}
-      </Card>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+            {likedUsers != 0 ? (
+              <Box paddingHorizontal={'s'}>
+                <Text fontSize={14} color={'mainblack'}>
+                  {likedUsers.length !== 0
+                    ? `Liked by ${likedUsers.join(', ')}`
+                    : null}
+                </Text>
+              </Box>
+            ) : null}
+          </TouchableOpacity>
+          <Box paddingVertical={'s'} paddingHorizontal={'s'}>
+            <Text
+              width={300}
+              fontSize={14}
+              color={'mainblack'}
+              numberOfLines={1}>
+              {user} {Caption}
+            </Text>
+          </Box>
+          {comments?.length > 0 && (
+            <Box paddingVertical="s" paddingHorizontal="s">
+              <TouchableOpacity onPress={ViewCmnt}>
+                <Text fontSize={14}>
+                  View{' '}
+                  {comments?.length > 1
+                    ? `${comments?.length} comments`
+                    : 'comment'}
+                </Text>
+              </TouchableOpacity>
+            </Box>
+          )}
+        </Card>
 
-      <ShareBox ref={Shareref} />
-      <CommentBox
-        navigation={navigation}
-        ref={CmtRef}
-        postId={postId}
-        userId={userId}
-      />
-      <Divider />
-    </Box>
+        <ShareBox ref={Shareref} />
+        <CommentBox
+          navigation={navigation}
+          ref={CmtRef}
+          postId={postId}
+          userId={userId}
+        />
+        <Divider />
+      </Box>
+    </GestureHandlerRootView>
   );
 };
 

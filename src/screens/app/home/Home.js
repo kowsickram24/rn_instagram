@@ -23,19 +23,38 @@ const Home = ({navigation}) => {
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('posts')
-      .onSnapshot(snapshot => {
-        const postsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+      .onSnapshot(async (snapshot) => {
+        const postsData = [];
+        for (const doc of snapshot.docs) {
+          const postData = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          try {
+            const userDoc = await firestore()
+              .collection('users')
+              .doc(postData.userId)
+              .get();
+  
+            if (userDoc.exists) {
+              postData.user = userDoc.data();
+            } else {
+              console.log(`User with ID ${postData.userId} not found.`);
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+          }
+  
+          postsData.push(postData);
+        }
+  
         setPosts(postsData);
-        console.log('postsData: ', postsData);
-
         setLoading(false);
       });
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   const renderItem = ({item}) => (
     <>
@@ -46,7 +65,7 @@ const Home = ({navigation}) => {
         userId={currentUser?.userId}
         postId={item?.postId}
         imageSrc={item?.imageUrl}
-        user={item?.user?.username}
+        user={item?.user.username}
         comments={item?.comments}
       />
     </>

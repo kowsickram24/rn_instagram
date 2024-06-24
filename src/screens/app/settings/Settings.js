@@ -1,12 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
-import {Button, Header, Overlay} from '@rneui/themed';
+import {Header, Overlay} from '@rneui/themed';
 import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import ToastManager from 'toastify-react-native';
 import {Loader} from '../../../components/loader/Loader';
-import {Back, Heaty_uf, Rt_Arrow, Save} from '../../../constants/assets';
+import {Button} from 'react-native-paper';
+import {
+  Back,
+  Heaty_uf,
+  Log_out,
+  Rt_Arrow,
+  Save,
+} from '../../../constants/assets';
 import {logout} from '../../../store/slices/userSlice';
 import BackBtn from '../../../components/buttons/backButton';
 import {Box, Text} from '../../../theme';
@@ -88,15 +95,11 @@ const Settings = ({navigation, getData}) => {
             </TouchableOpacity>
             <Box>
               <TouchableOpacity onPress={toggleOverlay}>
-                <Box
-                  flexDirection="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  gap={'s'}>
+                <Box flexDirection="row" alignItems="center" gap={'s'}>
+                  <Log_out />
                   <Text fontSize={14} color={'red'}>
                     Logout
                   </Text>
-                  <Rt_Arrow />
                 </Box>
               </TouchableOpacity>
             </Box>
@@ -108,12 +111,10 @@ const Settings = ({navigation, getData}) => {
                 Are you sure you want to logout?
               </Text>
               <Box flexDirection="row" gap="m">
-                <Button title="Cancel" onPress={toggleOverlay} />
-                <Button
-                  buttonStyle={{backgroundColor: 'red'}}
-                  title="Logout"
-                  onPress={handleLogout}
-                />
+                <Button onPress={toggleOverlay}> Cancel </Button>
+                <Button textColor="red" mode="text" onPress={handleLogout}>
+                  Logout
+                </Button>
               </Box>
             </Box>
           </Overlay>
