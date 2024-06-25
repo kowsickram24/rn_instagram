@@ -250,6 +250,7 @@ const ChatBox = ({navigation, route}) => {
       <Divider />
       <GestureHandlerRootView>
         <FlatList
+        showsVerticalScrollIndicator={false}
           data={chatData?.messages}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item}) => {
@@ -288,48 +289,50 @@ const ChatBox = ({navigation, route}) => {
                       minute: '2-digit',
                     })}
                   </Text>
-                  <Box
-                    margin="m"
-                    padding="m"
-                    elevation={2}
-                    backgroundColor={'mainwhite'}
-                    borderRadius="xl"
-                    alignSelf={
-                      item.userId === currentUser.userId
-                        ? 'flex-end'
-                        : 'flex-start'
-                    }
-                    maxWidth="90%">
-                    {item.messageType === 'text' ? (
-                      <Text fontSize={14} color={'mainblack'}>
-                        {item.message}
-                      </Text>
-                    ) : item.messageType === 'image' ? (
-                      <Image
-                        resizeMode="contain"
-                        source={{uri: item.message}}
-                        style={{width: 200, height: 400, borderRadius: 10}}
-                      />
-                    ) : item.messageType === 'post' ? (
-                      <>
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate('PostPage', {
-                              postId: item.message,
-                            })
-                          }>
-                          <SharePost postId={item.message} />
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <Video
-                        paused
-                        source={{uri: item.message}}
-                        style={{width: 200, height: 400, borderRadius: 10}}
-                        controls
-                      />
-                    )}
-                  </Box>
+                  <TouchableWithoutFeedback
+                    onLongPress={() => console.log('Gesture Long Press')}>
+                    <Box
+                      margin="m"
+                      padding="m"
+                      elevation={2}
+                      backgroundColor={'mainwhite'}
+                      borderRadius="xl"
+                      alignSelf={
+                        item.userId === currentUser.userId
+                          ? 'flex-end'
+                          : 'flex-start'
+                      }
+                      maxWidth="90%">
+                      {item.messageType === 'text' ? (
+                        <Text fontSize={14} color={'mainblack'}>
+                          {item.message}
+                        </Text>
+                      ) : item.messageType === 'image' ? (
+                        <Image
+                          resizeMode="contain"
+                          source={{uri: item.message}}
+                          style={{width: 200, height: 400, borderRadius: 10}}
+                        />
+                      ) : item.messageType === 'post' ? (
+                        <>
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate('PostPage', {
+                                postId: item.message,
+                              })
+                            }>
+                            <SharePost postId={item.message} />
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <Video
+                          source={{uri: item.message}}
+                          style={{width: 200, height: 400, borderRadius: 10}}
+                          controls
+                        />
+                      )}
+                    </Box>
+                  </TouchableWithoutFeedback>
                 </Box>
               </TapGestureHandler>
             );

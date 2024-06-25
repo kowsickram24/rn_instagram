@@ -3,9 +3,9 @@ import {Avatar} from '@rneui/themed';
 import {useEffect, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {Box, Text} from '../../theme';
-const SharePost = ({postId}) => {
+import Video from 'react-native-video';
+const SharePost = ({ postId }) => {
   const [post, setPost] = useState(null);
-  console.log('postId: ', post);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -41,17 +41,25 @@ const SharePost = ({postId}) => {
     <>
       <Box gap={'s'} padding={'s'} width={250}>
         <Box gap={'s'} flexDirection="row" alignItems="center">
-          <Avatar source={{uri: post?.user?.avatar}} rounded size={'small'} />
+          <Avatar source={{ uri: post?.user?.avatar }} rounded size={'small'} />
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
-            {' '}
             {post?.user?.username}
           </Text>
         </Box>
-        <FastImage
-          source={{uri: post?.imageUrl}}
-          resizeMode="cover"
-          style={{width: '100%', height: 400}}
-        />
+        {post?.mediaType === 'image' ? (
+          <FastImage
+            source={{ uri: post?.mediaUrl }}
+            resizeMode="cover"
+            style={{ width: '100%', height: 400 }}
+          />
+        ) : (
+          <Video
+            source={{ uri: post?.mediaUrl }}
+            style={{ width: '100%', height: 400 }}
+            controls={true}
+            resizeMode="cover"
+          />
+        )}
         <Box alignItems="center" flexDirection="row" gap={'s'}>
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
             {post?.user?.username}

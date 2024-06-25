@@ -1,23 +1,21 @@
-import {Avatar, Input, ListItem} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, ScrollView} from 'react-native';
-import {Search_uf} from '../../../constants/assets';
-import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
-import {Box, Text} from '../../../theme';
-import {Loader} from '../../../components/loader/Loader';
+import { Avatar, Input, ListItem } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import { FlatList } from 'react-native';
+import { Search_uf } from '../../../constants/assets';
+import { useSearchUsersQuery } from '../../../store/slices/apiSlice';
+import { Box, Text } from '../../../theme';
 import Gallery from './Gallery';
 
 const Explore = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
-  const {
-    data: searchResults = [],
-    isLoading,
-    isError,
-  } = useSearchUsersQuery(debouncedQuery.trim().toLowerCase(), {
-    skip: debouncedQuery.trim() === '',
-  });
+  const {data: searchResults = []} = useSearchUsersQuery(
+    debouncedQuery.trim().toLowerCase(),
+    {
+      skip: debouncedQuery.trim() === '',
+    },
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -34,7 +32,9 @@ const Explore = ({navigation}) => {
       onPress={() => navigation.navigate('ProfileView', {userId: item.userId})}>
       <Avatar size={'medium'} source={{uri: item.avatar}} rounded />
       <ListItem.Content>
-        <Text fontSize={14} color={'mainblack'}>{item?.username}</Text>
+        <Text fontSize={14} color={'mainblack'}>
+          {item?.username}
+        </Text>
         <Text fontSize={14} color={'darkgrey'}>
           {item?.fullname}
         </Text>
@@ -45,6 +45,7 @@ const Explore = ({navigation}) => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Input
+        renderErrorMessage={false}
         leftIcon={<Search_uf />}
         leftIconContainerStyle={{marginRight: 8, padding: 6}}
         containerStyle={{paddingVertical: 12}}
@@ -60,8 +61,7 @@ const Explore = ({navigation}) => {
         onChangeText={setSearchQuery}
         onSubmitEditing={() => setDebouncedQuery(searchQuery)}
       />
-      {isLoading && <Loader />}
-      {isError && <Text>Error fetching data</Text>}
+
       <FlatList
         showsVerticalScrollIndicator={false}
         data={searchResults}

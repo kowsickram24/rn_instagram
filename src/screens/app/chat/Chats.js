@@ -1,43 +1,56 @@
-import {FlatList, Image, TouchableOpacity} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import {Back, Camera, Search_uf} from '../../../constants/assets';
-import {Avatar, Header, Input} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
-import {Box, Text} from '../../../theme';
+import {Header} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {FlatList, RefreshControl, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
-import {Button} from '@rneui/themed';
-import SnackBar from '../../../components/snackbar/snackBar';
+import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
 import ChatSearch from '../../../components/searchbar/chatSearch';
-import BackBtn from '../../../components/buttons/backButton';
+import {Box, Text} from '../../../theme';
 const ChatBox = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [chats, setChats] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const unsubscribe = firestore()
       .collection('chats')
       .where('members', 'array-contains', currentUser.userId)
-      .onSnapshot(async snapshot => {
-        const chatData = await Promise.all(
-          snapshot.docs.map(async doc => {
-            const chat = doc.data();
-            const secondUserId = chat.members.find(
-              id => id !== currentUser.userId,
-            );
-            const userDoc = await firestore()
-              .collection('users')
-              .doc(secondUserId)
-              .get();
-            const secondUser = userDoc.data();
-            return {id: doc.id, ...chat, secondUser};
-          }),
-        );
-        setChats(chatData);
-      });
+      .onSnapshot(
+        async snapshot => {
+          const chatData = await Promise.all(
+            snapshot.docs.map(async doc => {
+              const chat = doc.data();
+              const secondUserId = chat.members.find(
+                id => id !== currentUser.userId,
+              );
+              const userDoc = await firestore()
+                .collection('users')
+                .doc(secondUserId)
+                .get();
+              const secondUser = userDoc.data();
+              return {id: doc.id, ...chat, secondUser};
+            }),
+          );
+
+          const filteredChats = chatData.filter(chat =>
+            chat.secondUser.username
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()),
+          );
+          setChats(filteredChats);
+          setLoading(false);
+        },
+        error => {
+          console.error('Error fetching chats: ', error);
+          setLoading(false);
+        },
+      );
 
     return () => unsubscribe();
-  }, [currentUser.userId]);
+  }, [currentUser.userId, searchQuery]);
 
   const RenderChats = ({item}) => (
     <TouchableOpacity
@@ -45,6 +58,7 @@ const ChatBox = ({navigation}) => {
         navigation.navigate('ChatBox', {params: {chatId: item.id}})
       }>
       <ChatCard
+        loading={loading}
         ProfileUrl={item.secondUser.avatar}
         Username={item.secondUser.username}
         LastMessage={
@@ -75,8 +89,9 @@ const ChatBox = ({navigation}) => {
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
         statusBarProps={{hidden: true}}
       />
-      <ChatSearch value={'Steve'} onChangeText={''} />
+      <ChatSearch value={searchQuery} onChangeText={setSearchQuery} />
       <FlatList
+       
         ListEmptyComponent={<Text> No Chat Yet</Text>}
         data={chats}
         renderItem={RenderChats}

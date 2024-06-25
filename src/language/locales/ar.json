@@ -3,6 +3,7 @@
         "usernamePlaceholder": "اسم المستخدم",
         "emailPlaceholder": "البريد الإلكتروني",
         "passwordPlaceholder": "كلمة المرور",
+        "fullnameplaceholder":"الاسم الكامل",
         "forgetPassword": "هل نسيت كلمة المرور؟",
         "loginButton": "تسجيل الدخول",
         "loginWithFacebook": "تسجيل الدخول باستخدام فيسبوك",

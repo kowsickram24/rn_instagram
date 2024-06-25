@@ -36,15 +36,17 @@ const ProfileView = ({route, navigation}) => {
 
       if (!chatDoc) {
         // Create a new chat
-        chatDoc = await firestore().collection('chats').add({
-          members: [currentUser.userId, userId],
-          lastMessage: {},
-          messages: []
-        });
+        chatDoc = await firestore()
+          .collection('chats')
+          .add({
+            members: [currentUser.userId, userId],
+            lastMessage: {},
+            messages: [],
+          });
       }
 
       navigation.navigate('ChatBox', {
-        params: { chatId: chatDoc.id },
+        params: {chatId: chatDoc.id},
       });
     } catch (error) {
       console.error('Error handling chat: ', error);
@@ -60,66 +62,57 @@ const ProfileView = ({route, navigation}) => {
         setSelectedUser(userData);
 
         const isFollowed = userData.followers.some(
-          follower => follower.username === currentUser.username,
+          follower => follower.userId === currentUser.userId,
         );
         setIsFollowed(isFollowed);
       } else {
         console.error('User not found');
       }
     } catch (error) {
-      // console.error('Error fetching user details: ', error);
+      console.error('Error fetching user details: ', error);
     }
   };
 
   const handleFollow = async () => {
     try {
-      const userQuerySnapshot = await firestore()
+      const userDocRef = firestore().collection('users').doc(userId);
+      const currentUserDocRef = firestore()
         .collection('users')
-        .where('email', '==', selectedUser?.email)
-        .get();
-      const currentUserQuerySnapshot = await firestore()
-        .collection('users')
-        .where('email', '==', currentUser?.email)
-        .get();
+        .doc(currentUser.userId);
 
-      if (!userQuerySnapshot.empty && !currentUserQuerySnapshot.empty) {
-        const userDocRef = userQuerySnapshot.docs[0].ref;
-        const currentUserDocRef = currentUserQuerySnapshot.docs[0].ref;
+      await firestore().runTransaction(async transaction => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentUserDoc = await transaction.get(currentUserDocRef);
 
-        const userData = {...userQuerySnapshot.docs[0].data()};
-        const currentUserData = {...currentUserQuerySnapshot.docs[0].data()};
+        if (!userDoc.exists || !currentUserDoc.exists) {
+          throw new Error('One of the documents does not exist.');
+        }
 
-        const updatedFollowers = isFollowed
-          ? userData.followers.filter(
-              follower => follower.username !== currentUser.username,
-            )
-          : [
-              ...userData.followers,
-              {
-                username: currentUser.username,
-                profilepic: currentUser.avatar,
-              },
-            ];
+        const userData = userDoc.data();
+        const currentUserData = currentUserDoc.data();
 
-        const updatedFollowing = isFollowed
-          ? currentUserData.following.filter(
-              following => following.username !== userData.username,
-            )
-          : [
-              ...currentUserData.following,
-              {username: userData.username, profilepic: userData.avatar},
-            ];
+        let updatedFollowers, updatedFollowing;
+        if (isFollowed) {
+          updatedFollowers = userData.followers.filter(
+            follower => follower.userId !== currentUser.userId,
+          );
+          updatedFollowing = currentUserData.following.filter(
+            following => following.userId !== userId,
+          );
+        } else {
+          updatedFollowers = [
+            ...userData.followers,
+            {userId: currentUser.userId},
+          ];
+          updatedFollowing = [...currentUserData.following, {userId: userId}];
+        }
 
-        await firestore().runTransaction(async transaction => {
-          transaction.update(userDocRef, {followers: updatedFollowers});
-          transaction.update(currentUserDocRef, {following: updatedFollowing});
-        });
+        transaction.update(userDocRef, {followers: updatedFollowers});
+        transaction.update(currentUserDocRef, {following: updatedFollowing});
 
-        setSelectedUser({...userData, followers: updatedFollowers});
+        setSelectedUser(prev => ({...prev, followers: updatedFollowers}));
         setIsFollowed(!isFollowed);
-      } else {
-        console.error('One of the documents was not found');
-      }
+      });
     } catch (error) {
       console.error('Error updating follow status: ', error);
     }

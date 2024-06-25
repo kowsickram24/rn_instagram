@@ -84,7 +84,7 @@ const LikedUsers = ({navigation, route}) => {
                     <Text fontSize={14} color={'mainblack'}>
                       {item?.username}
                     </Text>
-                    <Text fontSize={14} color={'lightgrey'}>
+                    <Text fontSize={14} color={'darkgrey'}>
                       {item?.fullname}
                     </Text>
                   </Box>

@@ -12,7 +12,10 @@ import {Box, Text} from '../../../theme';
 import {Back} from '../../../constants/assets';
 import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
+import BackBtn from '../../../components/buttons/backButton';
+import FastImage from 'react-native-fast-image';
 const {width, height} = Dimensions.get('screen');
+import Video from 'react-native-video';
 const SavedPosts = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [savedPosts, setSavedPosts] = useState([]);
@@ -81,12 +84,10 @@ const SavedPosts = ({navigation}) => {
         }}
         leftContainerStyle={{flex: 3}}
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box flexDirection="row" alignItems="center" gap={'s'}>
-              <Back />
-              <Text color={'mainblack'}>Saves</Text>
-            </Box>
-          </TouchableOpacity>
+          <Box flexDirection="row" alignItems="center" gap={'s'}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text color={'mainblack'}>Saves</Text>
+          </Box>
         }
       />
 
@@ -104,11 +105,20 @@ const SavedPosts = ({navigation}) => {
             onPress={() =>
               navigation.navigate('PostPage', {postId: item?.postId})
             }>
-            <Image
-              resizeMode="cover"
-              source={{uri: item?.imageUrl}}
-              style={{width: width / 3, height: width / 3}}
-            />
+              {item.mediaType === 'image' ? (
+              <FastImage
+                resizeMode="cover"
+                source={{uri: item?.mediaUrl}}
+                style={{width: width / 3, height: width / 3}}
+              />
+            ) : (
+              <Video
+              controls
+                resizeMode="cover"
+                source={{uri: item?.mediaUrl}}
+                style={{width: width / 3, height: width / 3}}
+              />
+            )}
           </TouchableOpacity>
         )}
       />

@@ -1,20 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Formik} from 'formik';
-import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {TouchableOpacity, SafeAreaView, ScrollView} from 'react-native';
+import { Formik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
+import ToastManager, { Toast } from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import {Fb_logo, Insta_Typo_logo, Line} from '../../constants/assets';
-import {Box, Text} from '../../theme';
-import {LoginSchema} from '../../utils/validation';
-import {Toast} from 'toastify-react-native';
-import ToastManager from 'toastify-react-native';
-import {useDispatch} from 'react-redux';
-import {login} from '../../store/slices/userSlice';
-import {Loader} from '../../components/loader/Loader';
+import { Loader } from '../../components/loader/Loader';
+import { Insta_Typo_logo, Line } from '../../constants/assets';
+import { login } from '../../store/slices/userSlice';
+import { Box, Text } from '../../theme';
+import { LoginSchema } from '../../utils/validation';
 
 const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
@@ -139,21 +138,23 @@ const LoginScreen = ({navigation, getData}) => {
                 isSubmitting,
               }) => (
                 <Box>
-                  <Inputbox
-                    placeholder={t('Auth.emailPlaceholder')}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    errorMessage={touched.email && errors.email}
-                  />
-                  <Inputbox
-                    secureTextEntry
-                    placeholder={t('Auth.passwordPlaceholder')}
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                    errorMessage={touched.password && errors.password}
-                  />
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <Inputbox
+                      placeholder={t('Auth.emailPlaceholder')}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values.email}
+                      errorMessage={touched.email && errors.email}
+                    />
+                    <Inputbox
+                      secureTextEntry
+                      placeholder={t('Auth.passwordPlaceholder')}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      value={values.password}
+                      errorMessage={touched.password && errors.password}
+                    />
+                  </ScrollView>
                   {isForget && (
                     <Box borderRadius={'m'} borderWidth={0.5} padding={'s'}>
                       <Text textAlign="center" color={'primaryBlue'}>
@@ -161,7 +162,7 @@ const LoginScreen = ({navigation, getData}) => {
                       </Text>
                     </Box>
                   )}
-                  <Box paddingVertical={'m'}>
+                  <Box paddingVertical={'s'}>
                     <TouchableOpacity
                       onPress={() => handleForgotPassword(values.email)}>
                       <Text
@@ -181,7 +182,7 @@ const LoginScreen = ({navigation, getData}) => {
               )}
             </Formik>
           </Box>
-          <Box gap={'xl'}>
+          <Box gap={'m'}>
             <Box
               flexDirection="row"
               justifyContent="center"
@@ -191,7 +192,7 @@ const LoginScreen = ({navigation, getData}) => {
               <Text>{t('Auth.OR')} </Text>
               <Line />
             </Box>
-            <Box margin={'xl'} gap={'l'}>
+            <Box margin={'l'} gap={'l'}>
               <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
                 <Text color={'darkgrey'}>{t('Auth.DontHaveAccount')} </Text>
                 <TouchableOpacity
@@ -203,11 +204,10 @@ const LoginScreen = ({navigation, getData}) => {
               </Box>
             </Box>
           </Box>
-          <Box flex={2} justifyContent="flex-end">
-            <Text paddingTop={'xl'} textAlign="center" fontSize={12}>
-              {t('Auth.footerText')}
-            </Text>
-          </Box>
+
+          <Text paddingTop={'xl'} textAlign="center" fontSize={12}>
+            {t('Auth.footerText')}
+          </Text>
         </>
       )}
     </Box>

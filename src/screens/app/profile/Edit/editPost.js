@@ -6,9 +6,11 @@ import {Header, Input} from '@rneui/themed';
 import {Back} from '../../../../constants/assets';
 import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
 import {useSelector} from 'react-redux';
-import {Alert} from 'react-native';
+
 const {width, height} = Dimensions.get('screen');
 import ToastManager, {Toast} from 'toastify-react-native';
+import FastImage from 'react-native-fast-image';
+import BackBtn from '../../../../components/buttons/backButton';
 const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);
@@ -39,14 +41,12 @@ const EditPost = ({route, navigation}) => {
       <ToastManager position="top" />
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box flexDirection="row" gap={'s'} alignItems="center">
-              <Back />
-              <Text fontSize={14} color={'mainblack'}>
-                Edit Post
-              </Text>
-            </Box>
-          </TouchableOpacity>
+          <Box flexDirection="row" gap={'s'} alignItems="center">
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text fontSize={14} color={'mainblack'}>
+              Edit Post
+            </Text>
+          </Box>
         }
         leftContainerStyle={{flex: 3}}
         backgroundColor="white"
@@ -54,11 +54,20 @@ const EditPost = ({route, navigation}) => {
       />
       <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false}>
         <Box gap={'s'}>
-          <Image
-            resizeMode="cover"
-            source={{uri: posts?.imageUrl}}
-            style={{height: 350, borderRadius: 10}}
-          />
+          {posts?.mediaType === 'image' ? (
+            <FastImage
+              resizeMode="cover"
+              source={{uri: posts?.mediaUrl}}
+              style={{height: 350, borderRadius: 10}}
+            />
+          ) : (
+            <Video
+              source={{uri: posts?.mediaUrl}}
+              style={{height: 350, borderRadius: 10}}
+              controls
+              resizeMode="cover"
+            />
+          )}
           <Input
             inputStyle={{fontSize: 14, height: 60, textAlignVertical: 'top'}}
             value={posts.caption}

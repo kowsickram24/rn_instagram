@@ -1,15 +1,8 @@
 import * as yup from 'yup';
 
 export const LoginSchema = yup.object({
-  email: yup
-    .string()
-    .matches(emailRegex, 'Invalid Mail')
-    .email('Invalid email')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('Password is required'),
+  email: yup.string().email('Invalid email').required('Email is required'),
+  password: yup.string().required('Password is required'),
 });
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,7 +13,7 @@ export const RegSchema = yup.object({
     .required('Name is required'),
   email: yup
     .string()
-    .matches(emailRegex, 'Invalid Mail')
+    .matches(emailRegex, 'Invalid email')
     .email('Invalid email')
     .required('Email is required'),
   fullname: yup.string().required('Fullname is required'),

@@ -20,6 +20,7 @@ const AccountReach = ({navigation, route}) => {
         if (userDoc.exists) {
           const userData = userDoc.data();
           setUserData(userData);
+          console.log('user reach: ', userData);
         } else {
           console.error('User document not found');
         }

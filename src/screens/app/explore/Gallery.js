@@ -2,6 +2,7 @@ import React from 'react';
 import { Dimensions, FlatList, Image, StyleSheet } from 'react-native';
 import { Box } from '../../../theme';
 import { PostData } from '../../../utils/randomData';
+import FastImage from 'react-native-fast-image';
 
 const { width } = Dimensions.get('window');
 
@@ -16,7 +17,7 @@ const Gallery = () => {
 
     return (
       <Box style={isFirstInRow ? styles.firstInRow : null}>
-        <Image
+        <FastImage
           source={{ uri: item.PostUrl }}
           alt="Post-Image"
           style={[imageStyle, styles.image]}

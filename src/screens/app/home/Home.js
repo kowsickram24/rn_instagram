@@ -64,7 +64,8 @@ const Home = ({navigation}) => {
         Caption={item.caption}
         userId={currentUser?.userId}
         postId={item?.postId}
-        imageSrc={item?.imageUrl}
+        mediaSrc={item?.mediaUrl}
+        mediaType={item?.mediaType}
         user={item?.user.username}
         comments={item?.comments}
         onProfilePress={() =>
@@ -105,12 +106,6 @@ const Home = ({navigation}) => {
             </Box>
             <Box>
               <TouchableOpacity onPress={() => navigation.navigate('Chats')}>
-                <Badge
-                  badgeStyle={{backgroundColor: 'red'}}
-                  value={10}
-                  textStyle={{color: 'white', fontSize: 10}}
-                  containerStyle={{position: 'absolute', bottom: 12, left: 12}}
-                />
                 <Msg_Icon />
               </TouchableOpacity>
             </Box>
@@ -118,7 +113,7 @@ const Home = ({navigation}) => {
         }
       />
       <Divider />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Box paddingVertical={'s'}>
           <FlatList
             showsHorizontalScrollIndicator={false}

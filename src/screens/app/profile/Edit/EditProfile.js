@@ -1,23 +1,20 @@
 import firestore from '@react-native-firebase/firestore';
 import {Avatar, Button, Header, Input} from '@rneui/themed';
-
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, TouchableOpacity} from 'react-native';
+import {Dimensions, ScrollView, TouchableOpacity} from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useSelector} from 'react-redux';
+import BackBtn from '../../../../components/buttons/backButton';
 import config from '../../../../config';
-import {Back} from '../../../../constants/assets';
-import {Box, Text} from '../../../../theme';
-import {Toast} from 'toastify-react-native';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
+import {Box, Text} from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
-import ToastManager from 'toastify-react-native';
-import {Loader} from '../../../../components/loader/Loader';
-
+import {Defaultimage} from '../../../../constants/assets';
 const EditProfile = ({navigation, route}) => {
+  const UserDefault = Defaultimage;
   const currentUser = route?.params;
   console.log('route?.params: ', route?.params);
   const user = useSelector(state => state.user.user);
@@ -34,6 +31,7 @@ const EditProfile = ({navigation, route}) => {
       if (!userDoc.empty) {
         const userData = userDoc.docs[0].data();
         setUserData(userData);
+        console.log('userData: ', userData);
       } else {
         console.log('No matching documents.');
       }
@@ -45,12 +43,26 @@ const EditProfile = ({navigation, route}) => {
   useEffect(() => {
     fetchUserData();
   }, []);
+  const removeProfile = async () => {
+    try {
+      setNewImage(UserDefault);
+
+      await updateFirestore(UserDefault);
+
+      navigation.navigate('Profile');
+
+      console.log('Profile picture updated to default successfully');
+    } catch (error) {
+      console.error('Error updating profile picture to default: ', error);
+      alert('Failed to update profile picture to default. Please try again.');
+    }
+  };
 
   const pickImage = async () => {
     try {
       const result = await ImageCropPicker.openPicker({
-        width: 300,
-        height: 300,
+        width: 1080,
+        height: 1080,
         mediaType: 'photo',
         showCropFrame: false,
         forceJpg: true,
@@ -104,8 +116,6 @@ const EditProfile = ({navigation, route}) => {
           bio: userData.bio,
         });
         setUserData(prevState => ({...prevState, avatar: imageUrl}));
-        //Toast
-        Toast.success('Update Successful');
         console.log('User profile updated successfully');
       } else {
         console.log('No matching documents.');
@@ -141,78 +151,76 @@ const EditProfile = ({navigation, route}) => {
           flex: 3,
         }}
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box gap={'m'} alignItems="center" flexDirection="row">
-              <Back />
-              <Text fontSize={14} color={'mainblack'}>
-                Edit profile{' '}
-              </Text>
-            </Box>
-          </TouchableOpacity>
+          <Box gap={'m'} alignItems="center" flexDirection="row">
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text fontSize={14} color={'mainblack'}>
+              Edit profile{' '}
+            </Text>
+          </Box>
         }
       />
-      <ToastManager position="top" />
 
       <Box padding={'m'} flex={1} paddingVertical={'l'}>
-        <Avatar
-          containerStyle={{alignSelf: 'center'}}
-          rounded
-          size={'large'}
-          source={{uri: newImage || currentUser?.avatar}}
-        />
-        <TouchableOpacity onPress={() => RBSheetref.current.open()}>
-          <Text
-            padding={'s'}
-            fontSize={12}
-            color="primaryBlue"
-            textAlign="center">
-            Edit Picture
-          </Text>
-        </TouchableOpacity>
-        <Text fontSize={12} color={'lightgrey'} textAlign="left">
-          Name
-        </Text>
-        <Input
-          inputContainerStyle={{
-            borderBottomWidth: 0.5,
-          }}
-          inputStyle={{padding: 2, fontSize: 14}}
-          value={userData?.username}
-          onChangeText={text => setUserData({...userData, username: text})}
-        />
-        <Text fontSize={12} color={'lightgrey'} textAlign="left">
-          Username
-        </Text>
-        <Input
-          inputContainerStyle={{
-            borderBottomWidth: 0.5,
-          }}
-          inputStyle={{padding: 2, fontSize: 14}}
-          placeholder="Bio"
-          value={userData?.fullname}
-          onChangeText={text => setUserData({...userData, fullname: text})}
-        />
-        <Text fontSize={12} color={'lightgrey'} textAlign="left">
-          Bio
-        </Text>
-        <Input
-          inputContainerStyle={{
-            borderBottomWidth: 0.5,
-          }}
-          inputStyle={{padding: 2, fontSize: 14}}
-          placeholder="Bio"
-          value={userData?.bio}
-          onChangeText={text => setUserData({...userData, bio: text})}
-        />
-        <Button
-          titleStyle={{fontSize: 14}}
-          buttonStyle={{
-            borderRadius: 6,
-          }}
-          containerStyle={{paddingVertical: 12}}
-          title={'Save Changes'}
-          onPress={handleSaveChanges}
-        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Avatar
+            containerStyle={{alignSelf: 'center'}}
+            rounded
+            size={'large'}
+            source={{uri: newImage || currentUser?.avatar}}
+          />
+          <TouchableOpacity onPress={() => RBSheetref.current.open()}>
+            <Text
+              padding={'s'}
+              fontSize={12}
+              color="primaryBlue"
+              textAlign="center">
+              Edit Picture
+            </Text>
+          </TouchableOpacity>
+          <Input
+            label={'Name'}
+            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+            inputContainerStyle={{
+              borderBottomWidth: 0.5,
+            }}
+            inputStyle={{padding: 8, fontSize: 14}}
+            value={userData?.username}
+            onChangeText={text => setUserData({...userData, username: text})}
+          />
+
+          <Input
+            label={'Username'}
+            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+            inputContainerStyle={{
+              borderBottomWidth: 0.5,
+            }}
+            inputStyle={{padding: 8, fontSize: 14}}
+            placeholder="Bio"
+            value={userData?.fullname}
+            onChangeText={text => setUserData({...userData, fullname: text})}
+          />
+
+          <Input
+            label={'Bio'}
+            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+            inputContainerStyle={{
+              borderBottomWidth: 0.5,
+            }}
+            inputStyle={{padding: 8, fontSize: 14}}
+            placeholder="Bio"
+            value={userData?.bio}
+            onChangeText={text => setUserData({...userData, bio: text})}
+          />
+          <Button
+            titleStyle={{fontSize: 14}}
+            buttonStyle={{
+              borderRadius: 6,
+            }}
+            containerStyle={{paddingVertical: 12}}
+            title={'Save Changes'}
+            onPress={handleSaveChanges}
+          />
+        </ScrollView>
       </Box>
       <RBSheet
         closeOnPressBack
@@ -232,7 +240,7 @@ const EditProfile = ({navigation, route}) => {
               New profile picture
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={removeProfile}>
             <Text fontSize={14} color={'red'}>
               Remove current picture
             </Text>

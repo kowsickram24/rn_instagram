@@ -6,15 +6,12 @@ import {Camera} from '../../constants/assets';
 import {TouchableOpacity} from 'react-native';
 import {Card} from '@rneui/themed';
 
-const ChatCard = ({Username = 'Charles Clark', LastMessage = 'hii', ProfileUrl}) => {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
+const ChatCard = ({
+  Username = 'Charles Clark',
+  LastMessage = 'hii',
+  ProfileUrl,
+  loading,
+}) => {
   if (loading) {
     return <ChatCardSkeleton />;
   }
@@ -27,19 +24,21 @@ const ChatCard = ({Username = 'Charles Clark', LastMessage = 'hii', ProfileUrl})
         borderWidth: 0,
       }}>
       <Box padding={'s'} flexDirection="row" gap={'s'}>
-        <Avatar
-          size={'medium'}
-          rounded
-          source={{uri: ProfileUrl}}
-        />
+        <Avatar size={'medium'} rounded source={{uri: ProfileUrl}} />
         <Box
           flex={1}
           flexDirection="row"
           alignItems="center"
           justifyContent="space-between">
           <Box flexDirection="column">
-            <Text fontSize={16} color={'mainblack'}> {Username}</Text>
-            <Text fontSize={14} color={'darkgrey'}> {LastMessage}</Text>
+            <Text fontSize={16} color={'mainblack'}>
+              {' '}
+              {Username}
+            </Text>
+            <Text fontSize={14} color={'darkgrey'}>
+              {' '}
+              {LastMessage}
+            </Text>
           </Box>
           <Box alignItems="center" justifyContent="center">
             <TouchableOpacity>

@@ -13,8 +13,8 @@ import {useSelector} from 'react-redux';
 import {Box, Text} from '../../../../theme';
 import FastImage from 'react-native-fast-image';
 const {width} = Dimensions.get('screen');
-
-const MyPosts = ({navigation}) => {
+import Video from 'react-native-video';
+const MyPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector(state => state.user.user);
@@ -35,8 +35,8 @@ const MyPosts = ({navigation}) => {
             .doc(postData.userId)
             .get();
           const userData = userSnapshot.exists ? userSnapshot.data() : {};
-          return {...postData, user: userData};
-        }),
+          return { ...postData, user: userData };
+        })
       );
 
       setPosts(userPosts);
@@ -53,20 +53,23 @@ const MyPosts = ({navigation}) => {
     }
   }, [currentUser]);
 
-  const renderPostItem = ({item}) => (
+  const renderPostItem = ({ item }) => (
     <Box>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('PostDesc', {post: item})}>
-        <FastImage
-          resizeMode="cover"
-          style={{width: width / 3, height: 125}}
-          source={{uri: item?.imageUrl}}
-        />
-        {/* <Image
-          resizeMode="cover"
-          style={{width: width / 3, height: 125}}
-          source={{uri: item?.imageUrl}}
-        /> */}
+      <TouchableOpacity onPress={() => navigation.navigate('PostDesc', { post: item })}>
+        {item.mediaType === 'image' ? (
+          <FastImage
+            resizeMode="cover"
+            style={{ width: width / 3, height: 125 }}
+            source={{ uri: item?.mediaUrl }}
+          />
+        ) : (
+          <Video
+            source={{ uri: item?.mediaUrl }}
+            style={{ width: width / 3, height: 125 }}
+            controls
+            resizeMode="cover"
+          />
+        )}
       </TouchableOpacity>
     </Box>
   );
@@ -126,5 +129,4 @@ const MyPosts = ({navigation}) => {
     </Box>
   );
 };
-
 export default MyPosts;

@@ -14,7 +14,7 @@ const ChatSearch = ({value, onChangeText}) => {
       inputContainerStyle={{
         marginVertical: 10,
         borderBottomWidth: 0,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: 'white',
         borderRadius: 10,
         elevation: 2,
         paddingHorizontal: 10,

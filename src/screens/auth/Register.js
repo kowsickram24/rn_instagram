@@ -5,7 +5,7 @@ import S3 from 'aws-sdk/clients/s3';
 import {Formik} from 'formik';
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {TouchableOpacity} from 'react-native';
+import {ScrollView, TouchableOpacity} from 'react-native';
 import {useDispatch} from 'react-redux';
 import ToastManager, {Toast} from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
@@ -16,14 +16,14 @@ import {Back, Eye, Eye_Slash, Insta_Typo_logo} from '../../constants/assets';
 import {login} from '../../store/slices/userSlice';
 import {Box, Text} from '../../theme';
 import {RegSchema} from '../../utils/validation';
-import {Divider} from '@rneui/themed';
+import {Divider, Header} from '@rneui/themed';
+import {Defaultimage} from '../../constants/assets';
+import BackBtn from '../../components/buttons/backButton';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,
   region: config.REGION,
 });
-const Defaultimage =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png';
 const RegisterScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -79,18 +79,18 @@ const RegisterScreen = ({navigation, getData}) => {
   };
 
   return (
-    <Box backgroundColor={'mainwhite'} padding={'xl'} flex={1}>
+    <Box backgroundColor={'mainwhite'} padding={'m'} flex={1}>
       {loading ? (
         <Loader text={'Registering user'} />
       ) : (
         <Box>
-          <ToastManager position="Top" />
-          <Box>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Back />
-            </TouchableOpacity>
-          </Box>
-          <Box>
+          <Header
+            backgroundColor="white"
+            statusBarProps={{hidden: true}}
+            leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
+          />
+
+          <ScrollView showsVerticalScrollIndicator={false}>
             <Box alignSelf="center" marginVertical={'l'}>
               <Insta_Typo_logo />
             </Box>
@@ -123,7 +123,7 @@ const RegisterScreen = ({navigation, getData}) => {
                     }
                   />
                   <Inputbox
-                    placeholder={'Full Name'}
+                    placeholder={t('Auth.fullnameplaceholder')}
                     value={values.fullname}
                     onChangeText={handleChange('fullname')}
                     onBlur={handleBlur('fullname')}
@@ -155,7 +155,7 @@ const RegisterScreen = ({navigation, getData}) => {
                     value={values.password}
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
-                    secureTextEntry={!showPassword} 
+                    secureTextEntry={!showPassword}
                     errorMessage={
                       touched.password && errors.password
                         ? errors.password
@@ -181,7 +181,7 @@ const RegisterScreen = ({navigation, getData}) => {
                 <Text color={'primaryBlue'}> {t('Auth.loginButton')}</Text>
               </TouchableOpacity>
             </Box>
-          </Box>
+          </ScrollView>
           <Box position="relative" top={16}>
             <Text fontSize={12} textAlign="center">
               {t('Auth.footerText')}

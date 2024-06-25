@@ -1,36 +1,35 @@
 import {Avatar, ListItem} from '@rneui/themed';
-import { FlatList } from 'react-native';
+import {FlatList, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Box, Text} from '../../../theme';
 
-const renderItem = ({item}) => (
-  <ListItem>
-    <Avatar
-      size={'medium'}
-      source={{uri: item?.profilepic}}
-      rounded
-    />
-    <ListItem.Content>
-      <ListItem.Title>
-        {item?.username}
-      </ListItem.Title>
-    </ListItem.Content>
-  </ListItem>
-);
+const Following = ({userData, navigation}) => {
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.push('ProfileView', {userId: item?.userId});
+      }}>
+      <ListItem>
+        <Avatar size={'medium'} source={{uri: item?.avatar}} rounded />
+        <ListItem.Content>
+          <Text color={'mainblack'} fontSize={14}>
+            {item?.username}
+          </Text>
+        </ListItem.Content>
+      </ListItem>
+    </TouchableOpacity>
+  );
 
-const Following = ({userData}) => {
   return (
     <Box backgroundColor={'mainwhite'} flex={1}>
       <FlatList
-        data={userData?.following} 
+        data={userData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.toString()}
+        keyExtractor={item => item.userId.toString()}
         ListEmptyComponent={
-          <Box flex={1} justifyContent='center' alignItems='center'>
-            <Text>
-              No following Yet
-            </Text>
-            </Box>
+          <Box flex={1} justifyContent="center" alignItems="center">
+            <Text>No following yet</Text>
+          </Box>
         }
       />
     </Box>

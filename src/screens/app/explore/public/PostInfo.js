@@ -1,24 +1,20 @@
-import { useRef, useState, useEffect } from 'react';
-import {
-  Dimensions,
-  FlatList
-} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
 import FeedPost from '../../../../components/card/FeedPost';
 import { Box, Text } from '../../../../theme';
-import { currentuser } from '../../../../constants/data';
-import { useSelector } from 'react-redux';
 const {width, height} = Dimensions.get('screen');
 
-const PostInfo = ({ route }) => {
+const PostInfo = ({route}) => {
   const currentUser = useSelector(state => state.user.user);
   const RBref = useRef();
   const Optionref = useRef();
-  const { item: post } = route.params;
+  const {item: post} = route.params;
   const [posts, setPosts] = useState([post]);
   const [currentPost, setCurrentPost] = useState(null);
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,16 +39,17 @@ const PostInfo = ({ route }) => {
     Optionref.current.open();
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <Box marginVertical="m">
       <FeedPost
+        mediaType={item?.mediaType}
+        mediaSrc={item?.mediaUrl}
         ProfileUrl={user?.avatar}
         user={user?.username}
-        location={item.location}
-        Caption={item.caption}
-        imageSrc={item.imageUrl}
+        location={item?.location}
+        Caption={item?.caption}
         onOptionpress={handleOption}
-        comments={item.comments}
+        comments={item?.comments}
         userId={currentUser?.userId}
         postId={item?.postId}
       />
@@ -62,6 +59,7 @@ const PostInfo = ({ route }) => {
   return (
     <Box flex={1} backgroundColor="mainwhite">
       <FlatList
+      showsVerticalScrollIndicator={false}
         data={posts}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
@@ -79,8 +77,7 @@ const PostInfo = ({ route }) => {
         }}
         closeOnPressBack
         ref={Optionref}
-        height={height / 4}
-      >
+        height={height / 4}>
         <Box flex={1} padding="s" justifyContent="center">
           <Text padding="s" fontSize={16} textAlign="center" color="red">
             Report
@@ -93,7 +90,5 @@ const PostInfo = ({ route }) => {
     </Box>
   );
 };
-
-
 
 export default PostInfo;

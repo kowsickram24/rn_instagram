@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Button, Header, Input} from '@rneui/themed';
+import {Button, Divider, Header, Input} from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
 import {Buffer} from 'buffer';
 import RNFS from 'react-native-fs';
@@ -15,15 +15,23 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import {useSelector} from 'react-redux';
 import {Loader} from '../../../../components/loader/Loader';
 import config from '../../../../config';
-import {Back, Image_Fill} from '../../../../constants/assets';
+import {
+  Gal_Image,
+  Gal_Video,
+  Gallery_Icon,
+  Image_Fill,
+} from '../../../../constants/assets';
 import {Box, Text} from '../../../../theme';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
+import BackBtn from '../../../../components/buttons/backButton';
 const cloudFrontDomain = config.CLDFRNTDOM;
+
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
-  console.log(currentuser?.id, 'hiiiiii');
   const [userData, setUserData] = useState();
-  const [postImage, setPostImage] = useState(null);
+
+  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,34 +68,56 @@ const NewPost = ({navigation, route, getData}) => {
         height: 1080,
         cropping: true,
       });
-      setPostImage(result.path);
+      setSelectedImage(result.path);
     } catch (error) {
       console.error('Error picking image: ', error);
     }
   };
 
-  const UploadToAWS = async () => {
+  const pickVideo = async () => {
+    try {
+      const result = await ImageCropPicker.openPicker({
+        mediaType: 'video',
+      });
+      setSelectedVideo(result.path);
+    } catch (error) {
+      console.error('Error picking video: ', error);
+    }
+  };
+
+  const uploadMediaToAWS = async (mediaPath, mediaType) => {
     try {
       const bucketName = 'instaaws';
-      const key = `post_${Date.now()}_.jpg`;
-      const imageUrl = await uploadImageToS3(postImage, bucketName, key);
-      console.log('Image uploaded successfully:', imageUrl);
-      return imageUrl;
+      const fileExtension = mediaType === 'image' ? 'jpg' : 'mp4';
+      const key = `post_${Date.now()}.${fileExtension}`;
+      const mediaUrl = await uploadFileToS3(
+        mediaPath,
+        bucketName,
+        key,
+        mediaType,
+      );
+      console.log(
+        `${
+          mediaType.charAt(0).toUpperCase() + mediaType.slice(1)
+        } uploaded successfully:`,
+        mediaUrl,
+      );
+      return mediaUrl;
     } catch (error) {
-      console.error('Error:', error);
+      console.error(`Error uploading ${mediaType}:`, error);
       return null;
     }
   };
 
-  const uploadImageToS3 = async (imageUri, bucketName, key) => {
-    const imageData = await RNFS.readFile(imageUri, 'base64');
-    const buffer = Buffer.from(imageData, 'base64');
+  const uploadFileToS3 = async (fileUri, bucketName, key, mediaType) => {
+    const fileData = await RNFS.readFile(fileUri, 'base64');
+    const buffer = Buffer.from(fileData, 'base64');
 
     const params = {
       Bucket: bucketName,
       Key: key,
       Body: buffer,
-      ContentType: 'image/jpeg',
+      ContentType: mediaType === 'image' ? 'image/jpeg' : 'video/mp4',
       ACL: 'public-read',
     };
 
@@ -104,16 +134,19 @@ const NewPost = ({navigation, route, getData}) => {
   };
 
   const handleCreatePost = async () => {
-    if (postImage) {
+    if (selectedImage || selectedVideo) {
       try {
         setLoading(true);
-        const imageUrl = await UploadToAWS();
+        const mediaUrl = selectedImage
+          ? await uploadMediaToAWS(selectedImage, 'image')
+          : await uploadMediaToAWS(selectedVideo, 'video');
         const newPostRef = firestore().collection('posts').doc();
         const newPostId = newPostRef.id;
         const newPost = {
           postId: newPostId,
           userId: currentuser.userId,
-          imageUrl,
+          mediaUrl,
+          mediaType: selectedImage ? 'image' : 'video',
           caption,
           location,
           likes: [],
@@ -132,7 +165,7 @@ const NewPost = ({navigation, route, getData}) => {
           posts: firestore.FieldValue.arrayUnion(newPostId),
         });
 
-        await getData();
+        // await getData();
         navigation.navigate('Home');
       } catch (error) {
         console.error('Error creating post:', error);
@@ -155,24 +188,49 @@ const NewPost = ({navigation, route, getData}) => {
             }}
             leftContainerStyle={{flex: 3}}
             leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Box gap={'m'} alignItems="center" flexDirection="row">
-                  <Back />
-                  <Text fontSize={14} color={'mainblack'}>
-                    New Post
-                  </Text>
-                </Box>
-              </TouchableOpacity>
+              <Box gap={'m'} alignItems="center" flexDirection="row">
+                <BackBtn onPress={() => navigation.goBack()} />
+                <Text fontSize={14} color={'mainblack'}>
+                  New Post
+                </Text>
+              </Box>
             }
           />
-          <ScrollView>
-            <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-              {postImage ? (
-                <Image source={{uri: postImage}} style={styles.image} />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <Box style={styles.mediaPicker}>
+              {selectedImage ? (
+                <Image source={{uri: selectedImage}} style={styles.media} />
+              ) : selectedVideo ? (
+                <Video source={{uri: selectedVideo}} style={styles.media} />
               ) : (
-                <Image_Fill />
+                <Gallery_Icon />
               )}
-            </TouchableOpacity>
+            </Box>
+
+            <Box
+              gap={'s'}
+              padding={'s'}
+              justifyContent="space-evenly"
+              flexDirection="row">
+              <Button
+                buttonStyle={{
+                  elevation: 1,
+                  borderRadius: 10,
+                  backgroundColor: 'powderblue',
+                }}
+                icon={<Gal_Image />}
+                onPress={pickImage}
+              />
+              <Button
+                buttonStyle={{
+                  elevation: 1,
+                  borderRadius: 10,
+                  backgroundColor: 'pink',
+                }}
+                icon={<Gal_Video />}
+                onPress={pickVideo}
+              />
+            </Box>
             <Box padding={'s'}>
               <Input
                 inputStyle={{
@@ -229,7 +287,7 @@ const NewPost = ({navigation, route, getData}) => {
 };
 
 const styles = StyleSheet.create({
-  imagePicker: {
+  mediaPicker: {
     borderRadius: 6,
     margin: 6,
     width: 350,
@@ -239,7 +297,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
   },
-  image: {
+  media: {
     borderRadius: 6,
     width: '100%',
     height: '100%',

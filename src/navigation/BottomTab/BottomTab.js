@@ -22,40 +22,10 @@ import firestore from '@react-native-firebase/firestore';
 import {Box} from '../../theme';
 const BottomTab = createBottomTabNavigator();
 
-const BottomNavigator = ({navigation}) => {
-  const user = useSelector(state => state.user.user);
-  const [currentUser, setCurrentUser] = useState();
+const BottomNavigator = ({User, navigation}) => {
   const refRBSheet = useRef();
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (user?.email) {
-        try {
-          const querySnapshot = await firestore()
-            .collection('users')
-            .where('email', '==', user.email)
-            .get();
+  const currentUser = User;
 
-          if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            setCurrentUser(userDoc.data());
-          } else {
-            console.log('No matching documents.');
-          }
-        } catch (error) {
-          console.error('Error fetching user data: ', error);
-        }
-      }
-    };
-
-    fetchUser();
-
-    return () => {
-      // Cleanup function if needed
-    };
-  }, [user?.email]);
-  console.log('currentUser: ', currentUser);
-  
   return (
     <>
       <BottomTab.Navigator
@@ -70,6 +40,7 @@ const BottomNavigator = ({navigation}) => {
         <BottomTab.Screen
           options={{
             tabBarIcon: ({focused}) => (focused ? <Search_f /> : <Search_uf />),
+            tabBarHideOnKeyboard: true,
           }}
           name="Explore"
           component={Explore}

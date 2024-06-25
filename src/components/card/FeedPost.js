@@ -96,13 +96,14 @@ const FeedPost = ({
   user,
   location,
   ProfileUrl,
-  imageSrc,
+  mediaSrc,
   Caption,
   onOptionpress,
   comments,
   userId,
   onProfilePress,
   postId,
+  mediaType, 
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
@@ -196,7 +197,7 @@ const FeedPost = ({
         if (likes.includes(userId)) {
           // Unlike the post
           newLikes = likes.filter(id => id !== userId);
-          transaction.update(postRef, {likes: newLikes});
+          transaction.update(postRef, { likes: newLikes });
 
           // Remove postId from user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -206,7 +207,7 @@ const FeedPost = ({
         } else {
           // Like the post
           newLikes = [...likes, userId];
-          transaction.update(postRef, {likes: newLikes});
+          transaction.update(postRef, { likes: newLikes });
 
           // Add postId to user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -281,20 +282,21 @@ const FeedPost = ({
             onProfilePress={onProfilePress}
           />
           <TapGestureHandler onActivated={onLikePress} numberOfTaps={2}>
-            <FastImage
-              resizeMode="cover"
-              style={{height: 400, width: '100%'}}
-              source={{uri: imageSrc}}
-            />
-            {/* <Image
-              resizeMode="cover"
-              style={{
-                height: 400,
-                width: '100%',
-              }}
-              alt="Post Image"
-              source={{uri: imageSrc}}
-            /> */}
+            {/* Media */}
+            {mediaType === 'image' ? (
+              <FastImage
+                resizeMode="cover"
+                style={{ height: 400, width: '100%' }}
+                source={{ uri: mediaSrc }}
+              />
+            ) : (
+              <Video
+                source={{ uri: mediaSrc }}
+                style={{ height: 400, width: '100%' }}
+                controls
+                resizeMode="cover"
+              />
+            )}
           </TapGestureHandler>
           <Box
             flexDirection="row"
@@ -312,13 +314,13 @@ const FeedPost = ({
                 <Share />
               </TouchableOpacity>
             </Box>
-            <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
+            <TouchableOpacity onPress={onSavePress} style={{ padding: 10 }}>
               {isSaved ? <Save_f /> : <Save />}
             </TouchableOpacity>
           </Box>
           <TouchableOpacity
-            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-            {likedUsers != 0 ? (
+            onPress={() => navigation.navigate('LikedUsers', { likedId })}>
+            {likedUsers.length !== 0 ? (
               <Box paddingHorizontal={'s'}>
                 {likedUsers.length > 0 && (
                   <Text fontSize={14} color={'mainblack'}>
@@ -369,6 +371,7 @@ const FeedPost = ({
   );
 };
 
+
 const ShareBox = forwardRef(({postId}, ref) => {
   const currentUser = useSelector(state => state.user.user);
   const [shareUsers, setShareUsers] = useState([]);
@@ -381,7 +384,13 @@ const ShareBox = forwardRef(({postId}, ref) => {
         id: doc.id,
         ...doc.data(),
       }));
-      setShareUsers(fetchedUsers);
+
+      // Filter out the current user
+      const filteredUsers = fetchedUsers.filter(
+        user => user.id !== currentUser.userId,
+      );
+
+      setShareUsers(filteredUsers);
     } catch (error) {
       console.error('Error fetching users: ', error);
     }

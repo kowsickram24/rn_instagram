@@ -4,7 +4,7 @@ import {Box, Text} from '../../../../theme';
 import {Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('screen');
 import firestore from '@react-native-firebase/firestore';
-
+import Video from 'react-native-video';
 const PostsView = ({ user, navigation }) => {
   const [posts, setPosts] = useState([]);
 

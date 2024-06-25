@@ -3,6 +3,7 @@
         "usernamePlaceholder":"Username",
         "emailPlaceholder": "Email",
         "passwordPlaceholder": "Password",
+        "fullnameplaceholder":"Full Name",
         "forgetPassword": "Forgot Password?",
         "loginButton": "Log in",
         "loginWithFacebook": "Login with Facebook",

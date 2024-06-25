@@ -1,11 +1,12 @@
-import {Header} from '@rneui/themed';
-import FeedPost from '../../../components/card/FeedPost';
-import {Box} from '../../../theme';
-import BackBtn from '../../../components/buttons/backButton';
-import {Insta_Typo_logo} from '../../../constants/assets';
 import firestore from '@react-native-firebase/firestore';
-import {useState, useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import { Header } from '@rneui/themed';
+import { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
+import BackBtn from '../../../components/buttons/backButton';
+import FeedPost from '../../../components/card/FeedPost';
+import { Insta_Typo_logo } from '../../../constants/assets';
+import { Box } from '../../../theme';
 const PostPage = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   console.log('route.params?.postId;: ', route.params?.postId);
@@ -68,19 +69,21 @@ const PostPage = ({route, navigation}) => {
         statusBarProps={{hidden: false}}
         backgroundColor="white"
       />
-
-      <FeedPost
-        onProfilePress={() =>
-          navigation.navigate('ProfileView', {userId: post?.user?.userId})
-        }
-        ProfileUrl={post?.user?.avatar}
-        userId={currentUser?.userId}
-        postId={post?.postId}
-        imageSrc={post?.imageUrl}
-        Caption={post?.caption}
-        user={post?.user?.username}
-        location={post?.location}
-      />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <FeedPost
+          onProfilePress={() =>
+            navigation.navigate('ProfileView', {userId: post?.user?.userId})
+          }
+          ProfileUrl={post?.user?.avatar}
+          userId={currentUser?.userId}
+          postId={post?.postId}
+          mediaSrc={post?.mediaUrl}
+          mediaType={post?.mediaType}
+          Caption={post?.caption}
+          user={post?.user?.username}
+          location={post?.location}
+        />
+      </ScrollView>
     </Box>
   );
 };

@@ -1,19 +1,21 @@
 import firestore from '@react-native-firebase/firestore';
+import { Header } from '@rneui/themed';
 import React, { useRef, useState } from 'react';
 import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
 import ToastManager from 'toastify-react-native';
+import BackBtn from '../../../../components/buttons/backButton';
 import FeedPost from '../../../../components/card/FeedPost';
-import { Dustbin, Pencil } from '../../../../constants/assets';
+import { Dustbin, Insta_Typo_logo, Pencil } from '../../../../constants/assets';
 import { Box, Text } from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
-const PostDesc = ({ route, navigation }) => {
+const PostDesc = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [selectedPost, setSelectedPost] = useState();
   const RBref = useRef();
-  const CmtRef = useRef();
+
   const [posts, setPosts] = useState([route.params.post]);
   console.log('posts: ', posts);
 
@@ -57,11 +59,11 @@ const PostDesc = ({ route, navigation }) => {
           style: 'destructive',
         },
       ],
-      { cancelable: false }
+      {cancelable: false},
     );
   };
 
-  const renderPostItem = ({ item }) => (
+  const renderPostItem = ({item}) => (
     <Box marginVertical="m">
       <FeedPost
         onOptionpress={() => handleOptions(item)}
@@ -72,16 +74,29 @@ const PostDesc = ({ route, navigation }) => {
         user={item?.user?.username}
         ProfileUrl={item?.user?.avatar}
         likedUsers={item.likes}
-        userId={currentUser?.userId}  
-        postId={item?.postId}         
+        mediaSrc={item?.mediaUrl}
+        mediaType={item?.mediaType}
+        userId={currentUser?.userId}
+        postId={item?.postId}
       />
     </Box>
   );
 
   return (
     <Box flex={1} backgroundColor="mainwhite">
+      <Header
+        statusBarProps={{hidden: true}}
+        backgroundColor="white"
+        leftComponent={
+          <Box flexDirection="row" alignItems="center" gap={'s'}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Insta_Typo_logo />
+          </Box>
+        }
+      />
       <ToastManager position="top" />
       <FlatList
+      showsVerticalScrollIndicator={false}
         data={posts}
         ListEmptyComponent={<Text>No Posts</Text>}
         renderItem={renderPostItem}
@@ -96,23 +111,20 @@ const PostDesc = ({ route, navigation }) => {
           },
         }}
         height={250}
-        ref={RBref}
-      >
+        ref={RBref}>
         <Box alignItems="center" gap="xl" flex={1}>
           <Box marginVertical="l">
             <Text
               fontSize={18}
               fontWeight="bold"
               textAlign="center"
-              color="mainblack"
-            >
+              color="mainblack">
               Post
             </Text>
           </Box>
           <Box gap="xl" alignItems="center">
             <TouchableOpacity
-              onPress={() => navigation.navigate('Editpost', { selectedPost })}
-            >
+              onPress={() => navigation.navigate('Editpost', {selectedPost})}>
               <Box flexDirection="row" gap="s" alignItems="center">
                 <Pencil />
                 <Text fontSize={18} textAlign="center" color="mainblack">

@@ -1,5 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import firestore from '@react-native-firebase/firestore';
+import React, {useState, useEffect} from 'react';
 import EditProfile from '../../../screens/app/profile/Edit/EditProfile';
 import Settings from '../../../screens/app/settings/Settings';
 import BottomNavigator from '../../BottomTab/BottomTab';
@@ -11,7 +12,6 @@ import ProfileView from '../../../screens/app/explore/ProfileView';
 import PostInfo from '../../../screens/app/explore/public/PostInfo';
 import EditPost from '../../../screens/app/profile/Edit/editPost';
 import LikedUsers from '../../../screens/app/explore/LikedUsers';
-
 import Chats from '../../../screens/app/chat/Chats';
 import ChatBox from '../../../screens/app/chat/ChatBox';
 import ChatInfo from '../../../screens/app/chat/ChatInfo';
@@ -20,13 +20,60 @@ import AccountCenter from '../../../screens/app/settings/AccountCenter';
 import SavedPosts from '../../../screens/app/saves/savedPosts';
 import LikedPosts from '../../../screens/app/saves/LikedPosts';
 import PostPage from '../../../screens/app/saves/postPage';
+import {useSelector} from 'react-redux';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
+  const user = useSelector(state => state?.user?.user);
+  const [currentUser, setCurrentUser] = useState();
+  console.log('currentUser: ', currentUser);
+
+  useEffect(() => {
+    let unsubscribe;
+    const fetchUser = async () => {
+      if (user?.email) {
+        try {
+          const querySnapshot = await firestore()
+            .collection('users')
+            .where('email', '==', user.email)
+            .get();
+
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            setCurrentUser(userDoc.data());
+
+            // Subscribe to real-time updates
+            unsubscribe = firestore()
+              .collection('users')
+              .doc(userDoc.id)
+              .onSnapshot(docSnapshot => {
+                if (docSnapshot.exists) {
+                  setCurrentUser(docSnapshot.data());
+                } else {
+                  console.log('User document does not exist');
+                }
+              });
+          } else {
+            console.log('No matching documents.');
+          }
+        } catch (error) {
+          console.error('Error fetching user data: ', error);
+        }
+      }
+    };
+
+    fetchUser();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [user?.email]);
+
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main">
-        {props => <BottomNavigator {...props} getData={getData} />}
+        {props => <BottomNavigator User={currentUser} {...props} getData={getData} />}
       </Stack.Screen>
       <Stack.Screen name="Notifications" component={Notification} />
       {/* Chats */}
@@ -35,11 +82,11 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="ChatInfo" component={ChatInfo} />
 
       <Stack.Screen name="EditProfile">
-        {props => <EditProfile {...props} getData={getData} />}
+        {props => <EditProfile {...props} />}
       </Stack.Screen>
       {/* Posts */}
       <Stack.Screen name="NewPost">
-        {props => <NewPost {...props} getData={getData} />}
+        {props => <NewPost {...props} />}
       </Stack.Screen>
       <Stack.Screen name="PostDesc" component={PostDesc} />
       <Stack.Screen name="ProfileView" component={ProfileView} />
@@ -54,7 +101,9 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="MySaves" component={SavedPosts} />
       <Stack.Screen name="LikedPosts" component={LikedPosts} />
       <Stack.Screen name="PostPage" component={PostPage} />
-      <Stack.Screen name="AccountCenter" component={AccountCenter} />
+      <Stack.Screen name="AccountCenter">
+        {props => <AccountCenter {...props} currentUser={currentUser} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

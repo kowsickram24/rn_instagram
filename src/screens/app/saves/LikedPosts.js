@@ -1,18 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import {
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  Dimensions,
-} from 'react-native';
-import {Header} from '@rneui/themed';
-import {Box, Text} from '../../../theme';
-import {Back} from '../../../constants/assets';
 import firestore from '@react-native-firebase/firestore';
-
-import {useSelector} from 'react-redux';
+import { Header } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  TouchableOpacity
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
+import { useSelector } from 'react-redux';
+import BackBtn from '../../../components/buttons/backButton';
+import { Box, Text } from '../../../theme';
 const {width, height} = Dimensions.get('screen');
 const LikedPosts = ({navigation}) => {
   const [likedPosts, setLikedPosts] = useState([]);
@@ -83,41 +82,40 @@ const LikedPosts = ({navigation}) => {
         }}
         leftContainerStyle={{flex: 3}}
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Box flexDirection="row" alignItems="center" gap={'s'}>
-              <Back />
-              <Text color={'mainblack'}>Likes</Text>
-            </Box>
-          </TouchableOpacity>
+          <Box flexDirection="row" alignItems="center" gap={'s'}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text color={'mainblack'}>Likes</Text>
+          </Box>
         }
       />
 
-      <ScrollView>
-        <FlatList
-          horizontal
-          data={posts}
-          keyExtractor={item => item.id}
-          ListEmptyComponent={
-        <Box flex={1} alignItems='center' justifyContent='center'>
-
-          <Text textAlign='center'>No Liked Posts Yet</Text>
-        </Box>  
-        
-        }
-          renderItem={({item}) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('PostPage', {postId: item.id});
-              }}>
-              <Image
+      <FlatList
+        horizontal
+        data={posts}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={<Text textAlign="center">No Liked Posts Yet</Text>}
+        renderItem={({item}) => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('PostPage', {postId: item.id});
+            }}>
+            {item.mediaType === 'image' ? (
+              <FastImage
                 resizeMode="cover"
-                source={{uri: item?.imageUrl}}
+                source={{uri: item?.mediaUrl}}
                 style={{width: width / 3, height: width / 3}}
               />
-            </TouchableOpacity>
-          )}
-        />
-      </ScrollView>
+            ) : (
+              <Video
+                controls
+                resizeMode="cover"
+                source={{uri: item?.mediaUrl}}
+                style={{width: width / 3, height: width / 3}}
+              />
+            )}
+          </TouchableOpacity>
+        )}
+      />
     </Box>
   );
 };
