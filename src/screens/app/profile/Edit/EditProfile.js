@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import {Avatar, Button, Header, Input} from '@rneui/themed';
-import S3 from 'aws-sdk/clients/s3';
+
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, Image, TouchableOpacity} from 'react-native';
@@ -12,14 +12,11 @@ import config from '../../../../config';
 import {Back} from '../../../../constants/assets';
 import {Box, Text} from '../../../../theme';
 import {Toast} from 'toastify-react-native';
+import {S3Bucket} from '../../../../services/aws/s3bucket';
 const {width, height} = Dimensions.get('screen');
 import ToastManager from 'toastify-react-native';
 import {Loader} from '../../../../components/loader/Loader';
-const s3 = new S3({
-  accessKeyId: config.ACCESSKEYID,
-  secretAccessKey: config.SECRETACCESSKEY,
-  region: config.REGION,
-});
+
 const EditProfile = ({navigation, route}) => {
   const currentUser = route?.params;
   console.log('route?.params: ', route?.params);
@@ -82,7 +79,7 @@ const EditProfile = ({navigation, route}) => {
         ContentType: 'image/jpeg',
         ACL: 'public-read',
       };
-      await s3.upload(params).promise();
+      await S3Bucket.upload(params).promise();
       const imageUrl = `https://${config.BUCKETNAME}.s3.amazonaws.com/${filename}`;
       return imageUrl;
     } catch (error) {
@@ -125,8 +122,8 @@ const EditProfile = ({navigation, route}) => {
         imageUrl = await uploadImageToS3(newImage);
       }
       await updateFirestore(imageUrl);
-      setNewImage(null); 
-      navigation.navigate('Profile')
+      setNewImage(null);
+      navigation.navigate('Profile');
     } catch (error) {
       console.error('Error saving changes: ', error);
       alert('Failed to update profile. Please try again.');

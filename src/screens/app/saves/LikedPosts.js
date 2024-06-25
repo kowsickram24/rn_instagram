@@ -97,11 +97,17 @@ const LikedPosts = ({navigation}) => {
           horizontal
           data={posts}
           keyExtractor={item => item.id}
-          ListEmptyComponent={<Text>No Liked Posts Yet</Text>}
+          ListEmptyComponent={
+        <Box flex={1} alignItems='center' justifyContent='center'>
+
+          <Text textAlign='center'>No Liked Posts Yet</Text>
+        </Box>  
+        
+        }
           renderItem={({item}) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('PostPage');
+                navigation.navigate('PostPage', {postId: item.id});
               }}>
               <Image
                 resizeMode="cover"

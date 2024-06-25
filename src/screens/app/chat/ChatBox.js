@@ -1,7 +1,13 @@
 import firestore from '@react-native-firebase/firestore';
 import {Avatar, Badge, Button, Divider, Header} from '@rneui/themed';
 import React, {useEffect, useRef, useState} from 'react';
-import {Image, ScrollView, FlatList, TouchableOpacity} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {
   Gal_Image,
   Gal_Video,
@@ -25,18 +31,56 @@ import {
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
+import SharePost from '../../../components/card/sharePost';
+
 const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
   const chatId = route?.params.params.chatId;
-
   const MediaRef = useRef();
   const [chatData, setChatData] = useState(null);
+
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedVideo, setSelectedVideo] = useState('');
   const [secondUser, setSecondUser] = useState(null);
   const [message, setMessage] = useState('');
+  const [postData, setPostData] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const cloudFrontDomain = config.CLDFRNTDOM;
+
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('chats')
+      .doc(chatId)
+      .onSnapshot(
+        async chatDoc => {
+          if (chatDoc.exists) {
+            const data = chatDoc.data();
+            console.log('data: ', data);
+            setChatData(data);
+
+            const secondUserId = data.members.find(
+              id => id !== currentUser.userId,
+            );
+
+            if (secondUserId) {
+              const secondUserDoc = await firestore()
+                .collection('users')
+                .doc(secondUserId)
+                .get();
+              if (secondUserDoc.exists) {
+                setSecondUser(secondUserDoc.data());
+              }
+            }
+          }
+        },
+        error => {
+          console.error('Error fetching chat data: ', error);
+        },
+      );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [chatId, currentUser.userId]);
 
   const PickImage = async () => {
     try {
@@ -127,41 +171,6 @@ const ChatBox = ({navigation, route}) => {
       }
     }
   };
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('chats')
-      .doc(chatId)
-      .onSnapshot(
-        async (chatDoc) => {
-          if (chatDoc.exists) {
-            const data = chatDoc.data();
-            setChatData(data);
-  
-            const secondUserId = data.members.find(
-              (id) => id !== currentUser.userId
-            );
-  
-            if (secondUserId) {
-              const secondUserDoc = await firestore()
-                .collection('users')
-                .doc(secondUserId)
-                .get();
-              if (secondUserDoc.exists) {
-                setSecondUser(secondUserDoc.data());
-              }
-            }
-          }
-        },
-        (error) => {
-          console.error('Error fetching chat data: ', error);
-        }
-      );
-  
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, [chatId, currentUser.userId]);
-  
-
   const handleSendMessage = async () => {
     if (message.trim()) {
       try {
@@ -237,8 +246,9 @@ const ChatBox = ({navigation, route}) => {
           </TouchableOpacity>
         }
       />
+      {/* */}
       <Divider />
-      <GestureHandlerRootView >
+      <GestureHandlerRootView>
         <FlatList
           data={chatData?.messages}
           keyExtractor={(item, index) => index.toString()}
@@ -265,51 +275,62 @@ const ChatBox = ({navigation, route}) => {
 
             return (
               <TapGestureHandler
-              onActivated={() => console.log('Double Tap',item.message)}
-              numberOfTaps={2}
-            >
-              <Box key={item.id}>
-                <Text textAlign="center" color={'mainblack'} fontSize={10}>
-                  {dateText}
-                </Text>
-                <Text textAlign="center" color={'mainblack'} fontSize={10}>
-                  {messageDate.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-                <Box
-                  margin="m"
-                  padding="m"
-                  elevation={2}
-                  backgroundColor={'mainwhite'}
-                  borderRadius="xl"
-                  alignSelf={
-                    item.userId === currentUser.userId
-                      ? 'flex-end'
-                      : 'flex-start'
-                  }
-                  maxWidth="75%">
-                  {item.messageType === 'text' ? (
-                    <Text fontSize={14} color={'mainblack'}>
-                      {item.message}
-                    </Text>
-                  ) : item.messageType === 'image' ? (
-                    <Image
-                      resizeMode="contain"
-                      source={{uri: item.message}}
-                      style={{width: 200, height: 400, borderRadius: 10}}
-                    />
-                  ) : (
-                    <Video
-                     paused
-                      source={{uri: item.message}}
-                      style={{width: 200, height: 400, borderRadius: 10}}
-                      controls
-                    />
-                  )}
+              // onActivated={() => console.log('Double Tap', item.message)}
+              // numberOfTaps={2}
+              >
+                <Box key={item.id}>
+                  <Text textAlign="center" color={'mainblack'} fontSize={10}>
+                    {dateText}
+                  </Text>
+                  <Text textAlign="center" color={'mainblack'} fontSize={10}>
+                    {messageDate.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </Text>
+                  <Box
+                    margin="m"
+                    padding="m"
+                    elevation={2}
+                    backgroundColor={'mainwhite'}
+                    borderRadius="xl"
+                    alignSelf={
+                      item.userId === currentUser.userId
+                        ? 'flex-end'
+                        : 'flex-start'
+                    }
+                    maxWidth="90%">
+                    {item.messageType === 'text' ? (
+                      <Text fontSize={14} color={'mainblack'}>
+                        {item.message}
+                      </Text>
+                    ) : item.messageType === 'image' ? (
+                      <Image
+                        resizeMode="contain"
+                        source={{uri: item.message}}
+                        style={{width: 200, height: 400, borderRadius: 10}}
+                      />
+                    ) : item.messageType === 'post' ? (
+                      <>
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate('PostPage', {
+                              postId: item.message,
+                            })
+                          }>
+                          <SharePost postId={item.message} />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <Video
+                        paused
+                        source={{uri: item.message}}
+                        style={{width: 200, height: 400, borderRadius: 10}}
+                        controls
+                      />
+                    )}
+                  </Box>
                 </Box>
-              </Box>
               </TapGestureHandler>
             );
           }}
@@ -372,6 +393,7 @@ const ChatBox = ({navigation, route}) => {
               <Gallery_Icon />
             </Box>
           )}
+          <Divider />
           <Box gap={'s'} justifyContent="space-evenly" flexDirection="row">
             <Button
               buttonStyle={{

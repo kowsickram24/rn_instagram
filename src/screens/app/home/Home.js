@@ -14,6 +14,7 @@ import FeedPost from '../../../components/card/FeedPost';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import {Data} from '../../../utils/randomData';
 import {useSelector} from 'react-redux';
+import {ActivityIndicator} from 'react-native';
 
 const Home = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -23,7 +24,7 @@ const Home = ({navigation}) => {
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('posts')
-      .onSnapshot(async (snapshot) => {
+      .onSnapshot(async snapshot => {
         const postsData = [];
         for (const doc of snapshot.docs) {
           const postData = {
@@ -35,7 +36,7 @@ const Home = ({navigation}) => {
               .collection('users')
               .doc(postData.userId)
               .get();
-  
+
             if (userDoc.exists) {
               postData.user = userDoc.data();
             } else {
@@ -44,17 +45,16 @@ const Home = ({navigation}) => {
           } catch (error) {
             console.error('Error fetching user data:', error);
           }
-  
+
           postsData.push(postData);
         }
-  
+
         setPosts(postsData);
         setLoading(false);
       });
-  
+
     return () => unsubscribe();
   }, []);
-  
 
   const renderItem = ({item}) => (
     <>
@@ -67,6 +67,9 @@ const Home = ({navigation}) => {
         imageSrc={item?.imageUrl}
         user={item?.user.username}
         comments={item?.comments}
+        onProfilePress={() =>
+          navigation.navigate('ProfileView', {userId: item?.userId})
+        }
       />
     </>
   );
@@ -115,8 +118,8 @@ const Home = ({navigation}) => {
         }
       />
       <Divider />
-      <Box paddingVertical={'s'}>
-        <ScrollView>
+      <ScrollView>
+        <Box paddingVertical={'s'}>
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -124,21 +127,19 @@ const Home = ({navigation}) => {
             renderItem={renderStory}
             data={Data}
           />
-        </ScrollView>
-      </Box>
-      <Divider />
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <ScrollView>
+        </Box>
+        <Divider />
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
           <FlatList
             data={posts}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             ListEmptyComponent={<Text> No More Posts </Text>}
           />
-        </ScrollView>
-      )}
+        )}
+      </ScrollView>
     </Box>
   );
 };

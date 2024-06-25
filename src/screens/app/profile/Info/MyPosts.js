@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
-import { Skeleton } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
+import {Skeleton} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -9,11 +9,12 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import { Box, Text } from '../../../../theme';
+import {useSelector} from 'react-redux';
+import {Box, Text} from '../../../../theme';
+import FastImage from 'react-native-fast-image';
 const {width} = Dimensions.get('screen');
 
-const MyPosts = ({ navigation }) => {
+const MyPosts = ({navigation}) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector(state => state.user.user);
@@ -29,10 +30,13 @@ const MyPosts = ({ navigation }) => {
       const userPosts = await Promise.all(
         postSnapshot.docs.map(async doc => {
           const postData = doc.data();
-          const userSnapshot = await firestore().collection('users').doc(postData.userId).get();
+          const userSnapshot = await firestore()
+            .collection('users')
+            .doc(postData.userId)
+            .get();
           const userData = userSnapshot.exists ? userSnapshot.data() : {};
-          return { ...postData, user: userData };
-        })
+          return {...postData, user: userData};
+        }),
       );
 
       setPosts(userPosts);
@@ -49,14 +53,20 @@ const MyPosts = ({ navigation }) => {
     }
   }, [currentUser]);
 
-  const renderPostItem = ({ item }) => (
+  const renderPostItem = ({item}) => (
     <Box>
-      <TouchableOpacity onPress={() => navigation.navigate('PostDesc', { post: item })}>
-        <Image
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PostDesc', {post: item})}>
+        <FastImage
           resizeMode="cover"
-          style={{ width: width / 3, height: 125 }}
-          source={{ uri: item?.imageUrl }}
+          style={{width: width / 3, height: 125}}
+          source={{uri: item?.imageUrl}}
         />
+        {/* <Image
+          resizeMode="cover"
+          style={{width: width / 3, height: 125}}
+          source={{uri: item?.imageUrl}}
+        /> */}
       </TouchableOpacity>
     </Box>
   );
@@ -116,6 +126,5 @@ const MyPosts = ({ navigation }) => {
     </Box>
   );
 };
-
 
 export default MyPosts;

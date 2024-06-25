@@ -193,7 +193,7 @@ const LoginScreen = ({navigation, getData}) => {
             </Box>
             <Box margin={'xl'} gap={'l'}>
               <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <Text color={'lightgrey'}>{t('Auth.DontHaveAccount')} </Text>
+                <Text color={'darkgrey'}>{t('Auth.DontHaveAccount')} </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Register')}>
                   <Text color={'primaryBlue'} fontSize={14}>

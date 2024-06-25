@@ -60,7 +60,7 @@ const EditPost = ({route, navigation}) => {
             style={{height: 350, borderRadius: 10}}
           />
           <Input
-            inputStyle={{fontSize: 14,height:60, textAlignVertical: 'top'}}
+            inputStyle={{fontSize: 14, height: 60, textAlignVertical: 'top'}}
             value={posts.caption}
             onChangeText={text => setPosts({...posts, caption: text})}
             multiline

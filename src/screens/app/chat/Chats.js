@@ -52,6 +52,8 @@ const ChatBox = ({navigation}) => {
             ? 'Sent a photo'
             : item?.lastMessage.messageType === 'video'
             ? 'Sent a video'
+            : item?.lastMessage.messageType === 'post'
+            ? 'Sent a post'
             : item?.lastMessage.message
         }
       />

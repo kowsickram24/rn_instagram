@@ -11,7 +11,7 @@ import {Header} from '@rneui/themed';
 import {Box, Text} from '../../../theme';
 import {Back} from '../../../constants/assets';
 import firestore from '@react-native-firebase/firestore';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 const {width, height} = Dimensions.get('screen');
 const SavedPosts = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -90,21 +90,28 @@ const SavedPosts = ({navigation}) => {
         }
       />
 
-      <ScrollView>
-        <FlatList
-          horizontal
-          data={posts}
-          keyExtractor={item => item.id}
-          ListEmptyComponent={<Text>No Liked Posts Yet</Text>}
-          renderItem={({item}) => (
+      <FlatList
+        horizontal
+        data={posts}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={
+          <Box flex={1} alignItems="center">
+            <Text>No Saved Posts Yet</Text>
+          </Box>
+        }
+        renderItem={({item}) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('PostPage', {postId: item?.postId})
+            }>
             <Image
               resizeMode="cover"
               source={{uri: item?.imageUrl}}
               style={{width: width / 3, height: width / 3}}
             />
-          )}
-        />
-      </ScrollView>
+          </TouchableOpacity>
+        )}
+      />
     </Box>
   );
 };

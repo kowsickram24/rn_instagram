@@ -1,28 +1,24 @@
 import firestore from '@react-native-firebase/firestore';
-import { Button, Header, Input } from '@rneui/themed';
+import {Button, Header, Input} from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
 import RNFS from 'react-native-fs';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { useSelector } from 'react-redux';
-import { Loader } from '../../../../components/loader/Loader';
+import {useSelector} from 'react-redux';
+import {Loader} from '../../../../components/loader/Loader';
 import config from '../../../../config';
-import { Back, Image_Fill } from '../../../../constants/assets';
-import { Box, Text } from '../../../../theme';
-const s3 = new S3({
-  accessKeyId: config.ACCESSKEYID,
-  secretAccessKey: config.SECRETACCESSKEY,
-  region: config.REGION,
-});
-
+import {Back, Image_Fill} from '../../../../constants/assets';
+import {Box, Text} from '../../../../theme';
+import {S3Bucket} from '../../../../services/aws/s3bucket';
+const cloudFrontDomain = config.CLDFRNTDOM;
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
   console.log(currentuser?.id, 'hiiiiii');
@@ -96,11 +92,12 @@ const NewPost = ({navigation, route, getData}) => {
     };
 
     return new Promise((resolve, reject) => {
-      s3.putObject(params, (err, data) => {
+      S3Bucket.putObject(params, (err, data) => {
         if (err) {
           reject(err);
         } else {
-          resolve(`https://${bucketName}.s3.amazonaws.com/${key}`);
+          const cloudFrontUrl = `${cloudFrontDomain}/${key}`;
+          resolve(cloudFrontUrl);
         }
       });
     });
