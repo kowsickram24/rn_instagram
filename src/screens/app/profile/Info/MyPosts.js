@@ -66,7 +66,6 @@ const MyPosts = ({ navigation }) => {
           <Video
             source={{ uri: item?.mediaUrl }}
             style={{ width: width / 3, height: 125 }}
-            controls
             resizeMode="cover"
           />
         )}

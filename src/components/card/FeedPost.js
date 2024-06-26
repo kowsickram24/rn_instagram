@@ -1,26 +1,24 @@
-import {Avatar, Card, Input, Dialog, Header, Button} from '@rneui/themed';
-import React, {useRef, forwardRef} from 'react';
-import {useState, useEffect} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
+import {Avatar, Button, Card, Input} from '@rneui/themed';
+import React, {forwardRef, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
   Dimensions,
+  FlatList,
   Share as Shre,
-  Image,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import {Skeleton} from '@rneui/themed';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {Divider} from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 import {
-  GestureDetector,
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-const {width, height} = Dimensions.get('screen');
+import {Divider} from 'react-native-paper';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import Video from 'react-native-video';
+import {useSelector} from 'react-redux';
 import {
-  Cmt_Share,
   Comment,
   Heaty_f,
   Heaty_uf,
@@ -29,31 +27,10 @@ import {
   Save_f,
   Share,
   Three_dots,
-  Within,
 } from '../../constants/assets';
 import {Box, Text} from '../../theme';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import {useNavigation} from '@react-navigation/native';
 import SkeletonCard from '../Skeleton/skeletonCard';
-import FastImage from 'react-native-fast-image';
-import {useSelector} from 'react-redux';
-const emojis = ['smile', 'heart', 'thumbs-up', 'surprise', 'laugh'];
-
-const EmojiReactions = ({onEmojiPress}) => {
-  return (
-    <Box
-      padding={'s'}
-      justifyContent="space-evenly"
-      flexDirection="row"
-      gap={'l'}>
-      {emojis.map((emoji, index) => (
-        <TouchableOpacity key={index} onPress={() => onEmojiPress(emoji)}>
-          <Icon name={emoji} size={24} />
-        </TouchableOpacity>
-      ))}
-    </Box>
-  );
-};
+const {width, height} = Dimensions.get('screen');
 
 const PostHeader = ({
   location,
@@ -103,7 +80,7 @@ const FeedPost = ({
   userId,
   onProfilePress,
   postId,
-  mediaType, 
+  mediaType,
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
@@ -197,7 +174,7 @@ const FeedPost = ({
         if (likes.includes(userId)) {
           // Unlike the post
           newLikes = likes.filter(id => id !== userId);
-          transaction.update(postRef, { likes: newLikes });
+          transaction.update(postRef, {likes: newLikes});
 
           // Remove postId from user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -207,7 +184,7 @@ const FeedPost = ({
         } else {
           // Like the post
           newLikes = [...likes, userId];
-          transaction.update(postRef, { likes: newLikes });
+          transaction.update(postRef, {likes: newLikes});
 
           // Add postId to user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -265,112 +242,109 @@ const FeedPost = ({
   }
 
   return (
-    <GestureHandlerRootView>
-      <Box>
-        <Card
-          containerStyle={{
-            padding: 0,
-            margin: 0,
-            elevation: 0,
-            borderWidth: 0,
-          }}>
-          <PostHeader
-            user={user}
-            location={location}
-            onOptionpress={onOptionpress}
-            ProfileUrl={ProfileUrl}
-            onProfilePress={onProfilePress}
+    <Box>
+      <Card
+        containerStyle={{
+          padding: 0,
+          margin: 0,
+          elevation: 0,
+          borderWidth: 0,
+        }}>
+        <PostHeader
+          user={user}
+          location={location}
+          onOptionpress={onOptionpress}
+          ProfileUrl={ProfileUrl}
+          onProfilePress={onProfilePress}
+        />
+
+        {/* Media */}
+        {mediaType === 'image' ? (
+          <FastImage
+            resizeMode="cover"
+            style={{height: 400, width: '100%'}}
+            source={{uri: mediaSrc}}
           />
-          <TapGestureHandler onActivated={onLikePress} numberOfTaps={2}>
-            {/* Media */}
-            {mediaType === 'image' ? (
-              <FastImage
-                resizeMode="cover"
-                style={{ height: 400, width: '100%' }}
-                source={{ uri: mediaSrc }}
-              />
-            ) : (
-              <Video
-                source={{ uri: mediaSrc }}
-                style={{ height: 400, width: '100%' }}
-                controls
-                resizeMode="cover"
-              />
-            )}
-          </TapGestureHandler>
-          <Box
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            padding={'s'}>
-            <Box flexDirection="row" justifyContent="center" gap={'m'}>
-              <TouchableOpacity onPress={onLikePress}>
-                {isLiked ? <Heaty_f /> : <Heaty_uf />}
-              </TouchableOpacity>
-              <TouchableOpacity onPress={oncommentPress}>
-                <Comment />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onSharePress}>
-                <Share />
-              </TouchableOpacity>
-            </Box>
-            <TouchableOpacity onPress={onSavePress} style={{ padding: 10 }}>
-              {isSaved ? <Save_f /> : <Save />}
+        ) : (
+          <Video
+            source={{uri: mediaSrc}}
+            style={{height: 400, width: '100%'}}
+            controls
+            resizeMode="cover"
+          />
+        )}
+
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          padding={'s'}>
+          <Box flexDirection="row" justifyContent="center" gap={'m'}>
+            <TouchableOpacity onPress={onLikePress}>
+              {isLiked ? <Heaty_f /> : <Heaty_uf />}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={oncommentPress}>
+              <Comment />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onSharePress}>
+              <Share />
             </TouchableOpacity>
           </Box>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('LikedUsers', { likedId })}>
-            {likedUsers.length !== 0 ? (
-              <Box paddingHorizontal={'s'}>
-                {likedUsers.length > 0 && (
-                  <Text fontSize={14} color={'mainblack'}>
-                    {likedUsers.length === 1
-                      ? `Liked by ${likedUsers[0]}`
-                      : `Liked by ${likedUsers[0]} and ${
-                          likedUsers.length - 1
-                        } others`}
-                  </Text>
-                )}
-              </Box>
-            ) : null}
+          <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
+            {isSaved ? <Save_f /> : <Save />}
           </TouchableOpacity>
-          <Box paddingVertical={'s'} paddingHorizontal={'s'}>
-            <Text width={300} numberOfLines={1}>
-              <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
-                {user}{' '}
-              </Text>
-              <Text fontSize={14} color={'mainblack'}>
-                {Caption}
-              </Text>
-            </Text>
-          </Box>
-          {comments?.length > 0 && (
-            <Box paddingVertical="s" paddingHorizontal="s">
-              <TouchableOpacity onPress={ViewCmnt}>
-                <Text fontSize={14}>
-                  View{' '}
-                  {comments?.length > 1
-                    ? `${comments?.length} comments`
-                    : 'comment'}
+        </Box>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+          {likedUsers.length !== 0 ? (
+            <Box paddingHorizontal={'s'}>
+              {likedUsers.length > 0 && (
+                <Text fontSize={14} color={'mainblack'}>
+                  {likedUsers.length === 1
+                    ? `Liked by ${likedUsers[0]}`
+                    : `Liked by ${likedUsers[0]} and ${
+                        likedUsers.length - 1
+                      } others`}
                 </Text>
-              </TouchableOpacity>
+              )}
             </Box>
-          )}
-        </Card>
+          ) : null}
+        </TouchableOpacity>
+        <Box paddingVertical={'s'} paddingHorizontal={'s'}>
+          <Text width={300} numberOfLines={1}>
+            <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
+              {user}{' '}
+            </Text>
+            <Text fontSize={14} color={'mainblack'}>
+              {Caption}
+            </Text>
+          </Text>
+        </Box>
+        {comments?.length > 0 && (
+          <Box paddingVertical="s" paddingHorizontal="s">
+            <TouchableOpacity onPress={ViewCmnt}>
+              <Text fontSize={14}>
+                View{' '}
+                {comments?.length > 1
+                  ? `${comments?.length} comments`
+                  : 'comment'}
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        )}
+      </Card>
 
-        <ShareBox postId={postId} ref={Shareref} />
-        <CommentBox
-          navigation={navigation}
-          ref={CmtRef}
-          postId={postId}
-          userId={userId}
-        />
-        <Divider />
-      </Box>
-    </GestureHandlerRootView>
+      <ShareBox postId={postId} ref={Shareref} />
+      <CommentBox
+        navigation={navigation}
+        ref={CmtRef}
+        postId={postId}
+        userId={userId}
+      />
+      <Divider />
+    </Box>
   );
 };
-
 
 const ShareBox = forwardRef(({postId}, ref) => {
   const currentUser = useSelector(state => state.user.user);
@@ -704,6 +678,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
             flex={1}
             flexDirection="row"
             alignItems="center"
+            gap={'s'}
             justifyContent="space-between">
             <Text fontSize={14} color="mainblack">
               {item.comment}

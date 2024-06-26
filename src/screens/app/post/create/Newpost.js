@@ -1,29 +1,18 @@
 import firestore from '@react-native-firebase/firestore';
-import {Button, Divider, Header, Input} from '@rneui/themed';
-import S3 from 'aws-sdk/clients/s3';
+import {Button, Header, Input} from '@rneui/themed';
 import {Buffer} from 'buffer';
-import RNFS from 'react-native-fs';
 import React, {useEffect, useState} from 'react';
-import {
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, ScrollView, StyleSheet} from 'react-native';
+import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
+import BackBtn from '../../../../components/buttons/backButton';
 import {Loader} from '../../../../components/loader/Loader';
 import config from '../../../../config';
-import {
-  Gal_Image,
-  Gal_Video,
-  Gallery_Icon,
-  Image_Fill,
-} from '../../../../constants/assets';
-import {Box, Text} from '../../../../theme';
+import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
-import BackBtn from '../../../../components/buttons/backButton';
+import {Box, Text} from '../../../../theme';
 const cloudFrontDomain = config.CLDFRNTDOM;
 
 const NewPost = ({navigation, route, getData}) => {
@@ -78,6 +67,7 @@ const NewPost = ({navigation, route, getData}) => {
     try {
       const result = await ImageCropPicker.openPicker({
         mediaType: 'video',
+        loadingLabelText: 'loading',
       });
       setSelectedVideo(result.path);
     } catch (error) {

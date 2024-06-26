@@ -1,11 +1,11 @@
-import React,{useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {FlatList, Image, TouchableOpacity} from 'react-native';
 import {Box, Text} from '../../../../theme';
 import {Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('screen');
 import firestore from '@react-native-firebase/firestore';
 import Video from 'react-native-video';
-const PostsView = ({ user, navigation }) => {
+const PostsView = ({user, navigation}) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -34,14 +34,22 @@ const PostsView = ({ user, navigation }) => {
     fetchPosts();
   }, [user]);
 
-  const renderPostItem = ({ item }) => (
+  const renderPostItem = ({item}) => (
     <Box>
-      <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {  item })}>
-        <Image
-          resizeMode="cover"
-          style={{ width: width / 3, height: 125 }}
-          source={{ uri: item?.imageUrl }}
-        />
+      <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {item})}>
+        {item.mediaType === 'image' ? (
+          <Image
+            resizeMode="cover"
+            style={{width: width / 3, height: 125}}
+            source={{uri: item?.mediaUrl}}
+          />
+        ) : (
+          <Video
+            source={{uri: item?.mediaUrl}}
+            style={{width: width / 3, height: 125}}
+            resizeMode="cover"
+          />
+        )}
       </TouchableOpacity>
     </Box>
   );
@@ -51,7 +59,7 @@ const PostsView = ({ user, navigation }) => {
       <FlatList
         data={posts}
         renderItem={renderPostItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         ListEmptyComponent={
           <Box flex={1} justifyContent="center" alignItems="center">
             <Text>No Posts Yet</Text>
@@ -65,6 +73,5 @@ const PostsView = ({ user, navigation }) => {
     </Box>
   );
 };
-
 
 export default PostsView;
