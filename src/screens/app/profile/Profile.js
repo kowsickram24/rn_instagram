@@ -1,9 +1,9 @@
-import {Avatar, Button, Header} from '@rneui/themed';
+import { Avatar, Button, Header } from '@rneui/themed';
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
-import {Menu} from '../../../constants/assets';
+import { TouchableOpacity } from 'react-native';
+import { Menu } from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import {Box, Text} from '../../../theme';
+import { Box, Text } from '../../../theme';
 const Profile = ({navigation, User}) => {
   console.log('User: ', User);
 
@@ -78,7 +78,7 @@ const Profile = ({navigation, User}) => {
       </Box>
       <Box padding={'s'}>
         <Button
-          onPress={() => navigation.navigate('EditProfile', User)}
+          onPress={() => navigation.push('EditProfile', User)}
           title={'Edit Profile'}
           containerStyle={{
             borderRadius: 10,

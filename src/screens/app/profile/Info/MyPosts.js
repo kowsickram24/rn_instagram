@@ -1,19 +1,18 @@
 import firestore from '@react-native-firebase/firestore';
-import {Skeleton} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
+import { Skeleton } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   RefreshControl,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
-import {useSelector} from 'react-redux';
-import {Box, Text} from '../../../../theme';
 import FastImage from 'react-native-fast-image';
-const {width} = Dimensions.get('screen');
 import Video from 'react-native-video';
+import { useSelector } from 'react-redux';
+import { Box, Text } from '../../../../theme';
+const {width} = Dimensions.get('screen');
 const MyPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

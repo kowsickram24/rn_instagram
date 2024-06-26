@@ -1,16 +1,15 @@
-import {Box, Text} from '../../../../theme';
 import firestore from '@react-native-firebase/firestore';
-import {Image, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
-import {useState, useEffect} from 'react';
-import {Header, Input} from '@rneui/themed';
-import {Back} from '../../../../constants/assets';
-import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
-import {useSelector} from 'react-redux';
-
-const {width, height} = Dimensions.get('screen');
-import ToastManager, {Toast} from 'toastify-react-native';
+import { Header, Input } from '@rneui/themed';
+import { useState } from 'react';
+import { Dimensions, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
+import { useSelector } from 'react-redux';
+import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
+import { PrimaryBtn } from '../../../../components/buttons/primaryButton';
+import { Box, Text } from '../../../../theme';
+const {width, height} = Dimensions.get('screen');
 const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);
@@ -64,7 +63,9 @@ const EditPost = ({route, navigation}) => {
             <Video
               source={{uri: posts?.mediaUrl}}
               style={{height: 350, borderRadius: 10}}
-              controls
+              playWhenInactive
+              repeat
+              muted
               resizeMode="cover"
             />
           )}

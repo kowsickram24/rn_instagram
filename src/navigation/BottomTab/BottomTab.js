@@ -67,13 +67,20 @@ const BottomNavigator = ({User, navigation}) => {
         />
         <BottomTab.Screen
           options={{
-            tabBarIcon: ({focused}) => (
-              <Avatar
-                avatarStyle={{borderRadius: 18}}
-                containerStyle={{width: 36, height: 36}}
-                source={{uri: currentUser?.avatar}}
-              />
-            ),
+            tabBarIcon: ({focused}) =>
+              focused ? (
+                <Avatar
+                  rounded
+                  containerStyle={{width: 36, height: 36, borderWidth:2}}
+                  source={{uri: currentUser?.avatar}}
+                />
+              ) : (
+                <Avatar
+                  rounded
+                  containerStyle={{width: 36, height: 36}}
+                  source={{uri: currentUser?.avatar}}
+                />
+              ),
           }}
           name="Profile">
           {props => <Profile {...props} User={currentUser} />}

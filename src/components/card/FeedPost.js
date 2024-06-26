@@ -242,9 +242,10 @@ const FeedPost = ({
   }
 
   return (
-    <Box>
+    <Box flex={1}>
       <Card
         containerStyle={{
+          flex:1,
           padding: 0,
           margin: 0,
           elevation: 0,
@@ -269,8 +270,9 @@ const FeedPost = ({
           <Video
             source={{uri: mediaSrc}}
             style={{height: 400, width: '100%'}}
-            controls
+            playWhenInactive
             resizeMode="cover"
+            repeat
           />
         )}
 

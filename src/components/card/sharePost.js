@@ -56,7 +56,8 @@ const SharePost = ({ postId }) => {
           <Video
             source={{ uri: post?.mediaUrl }}
             style={{ width: '100%', height: 400 }}
-            controls={true}
+            playWhenInactive
+            repeat
             resizeMode="cover"
           />
         )}

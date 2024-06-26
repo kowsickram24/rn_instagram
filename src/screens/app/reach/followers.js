@@ -14,6 +14,9 @@ const Followers = ({userData, navigation}) => {
             <Text color={'mainblack'} fontSize={14}>
               {item?.username}
             </Text>
+            <Text color={'mainblack'} fontSize={14}>
+              {item?.fullname}
+            </Text>
           </ListItem.Content>
         </ListItem>
       </TouchableOpacity>

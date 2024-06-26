@@ -7,13 +7,16 @@ const Following = ({userData, navigation}) => {
   const renderItem = ({item}) => (
     <TouchableOpacity
       onPress={() => {
-        navigation.push('ProfileView', {userId: item?.userId});
+        navigation.replace('ProfileView', {userId: item?.userId});
       }}>
       <ListItem>
         <Avatar size={'medium'} source={{uri: item?.avatar}} rounded />
         <ListItem.Content>
           <Text color={'mainblack'} fontSize={14}>
             {item?.username}
+          </Text>
+          <Text color={'mainblack'} fontSize={14}>
+            {item?.fullname}
           </Text>
         </ListItem.Content>
       </ListItem>

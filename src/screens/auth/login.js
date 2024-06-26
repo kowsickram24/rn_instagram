@@ -14,7 +14,7 @@ import { Insta_Typo_logo, Line } from '../../constants/assets';
 import { login } from '../../store/slices/userSlice';
 import { Box, Text } from '../../theme';
 import { LoginSchema } from '../../utils/validation';
-
+import SnackBar from '../../components/snackbar/snackBar';
 const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -162,6 +162,10 @@ const LoginScreen = ({navigation, getData}) => {
                       </Text>
                     </Box>
                   )}
+                  <SnackBar content={'Check Your mail for reset password'}
+                  visible={isForget}
+                  
+                  />
                   <Box paddingVertical={'s'}>
                     <TouchableOpacity
                       onPress={() => handleForgotPassword(values.email)}>

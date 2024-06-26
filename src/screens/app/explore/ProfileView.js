@@ -1,15 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Divider} from '@rneui/themed';
-import {useEffect, useState} from 'react';
-import {ActivityIndicator, TouchableOpacity} from 'react-native';
-import {useSelector} from 'react-redux';
+import { Avatar, Divider } from '@rneui/themed';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useSelector } from 'react-redux';
 import {
   PrimaryBtn,
   SecondaryBtn,
 } from '../../../components/buttons/primaryButton';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import {Box, Text} from '../../../theme';
-import Profile from '../profile/Profile';
+import { Box, Text } from '../../../theme';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
@@ -135,7 +134,7 @@ const ProfileView = ({route, navigation}) => {
   }
 
   if (isSameUser) {
-    return <Profile User={selectedUser} navigation={navigation} />;
+    navigation.navigate('Profile');
   }
 
   return (

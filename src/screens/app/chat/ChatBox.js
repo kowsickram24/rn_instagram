@@ -324,7 +324,8 @@ const ChatBox = ({navigation, route}) => {
                       <Video
                         source={{uri: item.message}}
                         style={{width: 200, height: 400, borderRadius: 10}}
-                        controls
+                       playWhenInactive
+                       repeat
                       />
                     )}
                   </Box>

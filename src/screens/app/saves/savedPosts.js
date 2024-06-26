@@ -1,21 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import {Header} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
 import {
-  ScrollView,
+  ActivityIndicator,
+  Dimensions,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  Dimensions,
 } from 'react-native';
-import {Header} from '@rneui/themed';
-import {Box, Text} from '../../../theme';
-import {Back} from '../../../constants/assets';
-import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
-import FastImage from 'react-native-fast-image';
+import {Box, Text} from '../../../theme';
 const {width, height} = Dimensions.get('screen');
-import Video from 'react-native-video';
 const SavedPosts = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [savedPosts, setSavedPosts] = useState([]);
@@ -105,7 +102,7 @@ const SavedPosts = ({navigation}) => {
             onPress={() =>
               navigation.navigate('PostPage', {postId: item?.postId})
             }>
-              {item.mediaType === 'image' ? (
+            {item.mediaType === 'image' ? (
               <FastImage
                 resizeMode="cover"
                 source={{uri: item?.mediaUrl}}
@@ -113,7 +110,8 @@ const SavedPosts = ({navigation}) => {
               />
             ) : (
               <Video
-              controls
+                repeat
+                playWhenInactive
                 resizeMode="cover"
                 source={{uri: item?.mediaUrl}}
                 style={{width: width / 3, height: width / 3}}
