@@ -52,6 +52,7 @@ const PostInfo = ({route}) => {
         comments={item?.comments}
         userId={currentUser?.userId}
         postId={item?.postId}
+        time={item?.time}
       />
     </Box>
   );

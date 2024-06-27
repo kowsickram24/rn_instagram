@@ -38,7 +38,7 @@ const ChatBox = ({navigation, route}) => {
   const chatId = route?.params.params.chatId;
   const MediaRef = useRef();
   const [chatData, setChatData] = useState(null);
-
+  const [isMuted, setIsMuted] = useState(true);
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedVideo, setSelectedVideo] = useState('');
   const [secondUser, setSecondUser] = useState(null);
@@ -46,7 +46,9 @@ const ChatBox = ({navigation, route}) => {
   const [postData, setPostData] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const cloudFrontDomain = config.CLDFRNTDOM;
-
+  const ToggleMute = () => {
+    setIsMuted(!isMuted);
+  };
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('chats')
@@ -321,13 +323,16 @@ const ChatBox = ({navigation, route}) => {
                         </TouchableOpacity>
                       </>
                     ) : (
-                      <Video
-                      resizeMode='cover'
-                        source={{uri: item.message}}
-                        style={{width: 200, height: 200, borderRadius: 10}}
-                       playWhenInactive
-                       repeat
-                      />
+                      <TouchableWithoutFeedback onPress={ToggleMute}>
+                        <Video
+                          resizeMode="cover"
+                          source={{uri: item.message}}
+                          style={{width: 200, height: 200, borderRadius: 10}}
+                          playWhenInactive
+                          repeat
+                          muted={isMuted}
+                        />
+                      </TouchableWithoutFeedback>
                     )}
                   </Box>
                 </TouchableWithoutFeedback>

@@ -1,0 +1,26 @@
+import {Avatar} from '@rneui/themed';
+import {Box} from '../../theme';
+import {TouchableWithoutFeedback} from 'react-native';
+
+const StoryHighlight = ({ImgSrc}) => {
+  return (
+    <Box padding={'s'}>
+      <TouchableWithoutFeedback>
+        <Avatar
+          containerStyle={{
+            borderWidth: 1.5,
+            borderColor: 'violet',
+
+            borderRadius: 50,
+          }}
+          rounded
+          source={{
+            uri: ImgSrc,
+          }}
+          size={'medium'}
+        />
+      </TouchableWithoutFeedback>
+    </Box>
+  );
+};
+export default StoryHighlight;

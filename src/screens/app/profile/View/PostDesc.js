@@ -78,6 +78,7 @@ const PostDesc = ({route, navigation}) => {
         mediaType={item?.mediaType}
         userId={currentUser?.userId}
         postId={item?.postId}
+        time={item?.time}
       />
     </Box>
   );

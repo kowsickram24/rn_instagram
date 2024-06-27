@@ -13,54 +13,83 @@ const ProfileCard = ({
   onAvatarPressout,
 }) => {
   return (
-    <Box>
-      <Box
-        flexDirection="row"
-        paddingVertical={'s'}
-        alignItems="center"
-        gap={'xl'}
-        justifyContent="space-evenly">
-        <TouchableWithoutFeedback
-          onPressOut={onAvatarPressout}
-          onLongPress={onAvatarLongPress}>
-          <Avatar
-            rounded
-            size={'large'}
-            source={{
-              uri: userAvatar,
-            }}
-          />
-        </TouchableWithoutFeedback>
-        <Box alignItems="center" flexDirection="row" gap={'l'}>
-          <Box alignSelf="center">
-            <Text color={'mainblack'} fontSize={20} textAlign="center">
-              {Postcount}
+    <Box
+      flexDirection="row"
+      paddingVertical={'s'}
+      alignItems="center"
+      justifyContent="space-evenly">
+      <TouchableWithoutFeedback
+        onPressOut={onAvatarPressout}
+        onLongPress={onAvatarLongPress}>
+        <Avatar
+          rounded
+          size={'large'}
+          source={{
+            uri: userAvatar,
+          }}
+        />
+      </TouchableWithoutFeedback>
+      <Box gap={'xl'} alignItems="center" flexDirection="row">
+        <Card
+          containerStyle={{
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <Text
+            color={'mainblack'}
+            fontWeight={'500'}
+            fontSize={16}
+            textAlign="center">
+            {Postcount}
+          </Text>
+          <Text color={'mainblack'} fontSize={13}>
+            posts
+          </Text>
+        </Card>
+
+        <Card
+          containerStyle={{
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <TouchableOpacity onPress={onFollowersPress}>
+            <Text
+              color={'mainblack'}
+              fontWeight={'500'}
+              fontSize={16}
+              textAlign="center">
+              {followersCount}
             </Text>
-            <Text color={'mainblack'} fontSize={12}>
-              posts
+            <Text color={'mainblack'} fontSize={13}>
+              followers
             </Text>
-          </Box>
-          <Box alignSelf="center">
-            <TouchableOpacity onPress={onFollowersPress}>
-              <Text color={'mainblack'} fontSize={20} textAlign="center">
-                {followersCount}
-              </Text>
-              <Text color={'mainblack'} fontSize={12}>
-                followers
-              </Text>
-            </TouchableOpacity>
-          </Box>
-          <Box alignSelf="center">
-            <TouchableOpacity onPress={onFollowingPress}>
-              <Text color={'mainblack'} fontSize={20} textAlign="center">
-                {followingCount}
-              </Text>
-              <Text color={'mainblack'} fontSize={12}>
-                following
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        </Box>
+          </TouchableOpacity>
+        </Card>
+
+        <Card
+          containerStyle={{
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <TouchableOpacity onPress={onFollowingPress}>
+            <Text
+              color={'mainblack'}
+              fontWeight={'500'}
+              fontSize={16}
+              textAlign="center">
+              {followingCount}
+            </Text>
+            <Text color={'mainblack'} fontSize={13}>
+              following
+            </Text>
+          </TouchableOpacity>
+        </Card>
       </Box>
     </Box>
   );

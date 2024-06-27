@@ -56,13 +56,13 @@ const ReachTab = ({userData, screen}) => {
       initialRouteName={screen}
       screenOptions={{
         tabBarAndroidRipple: {borderless: false},
-        tabBarLabelStyle: {fontSize: 12},
+        tabBarLabelStyle: {fontSize: 14,fontWeight:'500', textTransform: 'capitalize'},
         tabBarBounces: false,
         tabBarIndicatorStyle: {backgroundColor: 'black'},
       }}>
       <TopTab.Screen
         options={{
-          tabBarLabel: 'Following',
+          tabBarLabel: `Following ${followingData?.length}`,
         }}
         name="Following">
         {props => (
@@ -75,7 +75,8 @@ const ReachTab = ({userData, screen}) => {
       </TopTab.Screen>
       <TopTab.Screen
         options={{
-          tabBarLabel: 'Followers',
+          tabBarLabel: `Followers ${followersData?.length}`,
+
         }}
         name="Followers">
         {props => (

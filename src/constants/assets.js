@@ -42,6 +42,9 @@ export {default as Gal_Video} from '../assets/icons/gallery_video.svg';
 export {default as Gal_Image} from '../assets/icons/gallery_image.svg';
 export {default as Gallery_Icon} from '../assets/icons/gallery.svg';
 export {default as Log_out} from '../assets/icons/logout.svg';
+export {default as Dw_Arrow} from '../assets/icons/arrow_dwn.svg';
+
+
 export const Defaultimage =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png';
 // Bottom Tab

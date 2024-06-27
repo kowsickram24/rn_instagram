@@ -4,9 +4,15 @@ import {useEffect, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {Box, Text} from '../../theme';
 import Video from 'react-native-video';
+import {TouchableWithoutFeedback} from 'react-native';
 
-const SharePost = ({ postId }) => {
+const SharePost = ({postId}) => {
   const [post, setPost] = useState(null);
+  const [isMuted, setIsMUted] = useState(true);
+
+  const toggleMute = () => {
+    setIsMUted(!isMuted);
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -42,26 +48,28 @@ const SharePost = ({ postId }) => {
     <>
       <Box gap={'s'} padding={'s'} width={250}>
         <Box gap={'s'} flexDirection="row" alignItems="center">
-          <Avatar source={{ uri: post?.user?.avatar }} rounded size={'small'} />
+          <Avatar source={{uri: post?.user?.avatar}} rounded size={'small'} />
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
             {post?.user?.username}
           </Text>
         </Box>
         {post?.mediaType === 'image' ? (
           <FastImage
-            source={{ uri: post?.mediaUrl }}
+            source={{uri: post?.mediaUrl}}
             resizeMode="cover"
-            style={{ width: '100%', height: 200 }}
+            style={{width: '100%', height: 200}}
           />
         ) : (
-          <Video
-            source={{ uri: post?.mediaUrl }}
-            style={{ width: '100%', height: 200 }}
-            playWhenInactive
-            repeat
-            muted
-            resizeMode="cover"
-          />
+          <TouchableWithoutFeedback onPress={toggleMute}>
+            <Video
+              source={{uri: post?.mediaUrl}}
+              style={{width: '100%', height: 200}}
+              playWhenInactive
+              repeat
+              muted={isMuted}
+              resizeMode="cover"
+            />
+          </TouchableWithoutFeedback>
         )}
         <Box alignItems="center" flexDirection="row" gap={'s'}>
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>

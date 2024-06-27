@@ -1,5 +1,5 @@
-import {Button, Header} from '@rneui/themed';
-import React, {useState} from 'react';
+import {Avatar, Button, Header} from '@rneui/themed';
+import React, {useRef, useState} from 'react';
 import {
   Modal,
   TouchableOpacity,
@@ -8,13 +8,15 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import ProfileCard from '../../../components/card/profileCard';
-import {Menu} from '../../../constants/assets';
+import {Dw_Arrow, Menu} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import {Box, Text, width} from '../../../theme';
+import {Box, Text, height, width} from '../../../theme';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import StoryHighlight from '../../../components/avatar/StoryHighlight';
 const Profile = ({navigation, User}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const ProfileRef = useRef();
   const handleLongPress = avatar => {
     setSelectedImage(avatar);
     setModalVisible(true);
@@ -31,6 +33,16 @@ const Profile = ({navigation, User}) => {
         rightComponent={
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
             <Menu />
+          </TouchableOpacity>
+        }
+        leftComponent={
+          <TouchableOpacity onPress={() => ProfileRef.current.open()}>
+            <Box flexDirection="row" alignItems="center" gap={'s'}>
+              <Text color={'mainblack'} fontWeight={'400'} fontSize={16}>
+                {User?.username}
+              </Text>
+              <Dw_Arrow />
+            </Box>
           </TouchableOpacity>
         }
         backgroundColor="white"
@@ -57,7 +69,7 @@ const Profile = ({navigation, User}) => {
       />
       <Box padding={'m'}>
         {User?.username && (
-          <Text fontSize={12} color={'mainblack'}>
+          <Text fontSize={12} fontWeight={'500'} color={'mainblack'}>
             {User?.fullname}
           </Text>
         )}
@@ -81,7 +93,7 @@ const Profile = ({navigation, User}) => {
           }}
         />
       </Box>
-
+      <StoryHighlight ImgSrc={'https://picsum.photos/568'} />
       {/* Profile View */}
 
       <Modal
@@ -107,7 +119,45 @@ const Profile = ({navigation, User}) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
+      <RBSheet
+        draggable
+        height={height / 2}
+        ref={ProfileRef}
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          },
+          wrapper: {
+            padding: 2,
+          },
+        }}>
+        <Box flex={1}>
+          <Box
+            flex={2}
+            padding={'s'}
+            margin={'s'}
+            borderRadius={'m'}
+            backgroundColor={'lightgrey'}>
+            <Box flexDirection='row' gap={'m'}>
+              <Avatar rounded size={'medium'} source={{uri: User?.avatar}} />
+              <Text>{User?.username}</Text>
+            </Box>
+          </Box>
+          <Box flex={1} padding={'s'} justifyContent="flex-end">
+            <TouchableWithoutFeedback
+              onPress={() => navigation.navigate('AccountCenter')}>
+              <Box padding={'xs'} borderRadius={'m'} borderWidth={1}>
+                <Text color={'mainblack'} textAlign="center">
+                  Go to Accountcenter
+                </Text>
+              </Box>
+            </TouchableWithoutFeedback>
+          </Box>
+        </Box>
+      </RBSheet>
       {/* Profile Tab */}
       <TopNavigator navigation={navigation} />
     </Box>

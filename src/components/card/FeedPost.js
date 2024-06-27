@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Avatar, Button, Card, Input } from '@rneui/themed';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {Avatar, Button, Card, Input} from '@rneui/themed';
 import React, {
   forwardRef,
   useCallback,
@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Platform,
   Dimensions,
   FlatList,
   Share as Shre,
@@ -17,10 +18,13 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { Divider } from 'react-native-paper';
+import {Divider} from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+import {formatDistanceToNow} from 'date-fns';
+import {parse} from 'date-fns';
+import {enUS} from 'date-fns/locale';
 import {
   Comment,
   Heaty_f,
@@ -31,9 +35,10 @@ import {
   Share,
   Three_dots,
 } from '../../constants/assets';
-import { Box, Text } from '../../theme';
+import {Box, Text} from '../../theme';
 import SkeletonCard from '../Skeleton/skeletonCard';
 const {width, height} = Dimensions.get('screen');
+import {SearchBar} from '@rneui/themed';
 
 const PostHeader = ({
   location,
@@ -84,6 +89,7 @@ const FeedPost = ({
   onProfilePress,
   postId,
   mediaType,
+  time,
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
@@ -94,6 +100,23 @@ const FeedPost = ({
   const [isSaved, setIsSaved] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const [likedId, setLikedId] = useState([]);
+  const [isMuted, setIsMuted] = useState(true);
+  let formattedTime = '';
+
+  try {
+    const date = parse(time, 'M/dd/yyyy, h:mm:ss a', new Date(), {
+      locale: enUS,
+    });
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid Date');
+    }
+    formattedTime = formatDistanceToNow(date, {addSuffix: true});
+  } catch (error) {
+    formattedTime = 'Invalid time';
+  }
+  const toggleMute = () => {
+    setIsMuted(prevIsMuted => !prevIsMuted);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -289,22 +312,24 @@ const FeedPost = ({
               source={{uri: mediaSrc}}
             />
           ) : (
-            <Video
-              source={{uri: mediaSrc}}
-              style={{height: 400, width: '100%'}}
-              playWhenInactive
-              resizeMode="cover"
-              repeat
-              muted
-              // ref={ref => (VideoRefs.current = ref)}
-            />
+            <TouchableWithoutFeedback onPress={toggleMute}>
+              <Video
+                source={{uri: mediaSrc}}
+                style={{height: 400, width: '100%'}}
+                playWhenInactive
+                resizeMode="cover"
+                repeat
+                muted={isMuted}
+              />
+            </TouchableWithoutFeedback>
           )}
 
           <Box
             flexDirection="row"
             justifyContent="space-between"
             alignItems="center"
-            padding={'s'}>
+            paddingTop={'s'}
+            paddingHorizontal={'xs'}>
             <Box flexDirection="row" justifyContent="center" gap={'m'}>
               <TouchableOpacity onPress={onLikePress}>
                 {isLiked ? <Heaty_f /> : <Heaty_uf />}
@@ -349,7 +374,7 @@ const FeedPost = ({
           </Box>
           {comments?.length > 0 && (
             <TouchableOpacity onPress={ViewCmnt}>
-              <Text padding={'s'} fontSize={14}>
+              <Text paddingHorizontal={'s'} fontSize={14}>
                 View{' '}
                 {comments?.length > 1
                   ? `${comments?.length} comments`
@@ -366,6 +391,9 @@ const FeedPost = ({
           postId={postId}
           userId={userId}
         />
+        <Text paddingHorizontal={'s'} fontSize={12}>
+          {formattedTime}
+        </Text>
       </Box>
     </TouchableWithoutFeedback>
   );
@@ -503,15 +531,13 @@ const ShareBox = forwardRef(({postId}, ref) => {
       ref={ref}
       height={height / 2}>
       <Box flex={1} padding="s">
-        <Text
-          fontWeight="bold"
-          padding="s"
-          fontSize={14}
-          textAlign="center"
-          color="mainblack">
-          Share
-        </Text>
-        <Divider />
+        <SearchBar
+          inputStyle={{fontSize: 14}}
+          platform={Platform.OS === 'android' ? 'android' : 'ios'}
+          placeholder="Search"
+          // onChangeText={setSearchQuery}
+          // value={searchQuery}
+        />
         <FlatList
           data={shareUsers}
           renderItem={renderSharelist}
@@ -778,9 +804,11 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
           renderItem={renderCommentItem}
           keyExtractor={item => item.time}
           ListEmptyComponent={
-            <Text paddingVertical="s" textAlign="center">
-              No comments yet
-            </Text>
+            <Box flex={1} alignItems="center" justifyContent="center">
+              <Text color={'mainblack'} fontWeight={'bold'} paddingVertical="s">
+                No Comments Yet
+              </Text>
+            </Box>
           }
         />
         {replyingTo && (

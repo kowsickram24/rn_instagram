@@ -68,6 +68,7 @@ const Home = ({navigation}) => {
         mediaType={item?.mediaType}
         user={item?.user.username}
         comments={item?.comments}
+        time={item?.time}
         onProfilePress={() =>
           navigation.navigate('ProfileView', {userId: item?.userId})
         }

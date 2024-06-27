@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import {Header, Overlay} from '@rneui/themed';
 import React, {useState} from 'react';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, Platform} from 'react-native';
 import {useDispatch} from 'react-redux';
-import ToastManager from 'toastify-react-native';
+import {SearchBar} from '@rneui/themed';
 import {Loader} from '../../../components/loader/Loader';
 import {Button} from 'react-native-paper';
 import {
@@ -13,6 +13,7 @@ import {
   Log_out,
   Rt_Arrow,
   Save,
+  User,
 } from '../../../constants/assets';
 import {logout} from '../../../store/slices/userSlice';
 import BackBtn from '../../../components/buttons/backButton';
@@ -42,32 +43,42 @@ const Settings = ({navigation, getData}) => {
   };
 
   return (
-    <Box flex={1} gap={'m'} backgroundColor="mainwhite">
+    <Box flex={1}  backgroundColor="mainwhite">
       <Header
         backgroundColor="white"
         statusBarProps={{
           hidden: true,
         }}
+        leftContainerStyle={{flex: 3}}
         leftComponent={
           <Box gap={'m'} alignItems="center" flexDirection="row">
             <BackBtn onPress={() => navigation.goBack()} />
-            <Text color={'mainblack'}> Settings </Text>
+            <Text color={'mainblack'}>Settings and activity </Text>
           </Box>
         }
       />
+
       {loading ? (
         <Loader text={'Logging Out'} />
       ) : (
         <>
+            <SearchBar
+              inputStyle={{fontSize: 14}}
+              platform={Platform.OS === 'android' ? 'android' : 'ios'}
+              placeholder="Search"
+              // onChangeText={setSearchQuery}
+              // value={searchQuery}
+            />
           <Box padding={'m'} gap={'xl'}>
-            <ToastManager position={'top'} />
-            <Text color={'mainblack'}>Settings and Privacy</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('AccountCenter')}>
               <Box flexDirection="row" justifyContent="space-between">
-                <Text fontSize={14} color={'mainblack'}>
-                  Accounts Center
-                </Text>
+                <Box flexDirection="row" justifyContent="center" gap={'s'}>
+                  <User />
+                  <Text fontSize={14} color={'mainblack'}>
+                    Accounts Center
+                  </Text>
+                </Box>
                 <Rt_Arrow />
               </Box>
             </TouchableOpacity>

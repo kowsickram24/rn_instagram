@@ -1,8 +1,8 @@
-import { Avatar, ListItem, SearchBar } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Platform } from 'react-native';
-import { useSearchUsersQuery } from '../../../store/slices/apiSlice';
-import { Box, Text } from '../../../theme';
+import {Avatar, ListItem, SearchBar} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Platform} from 'react-native';
+import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
+import {Box, Text} from '../../../theme';
 import Gallery from './Gallery';
 
 const Explore = ({navigation}) => {
@@ -44,9 +44,9 @@ const Explore = ({navigation}) => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <SearchBar
-      inputStyle={{fontSize:14}}
+        inputStyle={{fontSize: 14}}
         onChangeText={setSearchQuery}
-        value={searchQuery} 
+        value={searchQuery}
         placeholder="Search"
         platform={Platform.OS === 'android' ? 'android' : 'ios'}
         inputContainerStyle={{
@@ -56,7 +56,6 @@ const Explore = ({navigation}) => {
           paddingHorizontal: 10,
           paddingVertical: 5,
         }}
-        
       />
 
       <FlatList
@@ -66,7 +65,6 @@ const Explore = ({navigation}) => {
         renderItem={renderItem}
         ListEmptyComponent={<Gallery />}
       />
-      
     </Box>
   );
 };

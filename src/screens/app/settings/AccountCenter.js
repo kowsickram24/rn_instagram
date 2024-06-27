@@ -1,9 +1,8 @@
-import {Image, TouchableOpacity} from 'react-native';
-import {Back} from '../../../constants/assets';
-import {Box, Text} from '../../../theme';
-import {Button, Header} from '@rneui/themed';
+import {Avatar, Button, Divider, Header} from '@rneui/themed';
 import {Fragment} from 'react';
+import {Image} from 'react-native';
 import BackBtn from '../../../components/buttons/backButton';
+import {Box, Text} from '../../../theme';
 
 const AccountCenter = ({currentUser, navigation}) => {
   return (
@@ -11,45 +10,61 @@ const AccountCenter = ({currentUser, navigation}) => {
       <Header
         statusBarProps={{hidden: true}}
         backgroundColor="white"
-        leftComponent={
-          <BackBtn onPress={() => navigation.goBack() } />
-        }
+        leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
       />
-      <Box gap={'s'} padding={'s'} backgroundColor={'mainwhite'} flex={1}>
+
+      <Box
+        backgroundColor={'mainwhite'}
+        borderRadius={'l'}
+        borderColor={'lightgrey'}
+        borderWidth={1}
+        flex={1}
+        gap={'m'}
+        padding={'l'}>
         <Text textAlign="center" color={'mainblack'}>
           Account Info
         </Text>
-
-        <Box
-          borderRadius={'l'}
-          borderColor={'lightgrey'}
-          borderWidth={1}
-          flex={1}
-          padding={'l'}>
-          <Image
-            source={{uri: currentUser?.avatar}}
-            style={{
-              alignSelf: 'center',
-              width: 150,
-              height: 150,
-              borderRadius: 75,
-            }}
-          />
-          <Box gap={'s'}>
-            <Text color={'mainblack'}> {currentUser?.username}</Text>
-            <Text color={'mainblack'}> {currentUser?.fullname}</Text>
-            <Text color={'mainblack'}> {currentUser?.bio}</Text>
+        <Avatar
+          size={'large'}
+          containerStyle={{
+            alignSelf: 'center',
+          }}
+          source={{uri: currentUser?.avatar}}
+          rounded
+        />
+        <Divider />
+        <Box gap={'l'}>
+          <Box padding={'s'}>
+            <Text fontSize={14}>Username</Text>
+            <Text color={'mainblack'}>{currentUser?.username}</Text>
+          </Box>
+          <Box padding={'s'}>
+            <Text fontSize={14}>Full Name</Text>
+            <Text color={'mainblack'}>{currentUser?.fullname}</Text>
+          </Box>
+          <Box padding={'s'}>
+            <Text fontSize={14}>Bio</Text>
+            <Text color={'mainblack'}>{currentUser?.bio}</Text>
+          </Box>
+          <Box padding={'s'}>
+            <Text fontSize={14}>Gender</Text>
+            <Text color={'mainblack'}>{currentUser?.gender}</Text>
+          </Box>
+          <Box padding={'s'}>
+            <Text fontSize={14}>Created On</Text>
+            <Text color={'mainblack'}>{currentUser?.createdAt}</Text>
           </Box>
         </Box>
-        <Button
-        containerStyle={{padding:6}}
-        titleStyle={{
-          fontSize: 14
-        }}
-          onPress={() => navigation.navigate('EditProfile', currentUser)}
-          title={'Edit Profile'}
-        />
       </Box>
+
+      <Button
+        containerStyle={{padding: 6}}
+        titleStyle={{
+          fontSize: 14,
+        }}
+        onPress={() => navigation.navigate('EditProfile', currentUser)}
+        title={'Edit Profile'}
+      />
     </Fragment>
   );
 };

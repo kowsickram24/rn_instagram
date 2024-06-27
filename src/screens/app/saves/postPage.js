@@ -82,6 +82,7 @@ const PostPage = ({route, navigation}) => {
           Caption={post?.caption}
           user={post?.user?.username}
           location={post?.location}
+          time={post?.time}
         />
       </ScrollView>
     </Box>

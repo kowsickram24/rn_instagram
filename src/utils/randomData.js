@@ -174,10 +174,34 @@ export const PostData = [
   },
   {
     id: 28,
-    PostUrl: 'https://picsum.photos/472',
+    PostUrl: 'https://picsum.photos/412',
   },
   {
     id: 43,
+    PostUrl: 'https://picsum.photos/895',
+  },
+  {
+    id: 89,
+    PostUrl: 'https://picsum.photos/997',
+  },
+  {
+    id: 52,
     PostUrl: 'https://picsum.photos/663',
+  },
+  {
+    id: 134,
+    PostUrl: 'https://picsum.photos/325',
+  },
+  {
+    id: 454,
+    PostUrl: 'https://picsum.photos/456',
+  },
+  {
+    id: 43,
+    PostUrl: 'https://picsum.photos/378',
+  },
+  {
+    id: 424,
+    PostUrl: 'https://picsum.photos/4245',
   },
 ];

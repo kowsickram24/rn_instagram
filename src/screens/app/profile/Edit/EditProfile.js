@@ -4,25 +4,38 @@ import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, TouchableOpacity} from 'react-native';
 import RNFS from 'react-native-fs';
+import {HelperText} from 'react-native-paper';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useSelector} from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
+import DropdownComponent from '../../../../components/dropdown/dropDownPicker';
 import config from '../../../../config';
+import {Defaultimage} from '../../../../constants/assets';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
 import {Box, Text} from '../../../../theme';
+
 const {width, height} = Dimensions.get('screen');
-import {Defaultimage} from '../../../../constants/assets';
 const EditProfile = ({navigation, route}) => {
   const UserDefault = Defaultimage;
   const currentUser = route?.params;
   const [uploadProgress, setUploadProgress] = useState(0);
-  console.log('route?.params: ', route?.params);
   const user = useSelector(state => state.user.user);
   const [newImage, setNewImage] = useState(null);
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState({
+    username: '',
+    fullname: '',
+    bio: '',
+    gender: '',
+  });
   const RBSheetref = useRef();
   const [isLoading, setIsLoading] = useState(false);
+  const [items, setItems] = useState([
+    {label: 'Male', value: 'Male'},
+    {label: 'Female', value: 'Female'},
+    {label: 'Prefer not to say', value: 'Prefer not to say'},
+  ]);
+
   const fetchUserData = async () => {
     try {
       const userDoc = await firestore()
@@ -31,8 +44,10 @@ const EditProfile = ({navigation, route}) => {
         .get();
       if (!userDoc.empty) {
         const userData = userDoc.docs[0].data();
-        setUserData(userData);
-        console.log('userData: ', userData);
+        setUserData({
+          ...userData,
+          gender: userData.gender || '',
+        });
       } else {
         console.log('No matching documents.');
       }
@@ -44,14 +59,12 @@ const EditProfile = ({navigation, route}) => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
   const removeProfile = async () => {
     try {
       setNewImage(UserDefault);
-
       await updateFirestore(UserDefault);
-
       navigation.navigate('Profile');
-
       console.log('Profile picture updated to default successfully');
     } catch (error) {
       console.error('Error updating profile picture to default: ', error);
@@ -123,6 +136,7 @@ const EditProfile = ({navigation, route}) => {
           username: userData?.username,
           fullname: userData?.fullname,
           bio: userData.bio,
+          gender: userData.gender, // Update gender field
         });
         setUserData(prevState => ({...prevState, avatar: imageUrl}));
         console.log('User profile updated successfully');
@@ -171,7 +185,6 @@ const EditProfile = ({navigation, route}) => {
           </Box>
         }
       />
-
       <Box padding={'m'} flex={1} paddingVertical={'l'}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Avatar
@@ -189,47 +202,70 @@ const EditProfile = ({navigation, route}) => {
               Edit Picture
             </Text>
           </TouchableOpacity>
-          <Input
-            label={'Name'}
-            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0.5,
-            }}
-            inputStyle={{padding: 8, fontSize: 14}}
-            value={userData?.username}
-            onChangeText={text => setUserData({...userData, username: text})}
+          <Box gap={'l'}>
+            <Input
+              label={'Name'}
+              renderErrorMessage={false}
+              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0.5,
+              }}
+              inputStyle={{padding: 6, fontSize: 14}}
+              value={userData?.username}
+              onChangeText={text => setUserData({...userData, username: text})}
+            />
+            <Input
+              label={'User Name'}
+              renderErrorMessage={false}
+              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0.5,
+              }}
+              inputStyle={{padding: 6, fontSize: 14}}
+              placeholder="Bio"
+              value={userData?.fullname}
+              onChangeText={text => setUserData({...userData, fullname: text})}
+            />
+            <Input
+              label={'Bio'}
+              renderErrorMessage={false}
+              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0.5,
+              }}
+              inputStyle={{padding: 6, fontSize: 14}}
+              placeholder="Bio"
+              value={userData?.bio}
+              onChangeText={text => setUserData({...userData, bio: text})}
+            />
+          </Box>
+          <Box alignSelf="flex-end">
+            <HelperText type="info">
+              <Text textAlign="right" fontSize={12}>
+                150
+              </Text>
+            </HelperText>
+          </Box>
+          <DropdownComponent
+            label={'Gender'}
+            data={items}
+            value={userData.gender}
+            onChange={item => setUserData({...userData, gender: item.value})}
+            placeholder={'Select gender'}
           />
-
-          <Input
-            label={'Username'}
-            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0.5,
-            }}
-            inputStyle={{padding: 8, fontSize: 14}}
-            placeholder="Bio"
-            value={userData?.fullname}
-            onChangeText={text => setUserData({...userData, fullname: text})}
-          />
-
-          <Input
-            label={'Bio'}
-            labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0.5,
-            }}
-            inputStyle={{padding: 8, fontSize: 14}}
-            placeholder="Bio"
-            value={userData?.bio}
-            onChangeText={text => setUserData({...userData, bio: text})}
-          />
-          {isLoading && <LinearProgress  color='blue' value={uploadProgress / 100} />}
+          {isLoading && (
+            <LinearProgress
+              variant="indeterminate"
+              color="blue"
+              value={uploadProgress / 100}
+            />
+          )}
           <Button
             titleStyle={{fontSize: 14}}
             buttonStyle={{
               borderRadius: 6,
             }}
-            containerStyle={{paddingVertical: 12}}
+            containerStyle={{paddingVertical: 24}}
             title={'Save Changes'}
             onPress={handleSaveChanges}
           />
