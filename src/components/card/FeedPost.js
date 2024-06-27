@@ -1,13 +1,12 @@
 import firestore from '@react-native-firebase/firestore';
-import {useNavigation} from '@react-navigation/native';
-import {Avatar, Button, Card, Input} from '@rneui/themed';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Avatar, Button, Card, Input } from '@rneui/themed';
 import React, {
   forwardRef,
+  useCallback,
   useEffect,
   useRef,
   useState,
-  useCallback,
 } from 'react';
 import {
   Dimensions,
@@ -15,12 +14,13 @@ import {
   Share as Shre,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Divider} from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Comment,
   Heaty_f,
@@ -31,7 +31,7 @@ import {
   Share,
   Three_dots,
 } from '../../constants/assets';
-import {Box, Text} from '../../theme';
+import { Box, Text } from '../../theme';
 import SkeletonCard from '../Skeleton/skeletonCard';
 const {width, height} = Dimensions.get('screen');
 
@@ -262,113 +262,112 @@ const FeedPost = ({
   }
 
   return (
-    <Box flex={1}>
-      <Card
-        containerStyle={{
-          flex: 1,
-          padding: 0,
-          margin: 0,
-          elevation: 0,
-          borderWidth: 0,
-        }}>
-        <PostHeader
-          user={user}
-          location={location}
-          onOptionpress={onOptionpress}
-          ProfileUrl={ProfileUrl}
-          onProfilePress={onProfilePress}
-        />
-        {/* Media */}
-        {mediaType === 'image' ? (
-          <Box>
+    <TouchableWithoutFeedback>
+      <Box flex={1}>
+        <Card
+          containerStyle={{
+            flex: 1,
+            padding: 0,
+            margin: 0,
+            elevation: 0,
+            borderWidth: 0,
+          }}>
+          <PostHeader
+            user={user}
+            location={location}
+            onOptionpress={onOptionpress}
+            ProfileUrl={ProfileUrl}
+            onProfilePress={onProfilePress}
+          />
+
+          {/* Media */}
+
+          {mediaType === 'image' ? (
             <FastImage
               resizeMode="cover"
               style={{height: 400, width: '100%'}}
               source={{uri: mediaSrc}}
             />
-          </Box>
-        ) : (
-          <Box>
+          ) : (
             <Video
               source={{uri: mediaSrc}}
               style={{height: 400, width: '100%'}}
-              playWhenInactive={false}
+              playWhenInactive
               resizeMode="cover"
               repeat
+              muted
               // ref={ref => (VideoRefs.current = ref)}
             />
-          </Box>
-        )}
+          )}
 
-        <Box
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          padding={'s'}>
-          <Box flexDirection="row" justifyContent="center" gap={'m'}>
-            <TouchableOpacity onPress={onLikePress}>
-              {isLiked ? <Heaty_f /> : <Heaty_uf />}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={oncommentPress}>
-              <Comment />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onSharePress}>
-              <Share />
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            padding={'s'}>
+            <Box flexDirection="row" justifyContent="center" gap={'m'}>
+              <TouchableOpacity onPress={onLikePress}>
+                {isLiked ? <Heaty_f /> : <Heaty_uf />}
+              </TouchableOpacity>
+              <TouchableOpacity onPress={oncommentPress}>
+                <Comment />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onSharePress}>
+                <Share />
+              </TouchableOpacity>
+            </Box>
+            <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
+              {isSaved ? <Save_f /> : <Save />}
             </TouchableOpacity>
           </Box>
-          <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
-            {isSaved ? <Save_f /> : <Save />}
+          {/* {likedUsers} */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+            {likedUsers.length !== 0 ? (
+              <Box paddingHorizontal={'s'}>
+                {likedUsers.length > 0 && (
+                  <Text fontSize={14} color={'mainblack'}>
+                    {likedUsers.length === 1
+                      ? `Liked by ${likedUsers[0]}`
+                      : `Liked by ${likedUsers[0]} and ${
+                          likedUsers.length - 1
+                        } others`}
+                  </Text>
+                )}
+              </Box>
+            ) : null}
           </TouchableOpacity>
-        </Box>
-        {/* {likedUsers} */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-          {likedUsers.length !== 0 ? (
-            <Box paddingHorizontal={'s'}>
-              {likedUsers.length > 0 && (
-                <Text fontSize={14} color={'mainblack'}>
-                  {likedUsers.length === 1
-                    ? `Liked by ${likedUsers[0]}`
-                    : `Liked by ${likedUsers[0]} and ${
-                        likedUsers.length - 1
-                      } others`}
-                </Text>
-              )}
-            </Box>
-          ) : null}
-        </TouchableOpacity>
-        <Box paddingVertical={'s'} paddingHorizontal={'s'}>
-          <Text width={300} numberOfLines={1}>
-            <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
-              {user}{' '}
+          <Box padding={'s'}>
+            <Text width={300} numberOfLines={1}>
+              <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
+                {user}{' '}
+              </Text>
+              <Text fontSize={14} color={'mainblack'}>
+                {Caption}
+              </Text>
             </Text>
-            <Text fontSize={14} color={'mainblack'}>
-              {Caption}
-            </Text>
-          </Text>
-        </Box>
-        {comments?.length > 0 && (
-          <Box paddingVertical="s" paddingHorizontal="s">
+          </Box>
+          {comments?.length > 0 && (
             <TouchableOpacity onPress={ViewCmnt}>
-              <Text fontSize={14}>
+              <Text padding={'s'} fontSize={14}>
                 View{' '}
                 {comments?.length > 1
                   ? `${comments?.length} comments`
                   : 'comment'}
               </Text>
             </TouchableOpacity>
-          </Box>
-        )}
-      </Card>
+          )}
+        </Card>
 
-      <ShareBox postId={postId} ref={Shareref} />
-      <CommentBox
-        navigation={navigation}
-        ref={CmtRef}
-        postId={postId}
-        userId={userId}
-      />
-    </Box>
+        <ShareBox postId={postId} ref={Shareref} />
+        <CommentBox
+          navigation={navigation}
+          ref={CmtRef}
+          postId={postId}
+          userId={userId}
+        />
+      </Box>
+    </TouchableWithoutFeedback>
   );
 };
 

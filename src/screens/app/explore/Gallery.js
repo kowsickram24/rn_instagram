@@ -1,27 +1,38 @@
-import React from 'react';
-import { Dimensions, FlatList, Image, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, FlatList, TouchableWithoutFeedback, Modal, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Box } from '../../../theme';
 import { PostData } from '../../../utils/randomData';
-import FastImage from 'react-native-fast-image';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Gallery = () => {
-  const renderPosts = ({ item, index }) => {
-    const isLarge = index % 6 === 0; 
-    const isFirstInRow = (index % 3 === 0) && !isLarge;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-    const imageStyle = isLarge
-      ? { width: width / 1.5, height: width / 1.5 }
-      : { width: width / 3, height: width / 3 };
+  const handleLongPress = (item) => {
+    setSelectedImage(item.PostUrl);
+    setModalVisible(true);
+  };
 
+  const handlePressOut = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
+
+  const renderPosts = ({ item }) => {
     return (
-      <Box style={isFirstInRow ? styles.firstInRow : null}>
-        <FastImage
-          source={{ uri: item.PostUrl }}
-          alt="Post-Image"
-          style={[imageStyle, styles.image]}
-        />
+      <Box style={{ flex: 1 }}>
+        <TouchableWithoutFeedback
+          onLongPress={() => handleLongPress(item)}
+          onPressOut={handlePressOut}
+        >
+          <FastImage
+            source={{ uri: item.PostUrl }}
+            alt="Post-Image"
+            style={{ width: width / 3, height: width / 3 }}
+          />
+        </TouchableWithoutFeedback>
       </Box>
     );
   };
@@ -29,26 +40,33 @@ const Gallery = () => {
   return (
     <Box flex={1}>
       <FlatList
-      showsVerticalScrollIndicator={false}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
         data={PostData}
         renderItem={renderPosts}
         keyExtractor={item => item.id.toString()}
         numColumns={3}
       />
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPressOut={handlePressOut}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            {selectedImage && (
+              <FastImage
+                source={{ uri: selectedImage }}
+                style={{ width: width, height: height / 2 }}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  firstInRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap-reverse',
-    justifyContent: 'space-between',
-  },
-  image: {
-    resizeMode: 'cover',
-    margin: 1, 
-  },
-});
 
 export default Gallery;

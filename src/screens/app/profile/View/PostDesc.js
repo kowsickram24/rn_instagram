@@ -105,8 +105,8 @@ const PostDesc = ({route, navigation}) => {
       <RBSheet
         customStyles={{
           container: {
-            borderTopRightRadius: 45,
-            borderTopLeftRadius: 45,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
             justifyContent: 'center',
           },
         }}
@@ -115,7 +115,7 @@ const PostDesc = ({route, navigation}) => {
         <Box alignItems="center" gap="xl" flex={1}>
           <Box marginVertical="l">
             <Text
-              fontSize={18}
+              fontSize={16}
               fontWeight="bold"
               textAlign="center"
               color="mainblack">
@@ -127,7 +127,7 @@ const PostDesc = ({route, navigation}) => {
               onPress={() => navigation.navigate('Editpost', {selectedPost})}>
               <Box flexDirection="row" gap="s" alignItems="center">
                 <Pencil />
-                <Text fontSize={18} textAlign="center" color="mainblack">
+                <Text fontSize={14} textAlign="center" color="mainblack">
                   Edit
                 </Text>
               </Box>
@@ -135,7 +135,7 @@ const PostDesc = ({route, navigation}) => {
             <TouchableOpacity onPress={handleDeletePost}>
               <Box flexDirection="row" gap="s" alignItems="center">
                 <Dustbin />
-                <Text fontSize={18} textAlign="center" color="red">
+                <Text fontSize={14} textAlign="center" color="red">
                   Delete
                 </Text>
               </Box>

@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator} from 'react-native';
 import Followers from '../../screens/app/reach/followers';
 import Following from '../../screens/app/reach/following';
-import { Box } from '../../theme';
+import {Box} from '../../theme';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -55,14 +55,36 @@ const ReachTab = ({userData, screen}) => {
     <TopTab.Navigator
       initialRouteName={screen}
       screenOptions={{
+        tabBarAndroidRipple: {borderless: false},
         tabBarLabelStyle: {fontSize: 12},
+        tabBarBounces: false,
         tabBarIndicatorStyle: {backgroundColor: 'black'},
       }}>
-      <TopTab.Screen name="Following">
-        {props => <Following {...props} currentUser={userData} userData={followingData} />}
+      <TopTab.Screen
+        options={{
+          tabBarLabel: 'Following',
+        }}
+        name="Following">
+        {props => (
+          <Following
+            {...props}
+            currentUser={userData}
+            userData={followingData}
+          />
+        )}
       </TopTab.Screen>
-      <TopTab.Screen name="Followers">
-        {props => <Followers {...props} currentUser={userData} userData={followersData} />}
+      <TopTab.Screen
+        options={{
+          tabBarLabel: 'Followers',
+        }}
+        name="Followers">
+        {props => (
+          <Followers
+            {...props}
+            currentUser={userData}
+            userData={followersData}
+          />
+        )}
       </TopTab.Screen>
     </TopTab.Navigator>
   );

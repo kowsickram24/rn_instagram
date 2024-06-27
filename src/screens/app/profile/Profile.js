@@ -1,12 +1,29 @@
-import {Avatar, Button, Header} from '@rneui/themed';
-import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {Button, Header} from '@rneui/themed';
+import React, {useState} from 'react';
+import {
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import ProfileCard from '../../../components/card/profileCard';
 import {Menu} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import {Box, Text} from '../../../theme';
-import ProfileCard from '../../../components/card/profileCard';
+import {Box, Text, width} from '../../../theme';
 const Profile = ({navigation, User}) => {
-  console.log('User: ', User);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleLongPress = avatar => {
+    setSelectedImage(avatar);
+    setModalVisible(true);
+  };
+
+  const handlePressOut = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
@@ -21,7 +38,12 @@ const Profile = ({navigation, User}) => {
           hidden: true,
         }}
       />
+
+      {/* Profile Card*/}
+
       <ProfileCard
+        onAvatarLongPress={() => handleLongPress(User?.avatar)}
+        // onAvatarPressout={handlePressOut}
         onFollowersPress={() =>
           navigation.navigate('Reach', {screen: 'Followers', User: User})
         }
@@ -33,14 +55,8 @@ const Profile = ({navigation, User}) => {
         Postcount={User?.posts.length}
         userAvatar={User?.avatar}
       />
-
       <Box padding={'m'}>
         {User?.username && (
-          <Text fontSize={12} color={'mainblack'}>
-            {User?.username}
-          </Text>
-        )}
-        {User?.fullname && (
           <Text fontSize={12} color={'mainblack'}>
             {User?.fullname}
           </Text>
@@ -66,6 +82,33 @@ const Profile = ({navigation, User}) => {
         />
       </Box>
 
+      {/* Profile View */}
+
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}>
+        <TouchableWithoutFeedback onPressOut={handlePressOut}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.8)',
+            }}>
+            {selectedImage && (
+              <FastImage
+                source={{uri: selectedImage}}
+                style={{width: width, height: width, borderRadius: width}}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Profile Tab */}
       <TopNavigator navigation={navigation} />
     </Box>
   );

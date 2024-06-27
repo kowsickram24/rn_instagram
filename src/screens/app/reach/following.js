@@ -1,49 +1,112 @@
-import {Avatar, Button, ListItem, Overlay, SearchBar} from '@rneui/themed';
+import firestore from '@react-native-firebase/firestore';
+import {Avatar, Button, Divider, SearchBar} from '@rneui/themed';
+import React, {useRef, useState} from 'react';
 import {FlatList, Platform, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {Box, Text} from '../../../theme';
-import {useSelector} from 'react-redux';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import {useSelector} from 'react-redux';
+import {Three_dots} from '../../../constants/assets';
+import {Box, Text, height} from '../../../theme';
 
 const Following = ({currentUser, userData, navigation}) => {
   const LogUser = useSelector(state => state.user.user);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFollowed, setIsFollowed] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [following, setFollowing] = useState(userData);
+  const OptionRef = useRef();
 
-  const handleUnFollow = () => {
-    console.log('unfollow');
+  const handleUnFollow = async () => {
+    try {
+      const userDocRef = firestore()
+        .collection('users')
+        .doc(selectedUser.userId);
+      const currentUserDocRef = firestore()
+        .collection('users')
+        .doc(currentUser.userId);
+
+      await firestore().runTransaction(async transaction => {
+        const userDoc = await transaction.get(userDocRef);
+        const currentUserDoc = await transaction.get(currentUserDocRef);
+
+        if (!userDoc.exists || !currentUserDoc.exists) {
+          throw new Error('One of the documents does not exist.');
+        }
+
+        const userData = userDoc.data();
+        const currentUserData = currentUserDoc.data();
+
+        const updatedFollowers = userData.followers.filter(
+          follower => follower.userId !== currentUser.userId,
+        );
+        const updatedFollowing = currentUserData.following.filter(
+          following => following.userId !== selectedUser.userId,
+        );
+
+        transaction.update(userDocRef, {followers: updatedFollowers});
+        transaction.update(currentUserDocRef, {following: updatedFollowing});
+
+        setFollowing(
+          following.filter(follow => follow.userId !== selectedUser.userId),
+        );
+        setIsFollowed(false);
+      });
+    } catch (error) {
+      console.error('Error updating follow status: ', error);
+    } finally {
+      OptionRef.current.close();
+    }
   };
+
   const isCurrentUser = LogUser.userId === currentUser.userId;
-  console.log('isCurrentUser: ', isCurrentUser);
+
   const renderItem = ({item}) => {
     if (
       item?.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item?.fullname.toLowerCase().includes(searchQuery.toLowerCase())
     ) {
       return (
-        <TouchableOpacity
-          onPress={() =>
-            navigation.push('ProfileView', {userId: item?.userId})
-          }>
-          <ListItem>
-            <Avatar size={'medium'} source={{uri: item?.avatar}} rounded />
-            <ListItem.Content>
-              <Text color={'mainblack'} fontSize={14}>
-                {item?.username}
-              </Text>
-              <Text color={'mainblack'} fontSize={14}>
-                {item?.fullname}
-              </Text>
-            </ListItem.Content>
-            {isCurrentUser ? (
+        <Box padding={'s'} flexDirection="row">
+          <TouchableOpacity
+            onPress={() =>
+              navigation.push('ProfileView', {userId: item?.userId})
+            }>
+            <Box flexDirection="row" gap={'s'} alignItems="center">
+              <Avatar size={'medium'} source={{uri: item?.avatar}} rounded />
+              <Box>
+                <Text color={'mainblack'} fontSize={14}>
+                  {item?.username}
+                </Text>
+                <Text color={'mainblack'} fontSize={14}>
+                  {item?.fullname}
+                </Text>
+              </Box>
+            </Box>
+          </TouchableOpacity>
+          {isCurrentUser ? (
+            <Box
+              flexDirection="row"
+              flex={1}
+              justifyContent="flex-end"
+              gap={'m'}
+              alignItems="center">
               <Button
                 buttonStyle={{backgroundColor: 'lightgrey', borderRadius: 6}}
-                onPress={handleUnFollow(item)}
-                title={'following'}
-                titleStyle={{fontSize: 14, color: 'black'}}
+                onPress={() => handleUnFollow(item)}
+                title={isFollowed ? 'following' : 'unfollow'}
+                titleStyle={{fontSize: 14, color: 'black', fontWeight: 'light'}}
               />
-            ) : null}
-          </ListItem>
-        </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedUser(item);
+                  OptionRef.current.open();
+                }}>
+                <Box padding={'s'}>
+                  <Three_dots />
+                </Box>
+              </TouchableOpacity>
+            </Box>
+          ) : null}
+        </Box>
       );
     }
     return null;
@@ -59,7 +122,7 @@ const Following = ({currentUser, userData, navigation}) => {
         value={searchQuery}
       />
       <FlatList
-        data={userData.filter(
+        data={following.filter(
           item =>
             item?.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item?.fullname.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -68,17 +131,34 @@ const Following = ({currentUser, userData, navigation}) => {
         keyExtractor={item => item.id}
         ListEmptyComponent={
           <Box flex={1} justifyContent="center" alignItems="center">
-            <Text>No users found </Text>
+            <Text>No users found</Text>
           </Box>
         }
       />
-      <Overlay isVisible={''}>
-        <Box padding={4} backgroundColor={'mainwhite'} borderRadius={10}>
-          <Text fontSize={18} color={'mainblack'}>
-            Unfollow?
-          </Text>
+      <RBSheet
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+          },
+        }}
+        height={height / 4}
+        ref={OptionRef}
+        draggable>
+        <Box flex={1} alignItems="center" gap={'m'}>
+          <Text color={'mainblack'}>{selectedUser?.username}</Text>
+          <TouchableOpacity onPress={handleUnFollow}>
+            <Text padding={'s'} textAlign="center" color={'red'}>
+              Unfollow
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => OptionRef.current.close()}>
+            <Text padding={'s'} textAlign="center" color={'mainblack'}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
         </Box>
-      </Overlay>
+      </RBSheet>
     </Box>
   );
 };

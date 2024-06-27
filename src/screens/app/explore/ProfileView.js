@@ -1,19 +1,38 @@
 import firestore from '@react-native-firebase/firestore';
 import {Avatar, Divider, Header} from '@rneui/themed';
 import {useEffect, useState} from 'react';
-import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import {
   PrimaryBtn,
   SecondaryBtn,
 } from '../../../components/buttons/primaryButton';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import {Box, Text} from '../../../theme';
+import {Box, Text, height, width} from '../../../theme';
 import ProfileCard from '../../../components/card/profileCard';
 import BackBtn from '../../../components/buttons/backButton';
+import FastImage from 'react-native-fast-image';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleLongPress = avatar => {
+    setSelectedImage(avatar);
+    setModalVisible(true);
+  };
+
+  const handlePressOut = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
   const [selectedUser, setSelectedUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
 
@@ -153,6 +172,8 @@ const ProfileView = ({route, navigation}) => {
       />
 
       <ProfileCard
+        onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
+        // onAvatarPressout={handlePressOut}
         userAvatar={selectedUser?.avatar}
         Postcount={selectedUser?.posts.length}
         onFollowersPress={() =>
@@ -177,11 +198,7 @@ const ProfileView = ({route, navigation}) => {
             {selectedUser?.username}
           </Text>
         )}
-        {selectedUser?.fullname && (
-          <Text fontSize={12} color={'mainblack'}>
-            {selectedUser?.fullname}
-          </Text>
-        )}
+
         {selectedUser?.bio && (
           <Text fontSize={12} color={'mainblack'}>
             {selectedUser?.bio}
@@ -196,7 +213,30 @@ const ProfileView = ({route, navigation}) => {
         )}
         <SecondaryBtn title={'Message'} onPress={handleChat} />
       </Box>
-      <Divider />
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}>
+        <TouchableWithoutFeedback onPressOut={handlePressOut}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.8)',
+            }}>
+            {selectedImage && (
+              <FastImage
+                source={{uri: selectedImage}}
+                style={{width: width, height: width, borderRadius: width}}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
       <ProfileTab user={selectedUser} />
     </Box>
   );

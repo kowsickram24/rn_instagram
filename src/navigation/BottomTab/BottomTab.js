@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Avatar} from '@rneui/themed';
-import {useEffect, useRef, useState} from 'react';
+import {useRef} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import NewSheet from '../../components/bottomsheet/NewSheet';
 import {
@@ -17,8 +16,6 @@ import Explore from '../../screens/app/explore/Explore';
 import Home from '../../screens/app/home/Home';
 import Notification from '../../screens/app/notification/Notification';
 import Profile from '../../screens/app/profile/Profile';
-import {useSelector} from 'react-redux';
-import firestore from '@react-native-firebase/firestore';
 import {Box} from '../../theme';
 const BottomTab = createBottomTabNavigator();
 
@@ -71,15 +68,11 @@ const BottomNavigator = ({User, navigation}) => {
               focused ? (
                 <Avatar
                   rounded
-                  containerStyle={{width: 36, height: 36, borderWidth:2}}
+                  containerStyle={{borderWidth: 2}}
                   source={{uri: currentUser?.avatar}}
                 />
               ) : (
-                <Avatar
-                  rounded
-                  containerStyle={{width: 36, height: 36}}
-                  source={{uri: currentUser?.avatar}}
-                />
+                <Avatar rounded source={{uri: currentUser?.avatar}} />
               ),
           }}
           name="Profile">

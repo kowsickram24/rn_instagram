@@ -16,22 +16,23 @@ import {Box, Text} from '../../theme';
 import {LoginSchema} from '../../utils/validation';
 import SnackBar from '../../components/snackbar/snackBar';
 
-
-
 const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const {t} = useTranslation();
+  const [error, setError] = useState(null);
   const [isForget, setIsForget] = useState(false);
 
   const handleForgotPassword = async email => {
     if (!email) {
-      
+      setError('Please enter your email address');
       return;
     }
     try {
       await auth().sendPasswordResetEmail(email);
-      setIsForget(true);
+      setError(
+        'Email sent for reset password',
+      )
     } catch (error) {
       console.log(error);
     }
@@ -100,8 +101,6 @@ const LoginScreen = ({navigation, getData}) => {
       }
     } catch (error) {
       console.error('Error logging in:', error);
-
-      // Handle specific authentication errors
       if (
         error.code === 'auth/user-not-found' ||
         error.code === 'auth/wrong-password'
@@ -111,7 +110,6 @@ const LoginScreen = ({navigation, getData}) => {
         setErrors({password: 'Invalid Credentials. Please try again '});
       }
     } finally {
-      // Ensure submitting state is reset
       setSubmitting(false);
     }
   };
@@ -149,6 +147,7 @@ const LoginScreen = ({navigation, getData}) => {
                       value={values.email}
                       errorMessage={touched.email && errors.email}
                     />
+
                     <Inputbox
                       secureTextEntry
                       placeholder={t('Auth.passwordPlaceholder')}
@@ -169,7 +168,7 @@ const LoginScreen = ({navigation, getData}) => {
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
-
+                  <Text fontSize={14} textAlign='center' padding={'s'} color={'primaryBlue'} >{error && error}</Text>
                   </Box>
                   <Authbutton
                     title={t('Auth.loginButton')}

@@ -22,6 +22,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import StackNavigator from './src/navigation/Stack';
 import {theme} from './src/theme';
 
+
+
 const App = () => {
   useEffect(() => {
     const checkFirebaseConnection = async () => {

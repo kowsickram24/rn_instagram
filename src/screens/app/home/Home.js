@@ -1,15 +1,19 @@
 import firestore from '@react-native-firebase/firestore';
 import {Divider, Header} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
-import {FlatList, TouchableOpacity} from 'react-native';
-import {Heaty_uf, Insta_Typo_logo, Msg_Icon} from '../../../constants/assets';
-import {Box, Text} from '../../../theme';
-import {ActivityIndicator} from 'react-native';
+import React, {Fragment, useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
+import {Heaty_uf, Insta_Typo_logo, Msg_Icon} from '../../../constants/assets';
+import {Box, Text} from '../../../theme';
 import {Data} from '../../../utils/randomData';
-
+import UserData from '../../../utils/randomData';
 const Home = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState([]);
@@ -18,6 +22,7 @@ const Home = ({navigation}) => {
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('posts')
+      .where('userId', '!=', currentUser?.userId) // Filter posts where userId is not equal to current user's userId
       .onSnapshot(async snapshot => {
         const postsData = [];
         for (const doc of snapshot.docs) {
@@ -48,7 +53,8 @@ const Home = ({navigation}) => {
       });
 
     return () => unsubscribe();
-  }, []);
+  }, [currentUser]);
+
 
   const renderItem = ({item}) => (
     <Box>
@@ -70,19 +76,20 @@ const Home = ({navigation}) => {
   );
 
   const renderStory = ({item}) => (
-    <Box alignItems="center">
-      <StoryAvatar source={item?.Url} />
-      <Text fontSize={12} color={'mainblack'} textAlign="center">
-        {item?.name}
-      </Text>
-    </Box>
+    <TouchableWithoutFeedback>
+      <Box alignItems="center">
+        <StoryAvatar source={item?.Url} />
+        <Text fontSize={12} color={'mainblack'} textAlign="center">
+          {item?.name}
+        </Text>
+      </Box>
+    </TouchableWithoutFeedback>
   );
 
   const ListHeaderComponent = () => (
     <>
       <Header
         statusBarProps={{hidden: true}}
-        containerStyle={{paddingVertical: 12}}
         leftComponent={<Insta_Typo_logo width="120" />}
         backgroundColor="white"
         rightComponent={
@@ -117,22 +124,24 @@ const Home = ({navigation}) => {
   );
 
   return (
-    <Box flex={1} backgroundColor={'mainwhite'}>
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          overScrollMode="never"
-          scrollEnabled
-          showsVerticalScrollIndicator={false}
-          data={posts}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          ListHeaderComponent={ListHeaderComponent}
-          ListEmptyComponent={<Text> No More Posts </Text>}
-        />
-      )}
-    </Box>
+    <Fragment>
+      <Box flex={1} backgroundColor={'mainwhite'}>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            overScrollMode="never"
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={false}
+            data={posts}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            ListHeaderComponent={ListHeaderComponent}
+            ListEmptyComponent={<Text> No More Posts </Text>}
+          />
+        )}
+      </Box>
+    </Fragment>
   );
 };
 

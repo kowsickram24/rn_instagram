@@ -1,4 +1,4 @@
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import {Box, Text} from '../../theme';
 import {Avatar, Card} from '@rneui/themed';
 
@@ -9,23 +9,29 @@ const ProfileCard = ({
   followingCount,
   onFollowersPress,
   onFollowingPress,
+  onAvatarLongPress,
+  onAvatarPressout,
 }) => {
   return (
     <Box>
       <Box
         flexDirection="row"
-        marginVertical={'s'}
-        marginHorizontal={'m'}
+        paddingVertical={'s'}
         alignItems="center"
-        justifyContent="space-around">
-        <Avatar
-          rounded
-          size={'large'}
-          source={{
-            uri: userAvatar,
-          }}
-        />
-        <Box alignItems='center' flexDirection="row" gap={'l'}>
+        gap={'xl'}
+        justifyContent="space-evenly">
+        <TouchableWithoutFeedback
+          onPressOut={onAvatarPressout}
+          onLongPress={onAvatarLongPress}>
+          <Avatar
+            rounded
+            size={'large'}
+            source={{
+              uri: userAvatar,
+            }}
+          />
+        </TouchableWithoutFeedback>
+        <Box alignItems="center" flexDirection="row" gap={'l'}>
           <Box alignSelf="center">
             <Text color={'mainblack'} fontSize={20} textAlign="center">
               {Postcount}
