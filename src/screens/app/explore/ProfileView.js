@@ -1,14 +1,16 @@
 import firestore from '@react-native-firebase/firestore';
-import { Avatar, Divider } from '@rneui/themed';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
+import {Avatar, Divider, Header} from '@rneui/themed';
+import {useEffect, useState} from 'react';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {useSelector} from 'react-redux';
 import {
   PrimaryBtn,
   SecondaryBtn,
 } from '../../../components/buttons/primaryButton';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
+import ProfileCard from '../../../components/card/profileCard';
+import BackBtn from '../../../components/buttons/backButton';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
@@ -139,57 +141,52 @@ const ProfileView = ({route, navigation}) => {
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
+      <Header
+        statusBarProps={{hidden: true}}
+        backgroundColor="white"
+        leftComponent={
+          <Box flexDirection="row" alignItems="center" gap={'s'}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text color={'mainblack'}>{selectedUser?.username}</Text>
+          </Box>
+        }
+      />
+
+      <ProfileCard
+        userAvatar={selectedUser?.avatar}
+        Postcount={selectedUser?.posts.length}
+        onFollowersPress={() =>
+          navigation.navigate('Reach', {
+            screen: 'Followers',
+            User: selectedUser,
+          })
+        }
+        followersCount={selectedUser?.followers.length}
+        onFollowingPress={() =>
+          navigation.navigate('Reach', {
+            screen: 'Following',
+            User: selectedUser,
+          })
+        }
+        followingCount={selectedUser?.following.length}
+      />
+
       <Box padding={'m'}>
-        <Text color={'mainblack'}>{selectedUser?.username}</Text>
-      </Box>
-      <Box
-        flexDirection="row"
-        marginVertical={'m'}
-        justifyContent="space-around">
-        <Avatar rounded size={'large'} source={{uri: selectedUser?.avatar}} />
-        <Box flexDirection="row" gap={'xl'}>
-          <Box alignSelf="center">
-            <Text color={'mainblack'} fontSize={20} textAlign="center">
-              {selectedUser?.posts.length}
-            </Text>
-            <Text color={'mainblack'} fontSize={12}>
-              posts
-            </Text>
-          </Box>
-          <Box alignSelf="center">
-            <TouchableOpacity
-              onPress={() => navigation.replace('Reach', {User: selectedUser})}>
-              <Text color={'mainblack'} fontSize={20} textAlign="center">
-                {selectedUser?.followers.length}
-              </Text>
-              <Text color={'mainblack'} fontSize={12}>
-                followers
-              </Text>
-            </TouchableOpacity>
-          </Box>
-          <Box alignSelf="center">
-            <TouchableOpacity
-              onPress={() => navigation.replace('Reach', {User: selectedUser})}>
-              <Text color={'mainblack'} fontSize={20} textAlign="center">
-                {selectedUser?.following.length}
-              </Text>
-              <Text color={'mainblack'} fontSize={12}>
-                following
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        </Box>
-      </Box>
-      <Box margin={'m'}>
-        <Text fontSize={12} color={'mainblack'}>
-          {selectedUser?.username}
-        </Text>
-        <Text fontSize={12} color={'mainblack'}>
-          {selectedUser?.fullname}
-        </Text>
-        <Text fontSize={12} color={'mainblack'}>
-          {selectedUser?.bio}
-        </Text>
+        {selectedUser?.username && (
+          <Text fontSize={12} color={'mainblack'}>
+            {selectedUser?.username}
+          </Text>
+        )}
+        {selectedUser?.fullname && (
+          <Text fontSize={12} color={'mainblack'}>
+            {selectedUser?.fullname}
+          </Text>
+        )}
+        {selectedUser?.bio && (
+          <Text fontSize={12} color={'mainblack'}>
+            {selectedUser?.bio}
+          </Text>
+        )}
       </Box>
       <Box justifyContent="center" flexDirection="row" padding={'s'} gap={'s'}>
         {isFollowed ? (

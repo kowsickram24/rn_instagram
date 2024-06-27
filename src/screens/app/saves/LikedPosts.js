@@ -107,7 +107,6 @@ const LikedPosts = ({navigation}) => {
               />
             ) : (
               <Video
-                controls
                 resizeMode="cover"
                 source={{uri: item?.mediaUrl}}
                 style={{width: width / 3, height: width / 3}}

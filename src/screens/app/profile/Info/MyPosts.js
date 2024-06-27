@@ -1,19 +1,19 @@
 import firestore from '@react-native-firebase/firestore';
-import { Skeleton } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
+import {Skeleton} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
-import { Box, Text } from '../../../../theme';
+import {useSelector} from 'react-redux';
+import {Box, Text} from '../../../../theme';
 const {width} = Dimensions.get('screen');
-const MyPosts = ({ navigation }) => {
+const MyPosts = ({navigation}) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector(state => state.user.user);
@@ -34,8 +34,8 @@ const MyPosts = ({ navigation }) => {
             .doc(postData.userId)
             .get();
           const userData = userSnapshot.exists ? userSnapshot.data() : {};
-          return { ...postData, user: userData };
-        })
+          return {...postData, user: userData};
+        }),
       );
 
       setPosts(userPosts);
@@ -52,19 +52,22 @@ const MyPosts = ({ navigation }) => {
     }
   }, [currentUser]);
 
-  const renderPostItem = ({ item }) => (
+  const renderPostItem = ({item}) => (
     <Box>
-      <TouchableOpacity onPress={() => navigation.navigate('PostDesc', { post: item })}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PostDesc', {post: item})}>
         {item.mediaType === 'image' ? (
           <FastImage
             resizeMode="cover"
-            style={{ width: width / 3, height: 125 }}
-            source={{ uri: item?.mediaUrl }}
+            style={{width: width / 3, height: width / 3}}
+            source={{uri: item?.mediaUrl}}
           />
         ) : (
           <Video
-            source={{ uri: item?.mediaUrl }}
-            style={{ width: width / 3, height: 125 }}
+            paused
+            poster="Video"
+            source={{uri: item?.mediaUrl}}
+            style={{width: width / 3, height: width / 3}}
             resizeMode="cover"
           />
         )}

@@ -1,12 +1,15 @@
 import firestore from '@react-native-firebase/firestore';
-import {Header} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
-import {FlatList, RefreshControl, TouchableOpacity} from 'react-native';
-import {useSelector} from 'react-redux';
+import { Header, SearchBar } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import {
+  FlatList,
+  Platform,
+  TouchableOpacity
+} from 'react-native';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
-import ChatSearch from '../../../components/searchbar/chatSearch';
-import {Box, Text} from '../../../theme';
+import { Box, Text } from '../../../theme';
 const ChatBox = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [chats, setChats] = useState([]);
@@ -89,9 +92,14 @@ const ChatBox = ({navigation}) => {
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
         statusBarProps={{hidden: true}}
       />
-      <ChatSearch value={searchQuery} onChangeText={setSearchQuery} />
+      <SearchBar
+      inputStyle={{fontSize:14}}
+      placeholder='Search'
+        platform={Platform.OS === 'android' ? 'android' : 'ios'}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
       <FlatList
-       
         ListEmptyComponent={<Text> No Chat Yet</Text>}
         data={chats}
         renderItem={RenderChats}

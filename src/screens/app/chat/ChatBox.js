@@ -305,9 +305,9 @@ const ChatBox = ({navigation, route}) => {
                       </Text>
                     ) : item.messageType === 'image' ? (
                       <Image
-                        resizeMode="contain"
+                        resizeMode="cover"
                         source={{uri: item.message}}
-                        style={{width: 200, height: 400, borderRadius: 10}}
+                        style={{width: 200, height: 200, borderRadius: 10}}
                       />
                     ) : item.messageType === 'post' ? (
                       <>
@@ -322,8 +322,9 @@ const ChatBox = ({navigation, route}) => {
                       </>
                     ) : (
                       <Video
+                      resizeMode='cover'
                         source={{uri: item.message}}
-                        style={{width: 200, height: 400, borderRadius: 10}}
+                        style={{width: 200, height: 200, borderRadius: 10}}
                        playWhenInactive
                        repeat
                       />

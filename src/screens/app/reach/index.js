@@ -4,9 +4,12 @@ import {TouchableOpacity} from 'react-native';
 import {Back} from '../../../constants/assets';
 import ReachTab from '../../../navigation/TopTab/ReachTab';
 import {Box, Text} from '../../../theme';
+import {Header} from '@rneui/themed';
+import BackBtn from '../../../components/buttons/backButton';
 
 const AccountReach = ({navigation, route}) => {
-  console.log('route: ', route.params.User);
+  console.log('route: ', route.params.screen);
+  const screen = route?.params?.screen;
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -34,13 +37,17 @@ const AccountReach = ({navigation, route}) => {
 
   return (
     <Box backgroundColor={'mainwhite'} flex={1}>
-      <Box flexDirection="row" padding={'m'} gap={'m'} alignItems="center">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Back />
-        </TouchableOpacity>
-        <Text color={'mainblack'}>{userData?.username}</Text>
-      </Box>
-      <ReachTab userData={userData} />
+      <Header
+        statusBarProps={{hidden: true}}
+        leftComponent={
+          <Box flexDirection="row" gap={'s'} alignItems="center">
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text color={'mainblack'}>{userData?.username}</Text>
+          </Box>
+        }
+        backgroundColor="white"
+      />
+      <ReachTab screen={screen} userData={userData} />
     </Box>
   );
 };

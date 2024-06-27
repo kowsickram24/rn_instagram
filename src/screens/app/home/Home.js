@@ -1,19 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
-import { Divider, Header } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
-import { FlatList, TouchableOpacity } from 'react-native';
-import {
-  Heaty_uf,
-  Insta_Typo_logo,
-  Msg_Icon
-} from '../../../constants/assets';
-import { Box, Text } from '../../../theme';
-
-import { ActivityIndicator } from 'react-native';
-import { useSelector } from 'react-redux';
+import {Divider, Header} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {FlatList, TouchableOpacity} from 'react-native';
+import {Heaty_uf, Insta_Typo_logo, Msg_Icon} from '../../../constants/assets';
+import {Box, Text} from '../../../theme';
+import {ActivityIndicator} from 'react-native';
+import {useSelector} from 'react-redux';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
-import { Data } from '../../../utils/randomData';
+import {Data} from '../../../utils/randomData';
 
 const Home = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -56,20 +51,22 @@ const Home = ({navigation}) => {
   }, []);
 
   const renderItem = ({item}) => (
-    <FeedPost
-      location={item?.location}
-      ProfileUrl={item.user?.avatar}
-      Caption={item.caption}
-      userId={currentUser?.userId}
-      postId={item?.postId}
-      mediaSrc={item?.mediaUrl}
-      mediaType={item?.mediaType}
-      user={item?.user.username}
-      comments={item?.comments}
-      onProfilePress={() =>
-        navigation.navigate('ProfileView', {userId: item?.userId})
-      }
-    />
+    <Box>
+      <FeedPost
+        location={item?.location}
+        ProfileUrl={item.user?.avatar}
+        Caption={item.caption}
+        userId={currentUser?.userId}
+        postId={item?.postId}
+        mediaSrc={item?.mediaUrl}
+        mediaType={item?.mediaType}
+        user={item?.user.username}
+        comments={item?.comments}
+        onProfilePress={() =>
+          navigation.navigate('ProfileView', {userId: item?.userId})
+        }
+      />
+    </Box>
   );
 
   const renderStory = ({item}) => (
@@ -107,6 +104,7 @@ const Home = ({navigation}) => {
       <Divider />
       <Box paddingVertical={'s'}>
         <FlatList
+          overScrollMode="never"
           showsHorizontalScrollIndicator={false}
           horizontal
           keyExtractor={item => item.id}
@@ -124,6 +122,8 @@ const Home = ({navigation}) => {
         <ActivityIndicator />
       ) : (
         <FlatList
+          overScrollMode="never"
+          scrollEnabled
           showsVerticalScrollIndicator={false}
           data={posts}
           renderItem={renderItem}

@@ -16,7 +16,7 @@ const StoryAvatar = ({source}) => {
   return (
     <>
       {loading ? (
-        <Box marginLeft={'s'}> 
+        <Box marginLeft={'s'}>
           <Skeleton
             animation="pulse"
             style={{borderRadius: 24}}

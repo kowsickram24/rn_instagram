@@ -1,20 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
-import ToastManager, { Toast } from 'toastify-react-native';
+import {Formik} from 'formik';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, TouchableOpacity} from 'react-native';
+import {useDispatch} from 'react-redux';
+import ToastManager, {Toast} from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import { Loader } from '../../components/loader/Loader';
-import { Insta_Typo_logo, Line } from '../../constants/assets';
-import { login } from '../../store/slices/userSlice';
-import { Box, Text } from '../../theme';
-import { LoginSchema } from '../../utils/validation';
+import {Loader} from '../../components/loader/Loader';
+import {Insta_Typo_logo, Line} from '../../constants/assets';
+import {login} from '../../store/slices/userSlice';
+import {Box, Text} from '../../theme';
+import {LoginSchema} from '../../utils/validation';
 import SnackBar from '../../components/snackbar/snackBar';
+
+
+
 const LoginScreen = ({navigation, getData}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -23,14 +26,14 @@ const LoginScreen = ({navigation, getData}) => {
 
   const handleForgotPassword = async email => {
     if (!email) {
-      Toast.info('Enter Your Email');
+      
       return;
     }
     try {
       await auth().sendPasswordResetEmail(email);
       setIsForget(true);
     } catch (error) {
-      Toast.error('Invalid Email');
+      console.log(error);
     }
   };
 
@@ -155,17 +158,7 @@ const LoginScreen = ({navigation, getData}) => {
                       errorMessage={touched.password && errors.password}
                     />
                   </ScrollView>
-                  {isForget && (
-                    <Box borderRadius={'m'} borderWidth={0.5} padding={'s'}>
-                      <Text textAlign="center" color={'primaryBlue'}>
-                        Check Your mail for reset password
-                      </Text>
-                    </Box>
-                  )}
-                  <SnackBar content={'Check Your mail for reset password'}
-                  visible={isForget}
-                  
-                  />
+
                   <Box paddingVertical={'s'}>
                     <TouchableOpacity
                       onPress={() => handleForgotPassword(values.email)}>
@@ -176,6 +169,7 @@ const LoginScreen = ({navigation, getData}) => {
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
+
                   </Box>
                   <Authbutton
                     title={t('Auth.loginButton')}

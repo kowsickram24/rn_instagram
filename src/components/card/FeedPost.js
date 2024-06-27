@@ -1,7 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import {Avatar, Button, Card, Input} from '@rneui/themed';
-import React, {forwardRef, useEffect, useRef, useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {
+  forwardRef,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -10,10 +17,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  GestureHandlerRootView,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
 import {Divider} from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
@@ -84,12 +87,29 @@ const FeedPost = ({
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
+  const VideoRefs = useRef();
   const Shareref = useRef();
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const [likedId, setLikedId] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const videoRef = VideoRefs.current;
+      if (videoRef) {
+        videoRef.seek(0);
+        videoRef.resume();
+      }
+
+      return () => {
+        if (videoRef) {
+          videoRef.pause();
+        }
+      };
+    }, []),
+  );
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -245,7 +265,7 @@ const FeedPost = ({
     <Box flex={1}>
       <Card
         containerStyle={{
-          flex:1,
+          flex: 1,
           padding: 0,
           margin: 0,
           elevation: 0,
@@ -258,22 +278,26 @@ const FeedPost = ({
           ProfileUrl={ProfileUrl}
           onProfilePress={onProfilePress}
         />
-
         {/* Media */}
         {mediaType === 'image' ? (
-          <FastImage
-            resizeMode="cover"
-            style={{height: 400, width: '100%'}}
-            source={{uri: mediaSrc}}
-          />
+          <Box>
+            <FastImage
+              resizeMode="cover"
+              style={{height: 400, width: '100%'}}
+              source={{uri: mediaSrc}}
+            />
+          </Box>
         ) : (
-          <Video
-            source={{uri: mediaSrc}}
-            style={{height: 400, width: '100%'}}
-            playWhenInactive
-            resizeMode="cover"
-            repeat
-          />
+          <Box>
+            <Video
+              source={{uri: mediaSrc}}
+              style={{height: 400, width: '100%'}}
+              playWhenInactive={false}
+              resizeMode="cover"
+              repeat
+              // ref={ref => (VideoRefs.current = ref)}
+            />
+          </Box>
         )}
 
         <Box
@@ -296,6 +320,7 @@ const FeedPost = ({
             {isSaved ? <Save_f /> : <Save />}
           </TouchableOpacity>
         </Box>
+        {/* {likedUsers} */}
         <TouchableOpacity
           onPress={() => navigation.navigate('LikedUsers', {likedId})}>
           {likedUsers.length !== 0 ? (
@@ -343,7 +368,6 @@ const FeedPost = ({
         postId={postId}
         userId={userId}
       />
-      <Divider />
     </Box>
   );
 };
@@ -714,8 +738,12 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
               marginTop="s">
               <Avatar source={{uri: reply.userAvatar}} size="small" rounded />
               <Box marginLeft="s">
-                <Text color={'mainblack'}>{reply.username}</Text>
-                <Text>{reply.comment}</Text>
+                <Text fontSize={12} color={'mainblack'}>
+                  {reply.username}
+                </Text>
+                <Text fontSize={12} color={'mainblack'}>
+                  {reply.comment}
+                </Text>
               </Box>
             </Box>
           ))}
@@ -746,6 +774,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
           Comments
         </Text>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={comments}
           renderItem={renderCommentItem}
           keyExtractor={item => item.time}

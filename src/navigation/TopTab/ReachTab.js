@@ -1,28 +1,29 @@
-import React, {useState, useEffect} from 'react';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import firestore from '@react-native-firebase/firestore';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import Followers from '../../screens/app/reach/followers';
 import Following from '../../screens/app/reach/following';
-import { ActivityIndicator } from 'react-native';
 import { Box } from '../../theme';
 
 const TopTab = createMaterialTopTabNavigator();
 
-const ReachTab = ({userData}) => {
+const ReachTab = ({userData, screen}) => {
   const [followersData, setFollowersData] = useState([]);
-  console.log('followersData: ', followersData);
   const [followingData, setFollowingData] = useState([]);
-  console.log('followingData: ', followingData);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserDetails = async (userIds) => {
+    const fetchUserDetails = async userIds => {
       try {
         const userDetails = await Promise.all(
-          userIds.map(async (user) => {
-            const userDoc = await firestore().collection('users').doc(user.userId).get();
-            return { userId: user.userId, ...userDoc.data() };
-          })
+          userIds.map(async user => {
+            const userDoc = await firestore()
+              .collection('users')
+              .doc(user.userId)
+              .get();
+            return {userId: user.userId, ...userDoc.data()};
+          }),
         );
         return userDetails;
       } catch (error) {
@@ -52,15 +53,16 @@ const ReachTab = ({userData}) => {
 
   return (
     <TopTab.Navigator
+      initialRouteName={screen}
       screenOptions={{
         tabBarLabelStyle: {fontSize: 12},
         tabBarIndicatorStyle: {backgroundColor: 'black'},
       }}>
       <TopTab.Screen name="Following">
-        {(props) => <Following {...props} userData={followingData} />}
+        {props => <Following {...props} currentUser={userData} userData={followingData} />}
       </TopTab.Screen>
       <TopTab.Screen name="Followers">
-        {(props) => <Followers {...props} userData={followersData} />}
+        {props => <Followers {...props} currentUser={userData} userData={followersData} />}
       </TopTab.Screen>
     </TopTab.Navigator>
   );

@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {Box, Text} from '../../theme';
 import Video from 'react-native-video';
+
 const SharePost = ({ postId }) => {
   const [post, setPost] = useState(null);
 
@@ -50,14 +51,15 @@ const SharePost = ({ postId }) => {
           <FastImage
             source={{ uri: post?.mediaUrl }}
             resizeMode="cover"
-            style={{ width: '100%', height: 400 }}
+            style={{ width: '100%', height: 200 }}
           />
         ) : (
           <Video
             source={{ uri: post?.mediaUrl }}
-            style={{ width: '100%', height: 400 }}
+            style={{ width: '100%', height: 200 }}
             playWhenInactive
             repeat
+            muted
             resizeMode="cover"
           />
         )}

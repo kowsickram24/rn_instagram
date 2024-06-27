@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Button, Header, Input} from '@rneui/themed';
+import {Avatar, Button, Header, Input, LinearProgress} from '@rneui/themed';
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, TouchableOpacity} from 'react-native';
@@ -16,6 +16,7 @@ import {Defaultimage} from '../../../../constants/assets';
 const EditProfile = ({navigation, route}) => {
   const UserDefault = Defaultimage;
   const currentUser = route?.params;
+  const [uploadProgress, setUploadProgress] = useState(0);
   console.log('route?.params: ', route?.params);
   const user = useSelector(state => state.user.user);
   const [newImage, setNewImage] = useState(null);
@@ -91,7 +92,15 @@ const EditProfile = ({navigation, route}) => {
         ContentType: 'image/jpeg',
         ACL: 'public-read',
       };
-      await S3Bucket.upload(params).promise();
+      const options = {
+        partSize: 5 * 1024 * 1024,
+        queueSize: 1,
+        onProgress: event => {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        },
+      };
+      await S3Bucket.upload(params, options).promise();
       const imageUrl = `https://${config.BUCKETNAME}.s3.amazonaws.com/${filename}`;
       return imageUrl;
     } catch (error) {
@@ -127,6 +136,7 @@ const EditProfile = ({navigation, route}) => {
 
   const handleSaveChanges = async () => {
     try {
+      setIsLoading(true);
       let imageUrl = userData.avatar;
       if (newImage) {
         imageUrl = await uploadImageToS3(newImage);
@@ -137,6 +147,8 @@ const EditProfile = ({navigation, route}) => {
     } catch (error) {
       console.error('Error saving changes: ', error);
       alert('Failed to update profile. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -211,6 +223,7 @@ const EditProfile = ({navigation, route}) => {
             value={userData?.bio}
             onChangeText={text => setUserData({...userData, bio: text})}
           />
+          {isLoading && <LinearProgress  color='blue' value={uploadProgress / 100} />}
           <Button
             titleStyle={{fontSize: 14}}
             buttonStyle={{

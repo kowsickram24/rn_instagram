@@ -14,7 +14,7 @@ const SnackBar = ({visible, content, duration = 3000, onDismiss}) => {
           mode:'text',
           labelStyle: {color: 'darkviolet'},
           label: 'Ok',
-          onPress: onDismiss,
+          // onPress: onDismiss,
         }}>
         <Text fontSize={14} color={'mainblack'}>
           {content}

@@ -45,6 +45,7 @@ const PostsView = ({user, navigation}) => {
           />
         ) : (
           <Video
+          paused
             source={{uri: item?.mediaUrl}}
             style={{width: width / 3, height: 125}}
             resizeMode="cover"

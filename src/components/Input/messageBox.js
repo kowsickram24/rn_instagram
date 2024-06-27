@@ -27,10 +27,10 @@ const MessageBox = ({
         </TouchableOpacity>
       }
       inputContainerStyle={{
-        borderBottomWidth: 0,
+        borderBottomWidth: 0.7,
         backgroundColor: 'white',
         borderRadius: 100,
-        elevation: 1,
+        borderWidth:0.7,
         marginVertical: 10,
       }}
       rightIcon={

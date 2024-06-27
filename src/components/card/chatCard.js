@@ -2,7 +2,7 @@ import {Box, Text} from '../../theme';
 import {Avatar} from '@rneui/themed';
 import {Skeleton} from '@rneui/themed';
 import {useState, useEffect} from 'react';
-import {Camera} from '../../constants/assets';
+import {Camera, Share} from '../../constants/assets';
 import {TouchableOpacity} from 'react-native';
 import {Card} from '@rneui/themed';
 
@@ -42,7 +42,7 @@ const ChatCard = ({
           </Box>
           <Box alignItems="center" justifyContent="center">
             <TouchableOpacity>
-              <Camera />
+              <Share />
             </TouchableOpacity>
           </Box>
         </Box>
