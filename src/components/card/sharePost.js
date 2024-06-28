@@ -53,16 +53,17 @@ const SharePost = ({postId}) => {
             {post?.user?.username}
           </Text>
         </Box>
-        {post?.mediaType === 'image' ? (
+        {post?.mediaUrls ? (
           <FastImage
-            source={{uri: post?.mediaUrl}}
+            source={{uri: post?.mediaUrls[0]}}
             resizeMode="cover"
             style={{width: '100%', height: 200}}
           />
-        ) : (
+        ) : null}
+        {post?.videoUrl ? (
           <TouchableWithoutFeedback onPress={toggleMute}>
             <Video
-              source={{uri: post?.mediaUrl}}
+              source={{uri: post?.videoUrl}}
               style={{width: '100%', height: 200}}
               playWhenInactive
               repeat
@@ -70,7 +71,8 @@ const SharePost = ({postId}) => {
               resizeMode="cover"
             />
           </TouchableWithoutFeedback>
-        )}
+        ) : null}
+
         <Box alignItems="center" flexDirection="row" gap={'s'}>
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
             {post?.user?.username}

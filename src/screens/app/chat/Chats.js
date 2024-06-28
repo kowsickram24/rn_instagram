@@ -16,6 +16,7 @@ const ChatBox = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
     setLoading(true);
     const unsubscribe = firestore()
@@ -27,29 +28,32 @@ const ChatBox = ({navigation}) => {
             snapshot.docs.map(async doc => {
               const chat = doc.data();
               const secondUserId = chat.members.find(
-                id => id !== currentUser.userId,
+                id => id !== currentUser.userId
               );
               const userDoc = await firestore()
                 .collection('users')
                 .doc(secondUserId)
                 .get();
               const secondUser = userDoc.data();
-              return {id: doc.id, ...chat, secondUser};
-            }),
+              return { id: doc.id, ...chat, secondUser };
+            })
           );
 
           const filteredChats = chatData.filter(chat =>
             chat.secondUser.username
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()),
+              .includes(searchQuery.toLowerCase())
           );
+
+          filteredChats.sort((a, b) => b.lastMessage.time.toDate() - a.lastMessage.time.toDate());
+
           setChats(filteredChats);
           setLoading(false);
         },
         error => {
           console.error('Error fetching chats: ', error);
           setLoading(false);
-        },
+        }
       );
 
     return () => unsubscribe();

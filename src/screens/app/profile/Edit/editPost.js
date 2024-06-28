@@ -1,14 +1,15 @@
 import firestore from '@react-native-firebase/firestore';
-import { Header, Input } from '@rneui/themed';
-import { useState } from 'react';
-import { Dimensions, ScrollView } from 'react-native';
+import {Header, Input} from '@rneui/themed';
+import {useState} from 'react';
+import {Dimensions, ScrollView} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
-import { PrimaryBtn } from '../../../../components/buttons/primaryButton';
-import { Box, Text } from '../../../../theme';
+import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
+import {Box, Text} from '../../../../theme';
+import Carousel from 'react-native-reanimated-carousel';
 const {width, height} = Dimensions.get('screen');
 const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -53,13 +54,24 @@ const EditPost = ({route, navigation}) => {
       />
       <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false}>
         <Box gap={'s'}>
-          {posts?.mediaType === 'image' ? (
-            <FastImage
-              resizeMode="cover"
-              source={{uri: posts?.mediaUrl}}
-              style={{height: 350, borderRadius: 10}}
+        {posts?.mediaUrls.length > 0 && (
+            <Carousel
+              snapEnabled
+              pagingEnabled
+              autoPlay={false}
+              width={400}
+              height={400}
+              data={posts?.mediaUrls}
+              renderItem={({item}) => (
+                <FastImage
+                  source={{uri: item}}
+                  style={{width: 400, height: 400}}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              )}
             />
-          ) : (
+          )}
+          {posts?.videoUrls ? (
             <Video
               source={{uri: posts?.mediaUrl}}
               style={{height: 350, borderRadius: 10}}
@@ -68,7 +80,8 @@ const EditPost = ({route, navigation}) => {
               muted
               resizeMode="cover"
             />
-          )}
+          ) : null}
+
           <Input
             inputStyle={{fontSize: 14, height: 60, textAlignVertical: 'top'}}
             value={posts.caption}

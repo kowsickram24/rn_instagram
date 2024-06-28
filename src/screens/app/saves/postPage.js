@@ -77,7 +77,8 @@ const PostPage = ({route, navigation}) => {
           ProfileUrl={post?.user?.avatar}
           userId={currentUser?.userId}
           postId={post?.postId}
-          mediaSrc={post?.mediaUrl}
+          mediaSrc={post?.mediaUrls}
+          videoSrc={post?.videoUrl}
           mediaType={post?.mediaType}
           Caption={post?.caption}
           user={post?.user?.username}

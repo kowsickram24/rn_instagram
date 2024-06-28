@@ -140,7 +140,7 @@ const Followers = ({currentUser, userData, navigation}) => {
         height={height / 5}
         ref={OptionRef}>
         <Box flex={1} alignItems="center" gap={'m'}>
-          <Text color={'mainblack'}>{selectedUser?.username}</Text>
+          <Text padding={'s'} color={'mainblack'}>{selectedUser?.username}</Text>
           <TouchableOpacity onPress={removeFollower}>
             <Text padding={'s'} textAlign="center" color={'red'}>
               Remove

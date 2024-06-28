@@ -31,7 +31,7 @@ const ChatCard = ({
           alignItems="center"
           justifyContent="space-between">
           <Box flexDirection="column">
-            <Text fontSize={16} color={'mainblack'}>
+            <Text fontWeight={'400'} fontSize={16} color={'mainblack'}>
               {' '}
               {Username}
             </Text>

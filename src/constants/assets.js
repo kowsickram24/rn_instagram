@@ -43,6 +43,8 @@ export {default as Gal_Image} from '../assets/icons/gallery_image.svg';
 export {default as Gallery_Icon} from '../assets/icons/gallery.svg';
 export {default as Log_out} from '../assets/icons/logout.svg';
 export {default as Dw_Arrow} from '../assets/icons/arrow_dwn.svg';
+export {default as Tick_blue} from '../assets/icons/tick_b.svg';
+export {default as Plus_blue} from '../assets/icons/plus_b.svg';
 
 
 export const Defaultimage =

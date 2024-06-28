@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList } from 'react-native';
+import {useEffect, useRef, useState} from 'react';
+import {Dimensions, FlatList} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import FeedPost from '../../../../components/card/FeedPost';
-import { Box, Text } from '../../../../theme';
+import {Box, Text} from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
 const PostInfo = ({route}) => {
@@ -15,6 +15,14 @@ const PostInfo = ({route}) => {
   const [posts, setPosts] = useState([post]);
   const [currentPost, setCurrentPost] = useState(null);
   const [user, setUser] = useState(null);
+  const [mutedStates, setMutedStates] = useState({});
+
+  const toggleMute = postId => {
+    setMutedStates(prevState => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -42,8 +50,6 @@ const PostInfo = ({route}) => {
   const renderItem = ({item}) => (
     <Box marginVertical="m">
       <FeedPost
-        mediaType={item?.mediaType}
-        mediaSrc={item?.mediaUrl}
         ProfileUrl={user?.avatar}
         user={user?.username}
         location={item?.location}
@@ -53,6 +59,13 @@ const PostInfo = ({route}) => {
         userId={currentUser?.userId}
         postId={item?.postId}
         time={item?.time}
+        mediaSrc={item?.mediaUrls}
+        videoSrc={item?.videoUrl}
+        isMuted={!!mutedStates[item.postId]}
+        toggleMute={() => toggleMute(item.postId)}
+        onProfilePress={() =>
+          navigation.navigate('ProfileView', {userId: item?.userId})
+        }
       />
     </Box>
   );
@@ -60,7 +73,7 @@ const PostInfo = ({route}) => {
   return (
     <Box flex={1} backgroundColor="mainwhite">
       <FlatList
-      showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={posts}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}

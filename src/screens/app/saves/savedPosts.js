@@ -102,21 +102,21 @@ const SavedPosts = ({navigation}) => {
             onPress={() =>
               navigation.navigate('PostPage', {postId: item?.postId})
             }>
-            {item.mediaType === 'image' ? (
+            {item?.mediaUrls ? (
               <FastImage
                 resizeMode="cover"
-                source={{uri: item?.mediaUrl}}
+                source={{uri: item?.mediaUrls[0]}}
                 style={{width: width / 3, height: width / 3}}
               />
-            ) : (
+            ) : null}
+            {item?.videoUrl ? (
               <Video
-                repeat
                 playWhenInactive
                 resizeMode="cover"
                 source={{uri: item?.mediaUrl}}
                 style={{width: width / 3, height: width / 3}}
               />
-            )}
+            ) : null}
           </TouchableOpacity>
         )}
       />

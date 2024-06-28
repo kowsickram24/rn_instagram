@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import ProfileCard from '../../../components/card/profileCard';
-import {Dw_Arrow, Menu} from '../../../constants/assets';
+import {Dw_Arrow, Menu, Tick_blue} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
 import {Box, Text, height, width} from '../../../theme';
 import RBSheet from 'react-native-raw-bottom-sheet';
@@ -121,7 +121,7 @@ const Profile = ({navigation, User}) => {
       </Modal>
       <RBSheet
         draggable
-        height={height / 2}
+        height={height / 4}
         ref={ProfileRef}
         customStyles={{
           container: {
@@ -136,20 +136,29 @@ const Profile = ({navigation, User}) => {
         }}>
         <Box flex={1}>
           <Box
-            flex={2}
-            padding={'s'}
+            flex={1}
+            padding={'m'}
             margin={'s'}
             borderRadius={'m'}
+            justifyContent="center"
             backgroundColor={'lightgrey'}>
-            <Box flexDirection='row' gap={'m'}>
-              <Avatar rounded size={'medium'} source={{uri: User?.avatar}} />
-              <Text>{User?.username}</Text>
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Box flexDirection="row" alignItems="center" gap={'m'}>
+                <Avatar rounded size={'medium'} source={{uri: User?.avatar}} />
+                <Text fontSize={16} color={'mainblack'}>
+                  {User?.username}
+                </Text>
+              </Box>
+              <Tick_blue />
             </Box>
           </Box>
           <Box flex={1} padding={'s'} justifyContent="flex-end">
             <TouchableWithoutFeedback
               onPress={() => navigation.navigate('AccountCenter')}>
-              <Box padding={'xs'} borderRadius={'m'} borderWidth={1}>
+              <Box padding={'xs'} borderRadius={'xl'} borderWidth={1}>
                 <Text color={'mainblack'} textAlign="center">
                   Go to Accountcenter
                 </Text>

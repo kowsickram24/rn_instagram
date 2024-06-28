@@ -1,10 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {FlatList, Image, TouchableOpacity} from 'react-native';
-import {Box, Text} from '../../../../theme';
-import {Dimensions} from 'react-native';
-const {width, height} = Dimensions.get('screen');
 import firestore from '@react-native-firebase/firestore';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, FlatList, Image, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
+import {Box, Text} from '../../../../theme';
+const {width, height} = Dimensions.get('screen');
 const PostsView = ({user, navigation}) => {
   const [posts, setPosts] = useState([]);
 
@@ -13,19 +12,20 @@ const PostsView = ({user, navigation}) => {
       try {
         const postsRef = firestore().collection('posts');
         const userPosts = user?.posts || [];
-        const fetchPromises = userPosts.map(async postId => {
-          const postDoc = await postsRef.doc(postId).get();
-          if (postDoc.exists) {
-            return postDoc.data();
-          } else {
-            console.log(`Post with ID ${postId} does not exist.`);
-            return null;
-          }
+
+        const unsubscribe = postsRef.onSnapshot(snapshot => {
+          const fetchedPosts = [];
+
+          snapshot.forEach(doc => {
+            if (userPosts.includes(doc.id)) {
+              fetchedPosts.push(doc.data());
+            }
+          });
+
+          setPosts(fetchedPosts);
         });
 
-        // Execute all promises and set posts
-        const fetchedPosts = await Promise.all(fetchPromises);
-        setPosts(fetchedPosts.filter(post => post !== null));
+        return () => unsubscribe();
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -37,20 +37,20 @@ const PostsView = ({user, navigation}) => {
   const renderPostItem = ({item}) => (
     <Box>
       <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {item})}>
-        {item.mediaType === 'image' ? (
+        {item?.mediaUrls ? (
           <Image
             resizeMode="cover"
             style={{width: width / 3, height: 125}}
-            source={{uri: item?.mediaUrl}}
+            source={{uri: item?.mediaUrls[0]}}
           />
-        ) : (
+        ) : item?.videoUrl ? (
           <Video
-          paused
-            source={{uri: item?.mediaUrl}}
+            paused
+            source={{uri: item?.videoUrl}}
             style={{width: width / 3, height: 125}}
             resizeMode="cover"
           />
-        )}
+        ) : null}
       </TouchableOpacity>
     </Box>
   );

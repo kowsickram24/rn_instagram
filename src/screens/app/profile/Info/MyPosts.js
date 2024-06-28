@@ -56,21 +56,20 @@ const MyPosts = ({navigation}) => {
     <Box>
       <TouchableOpacity
         onPress={() => navigation.navigate('PostDesc', {post: item})}>
-        {item.mediaType === 'image' ? (
+        {item?.mediaUrls ? (
           <FastImage
-            resizeMode="cover"
-            style={{width: width / 3, height: width / 3}}
-            source={{uri: item?.mediaUrl}}
-          />
-        ) : (
-          <Video
+          resizeMode="cover"
+          style={{width: 120, height: 120}}
+            source={{uri: item?.mediaUrls[0]}}
+            />
+          ) : item?.videoUrl ? (
+            <Video
             paused
-            poster="Video"
-            source={{uri: item?.mediaUrl}}
-            style={{width: width / 3, height: width / 3}}
+            source={{uri: item?.videoUrl}}
+            style={{backgroundColor:'red',width: 120, height: 120}}
             resizeMode="cover"
-          />
-        )}
+            />
+          ) : null}
       </TouchableOpacity>
     </Box>
   );
@@ -88,19 +87,11 @@ const MyPosts = ({navigation}) => {
     />
   );
 
-  if (loading) {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <ActivityIndicator size="large" />
-      </Box>
-    );
-  }
-
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       {loading ? (
         <FlatList
-          data={[...Array(9).keys()]}
+          data={[...Array(3).keys()]}
           renderItem={renderSkeletonItem}
           keyExtractor={(item, index) => index.toString()}
           numColumns={3}

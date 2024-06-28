@@ -3,15 +3,13 @@ import {TouchableOpacity} from 'react-native';
 import {Image_Fill, White_cam_Fill} from '../../constants/assets';
 import {Box, Text} from '../../theme';
 
-
 const MessageBox = ({
-  LongMedia,
   onChangeText,
   OnMedia,
   value,
   CamPress,
   OnSend,
-  BackCont
+  BackCont,
 }) => {
   return (
     <Input
@@ -30,22 +28,30 @@ const MessageBox = ({
         borderBottomWidth: 0.7,
         backgroundColor: 'white',
         borderRadius: 100,
-        borderWidth:0.7,
+        borderWidth: 0.7,
         marginVertical: 10,
+      }}
+      inputStyle={{
+        fontSize:14
       }}
       rightIcon={
         <>
           <Box flexDirection="row" gap={'s'}>
             {!value ? (
               <Box>
-                <TouchableOpacity onLongPress={LongMedia} onPress={OnMedia}>
+                <TouchableOpacity onPress={OnMedia}>
                   <Image_Fill />
                 </TouchableOpacity>
               </Box>
             ) : null}
-            <Box >
+            <Box>
               <TouchableOpacity onPress={OnSend}>
-                <Text textAlignVertical='center' verticalAlign='middle' color={'primaryBlue'}>Send</Text>
+                <Text
+                  textAlignVertical="center"
+                  verticalAlign="middle"
+                  color={'primaryBlue'}>
+                  Send
+                </Text>
               </TouchableOpacity>
             </Box>
           </Box>

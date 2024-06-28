@@ -39,7 +39,7 @@ import {Box, Text} from '../../theme';
 import SkeletonCard from '../Skeleton/skeletonCard';
 const {width, height} = Dimensions.get('screen');
 import {SearchBar} from '@rneui/themed';
-
+import Carousel from 'react-native-reanimated-carousel';
 const PostHeader = ({
   location,
   user,
@@ -88,8 +88,10 @@ const FeedPost = ({
   userId,
   onProfilePress,
   postId,
-  mediaType,
   time,
+  isMuted,
+  toggleMute,
+  videoSrc,
 }) => {
   const navigation = useNavigation();
   const CmtRef = useRef();
@@ -100,7 +102,7 @@ const FeedPost = ({
   const [isSaved, setIsSaved] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const [likedId, setLikedId] = useState([]);
-  const [isMuted, setIsMuted] = useState(true);
+
   let formattedTime = '';
 
   try {
@@ -114,9 +116,6 @@ const FeedPost = ({
   } catch (error) {
     formattedTime = 'Invalid time';
   }
-  const toggleMute = () => {
-    setIsMuted(prevIsMuted => !prevIsMuted);
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -302,27 +301,36 @@ const FeedPost = ({
             ProfileUrl={ProfileUrl}
             onProfilePress={onProfilePress}
           />
-
-          {/* Media */}
-
-          {mediaType === 'image' ? (
-            <FastImage
-              resizeMode="cover"
-              style={{height: 400, width: '100%'}}
-              source={{uri: mediaSrc}}
+          {mediaSrc?.length > 0 && (
+            <Carousel
+              onSnapToItem={index => console.log('current index:', index)}
+              snapEnabled
+              pagingEnabled
+              autoPlay={false}
+              width={width}
+              height={400}
+              data={mediaSrc}
+              renderItem={({item}) => (
+                <FastImage
+                  source={{uri: item}}
+                  style={{width: width, height: 400}}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              )}
             />
-          ) : (
+          )}
+          {videoSrc ? (
             <TouchableWithoutFeedback onPress={toggleMute}>
               <Video
-                source={{uri: mediaSrc}}
-                style={{height: 400, width: '100%'}}
+                source={{uri: videoSrc}}
+                style={{height: 400, width: width}}
                 playWhenInactive
                 resizeMode="cover"
                 repeat
-                muted={isMuted}
+                muted={!isMuted}
               />
             </TouchableWithoutFeedback>
-          )}
+          ) : null}
 
           <Box
             flexDirection="row"
@@ -391,7 +399,7 @@ const FeedPost = ({
           postId={postId}
           userId={userId}
         />
-        <Text paddingHorizontal={'s'} fontSize={12}>
+        <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
           {formattedTime}
         </Text>
       </Box>
@@ -399,9 +407,11 @@ const FeedPost = ({
   );
 };
 
-const ShareBox = forwardRef(({postId}, ref) => {
+const ShareBox = forwardRef(({ postId }, ref) => {
   const currentUser = useSelector(state => state.user.user);
   const [shareUsers, setShareUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   const fetchUsers = async () => {
     try {
@@ -418,6 +428,7 @@ const ShareBox = forwardRef(({postId}, ref) => {
       );
 
       setShareUsers(filteredUsers);
+      setFilteredUsers(filteredUsers);
     } catch (error) {
       console.error('Error fetching users: ', error);
     }
@@ -426,6 +437,17 @@ const ShareBox = forwardRef(({postId}, ref) => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery === '') {
+      setFilteredUsers(shareUsers);
+    } else {
+      const filtered = shareUsers.filter(user =>
+        user.username.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [searchQuery, shareUsers]);
 
   const handleShare = async userId => {
     try {
@@ -477,23 +499,23 @@ const ShareBox = forwardRef(({postId}, ref) => {
     }
   };
 
-  const renderSharelist = ({item}) => (
+  const renderSharelist = ({ item }) => (
     <Box paddingVertical={'s'} paddingHorizontal={'s'}>
       <Box
         justifyContent="space-between"
         flexDirection="row"
         alignItems="center">
         <Box flexDirection="row" gap={'s'} alignItems="center">
-          <Avatar rounded size={'medium'} source={{uri: item?.avatar}} />
+          <Avatar rounded size={'medium'} source={{ uri: item?.avatar }} />
           <Text fontSize={14} color={'mainblack'}>
             {item.username}
           </Text>
         </Box>
         <Button
-          containerStyle={{borderRadius: 8}}
+          containerStyle={{ borderRadius: 8 }}
           onPress={() => handleShare(item.id)}
           title={'Share'}
-          titleStyle={{fontSize: 12}}
+          titleStyle={{ fontSize: 12 }}
         />
       </Box>
     </Box>
@@ -532,14 +554,14 @@ const ShareBox = forwardRef(({postId}, ref) => {
       height={height / 2}>
       <Box flex={1} padding="s">
         <SearchBar
-          inputStyle={{fontSize: 14}}
+          inputStyle={{ fontSize: 14 }}
           platform={Platform.OS === 'android' ? 'android' : 'ios'}
           placeholder="Search"
-          // onChangeText={setSearchQuery}
-          // value={searchQuery}
+          onChangeText={setSearchQuery}
+          value={searchQuery}
         />
         <FlatList
-          data={shareUsers}
+          data={filteredUsers}
           renderItem={renderSharelist}
           keyExtractor={item => item.id}
           ListEmptyComponent={<Text fontSize={12}>No Users to Share</Text>}

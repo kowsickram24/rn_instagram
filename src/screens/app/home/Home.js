@@ -13,16 +13,20 @@ import FeedPost from '../../../components/card/FeedPost';
 import {Heaty_uf, Insta_Typo_logo, Msg_Icon} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Data} from '../../../utils/randomData';
-import UserData from '../../../utils/randomData';
 const Home = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [mutedStates, setMutedStates] = useState({});
+  const toggleMute = postId => {
+    setMutedStates(prevState => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
+  };
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('posts')
-      .where('userId', '!=', currentUser?.userId) // Filter posts where userId is not equal to current user's userId
       .onSnapshot(async snapshot => {
         const postsData = [];
         for (const doc of snapshot.docs) {
@@ -30,22 +34,24 @@ const Home = ({navigation}) => {
             id: doc.id,
             ...doc.data(),
           };
-          try {
-            const userDoc = await firestore()
-              .collection('users')
-              .doc(postData.userId)
-              .get();
+          if (postData.userId !== currentUser?.userId) {
+            try {
+              const userDoc = await firestore()
+                .collection('users')
+                .doc(postData.userId)
+                .get();
 
-            if (userDoc.exists) {
-              postData.user = userDoc.data();
-            } else {
-              console.log(`User with ID ${postData.userId} not found.`);
+              if (userDoc.exists) {
+                postData.user = userDoc.data();
+              } else {
+                console.log(`User with ID ${postData.userId} not found.`);
+              }
+            } catch (error) {
+              console.error('Error fetching user data:', error);
             }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-          }
 
-          postsData.push(postData);
+            postsData.push(postData);
+          }
         }
 
         setPosts(postsData);
@@ -55,7 +61,6 @@ const Home = ({navigation}) => {
     return () => unsubscribe();
   }, [currentUser]);
 
-
   const renderItem = ({item}) => (
     <Box>
       <FeedPost
@@ -64,14 +69,16 @@ const Home = ({navigation}) => {
         Caption={item.caption}
         userId={currentUser?.userId}
         postId={item?.postId}
-        mediaSrc={item?.mediaUrl}
-        mediaType={item?.mediaType}
         user={item?.user.username}
         comments={item?.comments}
         time={item?.time}
         onProfilePress={() =>
           navigation.navigate('ProfileView', {userId: item?.userId})
         }
+        mediaSrc={item?.mediaUrls}
+        videoSrc={item?.videoUrl}
+        isMuted={!!mutedStates[item.postId]}
+        toggleMute={() => toggleMute(item.postId)}
       />
     </Box>
   );
@@ -138,7 +145,12 @@ const Home = ({navigation}) => {
             renderItem={renderItem}
             keyExtractor={item => item.id}
             ListHeaderComponent={ListHeaderComponent}
-            ListEmptyComponent={<Text> No More Posts </Text>}
+            ListEmptyComponent={
+              <Text fontSize={14} textAlign="center">
+                {' '}
+                No More Feeds{' '}
+              </Text>
+            }
           />
         )}
       </Box>

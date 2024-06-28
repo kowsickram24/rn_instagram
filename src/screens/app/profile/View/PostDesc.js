@@ -1,21 +1,28 @@
 import firestore from '@react-native-firebase/firestore';
-import { Header } from '@rneui/themed';
-import React, { useRef, useState } from 'react';
-import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import {Header} from '@rneui/themed';
+import React, {useRef, useState} from 'react';
+import {Alert, Dimensions, FlatList, TouchableOpacity} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
 import FeedPost from '../../../../components/card/FeedPost';
-import { Dustbin, Insta_Typo_logo, Pencil } from '../../../../constants/assets';
-import { Box, Text } from '../../../../theme';
+import {Dustbin, Insta_Typo_logo, Pencil} from '../../../../constants/assets';
+import {Box, Text} from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
 const PostDesc = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [selectedPost, setSelectedPost] = useState();
   const RBref = useRef();
+  const [mutedStates, setMutedStates] = useState({});
 
+  const toggleMute = postId => {
+    setMutedStates(prevState => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
+  };
   const [posts, setPosts] = useState([route.params.post]);
   console.log('posts: ', posts);
 
@@ -74,11 +81,16 @@ const PostDesc = ({route, navigation}) => {
         user={item?.user?.username}
         ProfileUrl={item?.user?.avatar}
         likedUsers={item.likes}
-        mediaSrc={item?.mediaUrl}
-        mediaType={item?.mediaType}
         userId={currentUser?.userId}
         postId={item?.postId}
         time={item?.time}
+        mediaSrc={item?.mediaUrls}
+        videoSrc={item?.videoUrl}
+        isMuted={!!mutedStates[item.postId]}
+        onProfilePress={() =>
+          navigation.navigate('ProfileView', {userId: item?.userId})
+        }
+        toggleMute={() => toggleMute(item.postId)}
       />
     </Box>
   );
@@ -97,13 +109,14 @@ const PostDesc = ({route, navigation}) => {
       />
       <ToastManager position="top" />
       <FlatList
-      showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={posts}
         ListEmptyComponent={<Text>No Posts</Text>}
         renderItem={renderPostItem}
         keyExtractor={(item, index) => index.toString()}
       />
       <RBSheet
+        draggable
         customStyles={{
           container: {
             borderTopRightRadius: 20,
@@ -111,18 +124,9 @@ const PostDesc = ({route, navigation}) => {
             justifyContent: 'center',
           },
         }}
-        height={250}
+        height={height / 4}
         ref={RBref}>
-        <Box alignItems="center" gap="xl" flex={1}>
-          <Box marginVertical="l">
-            <Text
-              fontSize={16}
-              fontWeight="bold"
-              textAlign="center"
-              color="mainblack">
-              Post
-            </Text>
-          </Box>
+        <Box alignItems="center" justifyContent="center" gap="xl" flex={1}>
           <Box gap="xl" alignItems="center">
             <TouchableOpacity
               onPress={() => navigation.navigate('Editpost', {selectedPost})}>

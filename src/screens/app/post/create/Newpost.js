@@ -12,14 +12,16 @@ import {Loader} from '../../../../components/loader/Loader';
 import config from '../../../../config';
 import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
-import {Box, Text} from '../../../../theme';
+import {Box, Text, width} from '../../../../theme';
 const cloudFrontDomain = config.CLDFRNTDOM;
+import Carousel from 'react-native-reanimated-carousel';
+import FastImage from 'react-native-fast-image';
 
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
   const [userData, setUserData] = useState();
-
-  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedImages, setSelectedImages] = useState([]);
+  console.log('selectedImages: ', selectedImages);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
@@ -51,15 +53,19 @@ const NewPost = ({navigation, route, getData}) => {
 
   const pickImage = async () => {
     try {
-      const result = await ImageCropPicker.openPicker({
+      const results = await ImageCropPicker.openPicker({
         mediaType: 'photo',
         width: 1080,
         height: 1080,
+        multiple: true, 
         cropping: true,
+        showsSelectedCount: true,
       });
-      setSelectedImage(result.path);
+
+      const imagePaths = results.map(result => result.path);
+      setSelectedImages(imagePaths);
     } catch (error) {
-      console.error('Error picking image: ', error);
+      console.error('Error picking images: ', error);
     }
   };
 
@@ -67,6 +73,7 @@ const NewPost = ({navigation, route, getData}) => {
     try {
       const result = await ImageCropPicker.openPicker({
         mediaType: 'video',
+        showsSelectedCount: true,
         loadingLabelText: 'loading',
       });
       setSelectedVideo(result.path);
@@ -124,19 +131,23 @@ const NewPost = ({navigation, route, getData}) => {
   };
 
   const handleCreatePost = async () => {
-    if (selectedImage || selectedVideo) {
+    if (selectedImages.length > 0 || selectedVideo) {
       try {
         setLoading(true);
-        const mediaUrl = selectedImage
-          ? await uploadMediaToAWS(selectedImage, 'image')
-          : await uploadMediaToAWS(selectedVideo, 'video');
+        const mediaUrls = await Promise.all(
+          selectedImages.map(image => uploadMediaToAWS(image, 'image')),
+        );
+        const videoUrl = selectedVideo
+          ? await uploadMediaToAWS(selectedVideo, 'video')
+          : null;
+
         const newPostRef = firestore().collection('posts').doc();
         const newPostId = newPostRef.id;
         const newPost = {
           postId: newPostId,
           userId: currentuser.userId,
-          mediaUrl,
-          mediaType: selectedImage ? 'image' : 'video',
+          mediaUrls,
+          videoUrl,
           caption,
           location,
           likes: [],
@@ -188,10 +199,31 @@ const NewPost = ({navigation, route, getData}) => {
           />
           <ScrollView showsVerticalScrollIndicator={false}>
             <Box style={styles.mediaPicker}>
-              {selectedImage ? (
-                <Image source={{uri: selectedImage}} style={styles.media} />
+              {selectedImages.length > 0 ? (
+                <>
+                  <Carousel
+                    snapEnabled
+                    pagingEnabled
+                    width={350}
+                    height={350}
+                    style={{borderRadius: 8}}
+                    data={selectedImages}
+                    onSnapToItem={index => console.log('current index:', index)}
+                    renderItem={({item}) => (
+                      <FastImage
+                        source={{uri: item}}
+                        style={{width: 350, height: 350, borderRadius: 8}}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                    )}
+                  />
+                </>
               ) : selectedVideo ? (
-                <Video source={{uri: selectedVideo}} style={styles.media} />
+                <Video
+                  source={{uri: selectedVideo}}
+                  resizeMode="cover"
+                  style={styles.media}
+                />
               ) : (
                 <Gallery_Icon />
               )}

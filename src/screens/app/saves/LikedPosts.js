@@ -1,17 +1,17 @@
 import firestore from '@react-native-firebase/firestore';
-import { Header } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
+import {Header} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
 const {width, height} = Dimensions.get('screen');
 const LikedPosts = ({navigation}) => {
   const [likedPosts, setLikedPosts] = useState([]);
@@ -99,19 +99,20 @@ const LikedPosts = ({navigation}) => {
             onPress={() => {
               navigation.navigate('PostPage', {postId: item.id});
             }}>
-            {item.mediaType === 'image' ? (
+            {item?.mediaUrls ? (
               <FastImage
                 resizeMode="cover"
-                source={{uri: item?.mediaUrl}}
+                source={{uri: item?.mediaUrls[0]}}
                 style={{width: width / 3, height: width / 3}}
               />
-            ) : (
+            ) : null}
+            {item?.videoUrl ? (
               <Video
                 resizeMode="cover"
-                source={{uri: item?.mediaUrl}}
+                source={{uri: item?.videoUrl}}
                 style={{width: width / 3, height: width / 3}}
               />
-            )}
+            ) : null}
           </TouchableOpacity>
         )}
       />

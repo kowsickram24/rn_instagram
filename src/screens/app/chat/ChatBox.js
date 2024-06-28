@@ -1,37 +1,32 @@
 import firestore from '@react-native-firebase/firestore';
 import {Avatar, Badge, Button, Divider, Header} from '@rneui/themed';
+import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Image,
-  ScrollView,
   FlatList,
+  Image,
+  Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import RNFS from 'react-native-fs';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import Video from 'react-native-video';
+import {useSelector} from 'react-redux';
+import MessageBox from '../../../components/Input/messageBox';
+import BackBtn from '../../../components/buttons/backButton';
+import SharePost from '../../../components/card/sharePost';
+import config from '../../../config';
 import {
   Gal_Image,
   Gal_Video,
-  Gallery,
   Gallery_Icon,
   Info,
 } from '../../../constants/assets';
 import {S3Bucket} from '../../../services/aws/s3bucket';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import {useSelector} from 'react-redux';
-import MessageBox from '../../../components/Input/messageBox';
-import BackBtn from '../../../components/buttons/backButton';
 import {Box, Text, height} from '../../../theme';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import {Buffer} from 'buffer';
-import RNFS from 'react-native-fs';
-import Video from 'react-native-video';
-import config from '../../../config';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
-import SharePost from '../../../components/card/sharePost';
 
 const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -43,12 +38,13 @@ const ChatBox = ({navigation, route}) => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const [secondUser, setSecondUser] = useState(null);
   const [message, setMessage] = useState('');
-  const [postData, setPostData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [imageVisble, setImageVisible] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const cloudFrontDomain = config.CLDFRNTDOM;
   const ToggleMute = () => {
     setIsMuted(!isMuted);
   };
+  const ActionRef = useRef();
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('chats')
@@ -80,7 +76,6 @@ const ChatBox = ({navigation, route}) => {
         },
       );
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [chatId, currentUser.userId]);
 
@@ -250,33 +245,39 @@ const ChatBox = ({navigation, route}) => {
       />
       {/* */}
       <Divider />
-      <GestureHandlerRootView>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={chatData?.messages}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => {
-            const messageDate = item.time.toDate();
-            const currentDate = new Date();
-            const timeDifference = currentDate - messageDate;
-            const oneDay = 24 * 60 * 60 * 1000;
 
-            let dateText;
-            if (
-              timeDifference < oneDay &&
-              messageDate.getDate() === currentDate.getDate()
-            ) {
-              dateText = 'Today';
-            } else if (
-              timeDifference < 2 * oneDay &&
-              messageDate.getDate() === currentDate.getDate() - 1
-            ) {
-              dateText = 'Yesterday';
-            } else {
-              dateText = messageDate.toLocaleDateString();
-            }
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={chatData?.messages}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => {
+          const messageDate = item.time.toDate();
+          const currentDate = new Date();
+          const timeDifference = currentDate - messageDate;
+          const oneDay = 24 * 60 * 60 * 1000;
 
-            return (
+          let dateText;
+          if (
+            timeDifference < oneDay &&
+            messageDate.getDate() === currentDate.getDate()
+          ) {
+            dateText = 'Today';
+          } else if (
+            timeDifference < 2 * oneDay &&
+            messageDate.getDate() === currentDate.getDate() - 1
+          ) {
+            dateText = 'Yesterday';
+          } else {
+            dateText = messageDate.toLocaleDateString();
+          }
+
+          const handleLongPress = () => {
+            ActionRef.current.open();
+            setSelectedMessage(item);
+          };
+
+          return (
+            <TouchableWithoutFeedback>
               <Box key={item.id}>
                 <Text textAlign="center" color={'mainblack'} fontSize={10}>
                   {dateText}
@@ -287,8 +288,7 @@ const ChatBox = ({navigation, route}) => {
                     minute: '2-digit',
                   })}
                 </Text>
-                <TouchableWithoutFeedback
-                  onLongPress={() => console.log('Gesture Long Press')}>
+                <TouchableWithoutFeedback onLongPress={handleLongPress}>
                   <Box
                     margin="m"
                     padding="m"
@@ -319,7 +319,7 @@ const ChatBox = ({navigation, route}) => {
                               postId: item.message,
                             })
                           }>
-                          <SharePost postId={item.message} />
+                          <SharePost postId={item?.message} />
                         </TouchableOpacity>
                       </>
                     ) : (
@@ -337,13 +337,12 @@ const ChatBox = ({navigation, route}) => {
                   </Box>
                 </TouchableWithoutFeedback>
               </Box>
-            );
-          }}
-        />
-      </GestureHandlerRootView>
+            </TouchableWithoutFeedback>
+          );
+        }}
+      />
 
       <MessageBox
-        // LongMedia={() => MsgRef.current.open()}
         value={message}
         onChangeText={setMessage}
         CamPress={() => console.log('Camera')}
@@ -427,6 +426,27 @@ const ChatBox = ({navigation, route}) => {
           />
         </Box>
       </RBSheet>
+      <RBSheet
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            elevation: 0,
+          },
+        }}
+        ref={ActionRef}
+        draggable>
+        <Box flex={1}></Box>
+      </RBSheet>
+
+      {/* Image Viewer */}
+      <Modal visible={imageVisble}>
+        <FastImage
+          // source={{uri: imageUri}}
+          style={{width: '100%', height: '100%'}}
+          resizeMode="contain"
+        />
+      </Modal>
     </Box>
   );
 };
