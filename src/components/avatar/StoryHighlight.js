@@ -8,8 +8,8 @@ const StoryHighlight = ({ImgSrc}) => {
       <TouchableWithoutFeedback>
         <Avatar
           containerStyle={{
-            borderWidth: 1.5,
-            borderColor: 'violet',
+            borderWidth: 2,
+            borderColor: 'grey',
 
             borderRadius: 50,
           }}

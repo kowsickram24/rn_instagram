@@ -2,7 +2,12 @@ import firestore from '@react-native-firebase/firestore';
 import {Button, Header, Input} from '@rneui/themed';
 import {Buffer} from 'buffer';
 import React, {useEffect, useState} from 'react';
-import {Image, ScrollView, StyleSheet} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
@@ -14,8 +19,9 @@ import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
 import {Box, Text, width} from '../../../../theme';
 const cloudFrontDomain = config.CLDFRNTDOM;
-import Carousel from 'react-native-reanimated-carousel';
+
 import FastImage from 'react-native-fast-image';
+import {FlatList} from 'react-native';
 
 const NewPost = ({navigation, route, getData}) => {
   const currentuser = useSelector(state => state.user.user);
@@ -57,7 +63,7 @@ const NewPost = ({navigation, route, getData}) => {
         mediaType: 'photo',
         width: 1080,
         height: 1080,
-        multiple: true, 
+        multiple: true,
         cropping: true,
         showsSelectedCount: true,
       });
@@ -134,12 +140,14 @@ const NewPost = ({navigation, route, getData}) => {
     if (selectedImages.length > 0 || selectedVideo) {
       try {
         setLoading(true);
-        const mediaUrls = await Promise.all(
+        const imageUrls = await Promise.all(
           selectedImages.map(image => uploadMediaToAWS(image, 'image')),
         );
         const videoUrl = selectedVideo
           ? await uploadMediaToAWS(selectedVideo, 'video')
           : null;
+
+        const mediaUrls = [...imageUrls, ...(videoUrl ? [videoUrl] : [])];
 
         const newPostRef = firestore().collection('posts').doc();
         const newPostId = newPostRef.id;
@@ -147,7 +155,6 @@ const NewPost = ({navigation, route, getData}) => {
           postId: newPostId,
           userId: currentuser.userId,
           mediaUrls,
-          videoUrl,
           caption,
           location,
           likes: [],
@@ -201,20 +208,21 @@ const NewPost = ({navigation, route, getData}) => {
             <Box style={styles.mediaPicker}>
               {selectedImages.length > 0 ? (
                 <>
-                  <Carousel
-                    snapEnabled
+                  <FlatList
+                    showsHorizontalScrollIndicator={false}
+                    scrollEnabled
                     pagingEnabled
-                    width={350}
-                    height={350}
                     style={{borderRadius: 8}}
                     data={selectedImages}
-                    onSnapToItem={index => console.log('current index:', index)}
+                    horizontal
                     renderItem={({item}) => (
-                      <FastImage
-                        source={{uri: item}}
-                        style={{width: 350, height: 350, borderRadius: 8}}
-                        resizeMode={FastImage.resizeMode.cover}
-                      />
+                      <TouchableWithoutFeedback>
+                        <FastImage
+                          source={{uri: item}}
+                          style={{width: 350, height: 350, borderRadius: 8}}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      </TouchableWithoutFeedback>
                     )}
                   />
                 </>

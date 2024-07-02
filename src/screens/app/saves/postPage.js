@@ -78,12 +78,13 @@ const PostPage = ({route, navigation}) => {
           userId={currentUser?.userId}
           postId={post?.postId}
           mediaSrc={post?.mediaUrls}
-          videoSrc={post?.videoUrl}
+          isMuted={true}
           mediaType={post?.mediaType}
           Caption={post?.caption}
           user={post?.user?.username}
           location={post?.location}
           time={post?.time}
+          comments={post?.comments}
         />
       </ScrollView>
     </Box>

@@ -1,7 +1,7 @@
 import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import {Box, Text} from '../../theme';
 import {Avatar, Card} from '@rneui/themed';
-
+import {Plus_blue} from '../../constants/assets';
 const ProfileCard = ({
   userAvatar,
   Postcount,
@@ -11,6 +11,7 @@ const ProfileCard = ({
   onFollowingPress,
   onAvatarLongPress,
   onAvatarPressout,
+  show
 }) => {
   return (
     <Box
@@ -21,13 +22,16 @@ const ProfileCard = ({
       <TouchableWithoutFeedback
         onPressOut={onAvatarPressout}
         onLongPress={onAvatarLongPress}>
-        <Avatar
-          rounded
-          size={'large'}
-          source={{
-            uri: userAvatar,
-          }}
-        />
+        <>
+          <Avatar
+            rounded
+            size={'large'}
+            source={{
+              uri: userAvatar,
+            }}>
+            {show && <Avatar.Accessory size={23} Component={Plus_blue} />}
+          </Avatar>
+        </>
       </TouchableWithoutFeedback>
       <Box gap={'xl'} alignItems="center" flexDirection="row">
         <Card

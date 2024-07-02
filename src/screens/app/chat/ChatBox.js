@@ -1,11 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Badge, Button, Divider, Header} from '@rneui/themed';
+import {Avatar, Badge, Button, Divider, Header, SearchBar} from '@rneui/themed';
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Modal,
+  Platform,
+  SafeAreaView,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -20,11 +23,14 @@ import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
 import config from '../../../config';
 import {
+  Dustbin,
+  ForWard,
   Gal_Image,
   Gal_Video,
   Gallery_Icon,
   Info,
 } from '../../../constants/assets';
+import {GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
 import {S3Bucket} from '../../../services/aws/s3bucket';
 import {Box, Text, height} from '../../../theme';
 
@@ -32,19 +38,24 @@ const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
   const chatId = route?.params.params.chatId;
   const MediaRef = useRef();
+  const fwdRef = useRef();
+  const ActionRef = useRef();
   const [chatData, setChatData] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedVideo, setSelectedVideo] = useState('');
   const [secondUser, setSecondUser] = useState(null);
   const [message, setMessage] = useState('');
-  const [imageVisble, setImageVisible] = useState(false);
+  const [fwdUsers, setFwdUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [replyingMessage, setReplyingMessage] = useState(null);
+
   const cloudFrontDomain = config.CLDFRNTDOM;
   const ToggleMute = () => {
     setIsMuted(!isMuted);
   };
-  const ActionRef = useRef();
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('chats')
@@ -75,7 +86,7 @@ const ChatBox = ({navigation, route}) => {
           console.error('Error fetching chat data: ', error);
         },
       );
-
+    fetchUsers();
     return () => unsubscribe();
   }, [chatId, currentUser.userId]);
 
@@ -136,6 +147,104 @@ const ChatBox = ({navigation, route}) => {
     });
   };
 
+  const handleDeleteMessage = async () => {
+    if (selectedMessage) {
+      try {
+        await firestore()
+          .collection('chats')
+          .doc(chatId)
+          .update({
+            messages: firestore.FieldValue.arrayRemove(selectedMessage),
+          });
+        ActionRef.current.close();
+      } catch (error) {
+        console.error('Error deleting message: ', error);
+      }
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const userRef = firestore().collection('users');
+      const snapshot = await userRef.get();
+      const fetchedUsers = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Filter out the current user
+      const filteredUsers = fetchedUsers.filter(
+        user => user.id !== currentUser.userId,
+      );
+
+      setFwdUsers(filteredUsers);
+    } catch (error) {
+      console.error('Error fetching users: ', error);
+    }
+  };
+
+  const handleForwardMessage = async userId => {
+    try {
+      // Check if a chat already exists
+      const chatQuerySnapshot = await firestore()
+        .collection('chats')
+        .where('members', 'array-contains', currentUser.userId)
+        .get();
+      console.log('currentUser.userId: ', userId, currentUser.userId);
+
+      let chatDoc;
+      chatQuerySnapshot.forEach(doc => {
+        const chatData = doc.data();
+        if (chatData.members.includes(userId)) {
+          chatDoc = doc;
+        }
+      });
+      console.log(chatDoc);
+      if (!chatDoc) {
+        // Create a new chat
+        chatDoc = await firestore()
+          .collection('chats')
+          .add({
+            members: [currentUser.userId, userId],
+            lastMessage: {},
+            messages: [],
+          });
+      }
+
+      // Share the message in the chat
+      const timestamp = firestore.Timestamp.now();
+      const newMessage = {
+        userId: currentUser.userId, // Explicitly set the userId to the current user
+        messageType: selectedMessage.messageType,
+        message: selectedMessage.message,
+        time: timestamp,
+      };
+
+      await firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+        .update({
+          messages: firestore.FieldValue.arrayUnion(newMessage),
+          lastMessage: newMessage,
+        });
+
+      fwdRef.current.close();
+    } catch (error) {
+      console.error('Error forwarding message: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = fwdUsers.filter(user =>
+        user.username.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredUsers(filtered);
+    } else {
+      setFilteredUsers(fwdUsers);
+    }
+  }, [searchQuery, fwdUsers]);
+
   const handleShare = async () => {
     if (selectedImage || selectedVideo) {
       try {
@@ -177,6 +286,7 @@ const ChatBox = ({navigation, route}) => {
           messageType: 'text',
           message,
           time: timestamp,
+          replyingTo: replyingMessage ? replyingMessage : null,
         };
 
         await firestore()
@@ -188,12 +298,36 @@ const ChatBox = ({navigation, route}) => {
           });
 
         setMessage('');
+        setReplyingMessage(null);
       } catch (error) {
         console.error('Error sending message: ', error);
       }
     }
   };
 
+  const renderFwdUsers = ({item}) => (
+    <Box>
+      <Box
+        flex={1}
+        padding={'s'}
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between">
+        <Box flexDirection="row" alignItems="center" gap={'m'}>
+          <Avatar rounded size={'small'} source={{uri: item.avatar}} />
+          <Text color={'mainblack'} style={{fontWeight: 'normal'}}>
+            {item.username}
+          </Text>
+        </Box>
+        <Button
+          title={'Share'}
+          containerStyle={{borderRadius: 8}}
+          titleStyle={{fontWeight: 'medium', fontSize: 14}}
+          onPress={() => handleForwardMessage(item.userId)}
+        />
+      </Box>
+    </Box>
+  );
   if (!chatData || !secondUser) {
     return (
       <Box
@@ -201,7 +335,7 @@ const ChatBox = ({navigation, route}) => {
         backgroundColor={'mainwhite'}
         alignItems="center"
         justifyContent="center">
-        <Text>Loading...</Text>
+        <ActivityIndicator size={'large'} />
       </Box>
     );
   }
@@ -246,109 +380,190 @@ const ChatBox = ({navigation, route}) => {
       {/* */}
       <Divider />
 
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={chatData?.messages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => {
-          const messageDate = item.time.toDate();
-          const currentDate = new Date();
-          const timeDifference = currentDate - messageDate;
-          const oneDay = 24 * 60 * 60 * 1000;
+      <GestureHandlerRootView style={{flex: 1}}>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={chatData?.messages}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => {
+            const messageDate = item.time.toDate();
+            const currentDate = new Date();
+            const timeDifference = currentDate - messageDate;
+            const oneDay = 24 * 60 * 60 * 1000;
 
-          let dateText;
-          if (
-            timeDifference < oneDay &&
-            messageDate.getDate() === currentDate.getDate()
-          ) {
-            dateText = 'Today';
-          } else if (
-            timeDifference < 2 * oneDay &&
-            messageDate.getDate() === currentDate.getDate() - 1
-          ) {
-            dateText = 'Yesterday';
-          } else {
-            dateText = messageDate.toLocaleDateString();
-          }
+            let dateText;
+            if (
+              timeDifference < oneDay &&
+              messageDate.getDate() === currentDate.getDate()
+            ) {
+              dateText = 'Today';
+            } else if (
+              timeDifference < 2 * oneDay &&
+              messageDate.getDate() === currentDate.getDate() - 1
+            ) {
+              dateText = 'Yesterday';
+            } else {
+              dateText = messageDate.toLocaleDateString();
+            }
 
-          const handleLongPress = () => {
-            ActionRef.current.open();
-            setSelectedMessage(item);
-          };
+            const handleLongPress = () => {
+              ActionRef.current.open();
+              setSelectedMessage(item);
+              console.log(selectedMessage);
+            };
 
-          return (
-            <TouchableWithoutFeedback>
-              <Box key={item.id}>
-                <Text textAlign="center" color={'mainblack'} fontSize={10}>
-                  {dateText}
-                </Text>
-                <Text textAlign="center" color={'mainblack'} fontSize={10}>
-                  {messageDate.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-                <TouchableWithoutFeedback onLongPress={handleLongPress}>
-                  <Box
-                    margin="m"
-                    padding="m"
-                    elevation={2}
-                    backgroundColor={'mainwhite'}
-                    borderRadius="xl"
-                    alignSelf={
-                      item.userId === currentUser.userId
-                        ? 'flex-end'
-                        : 'flex-start'
-                    }
-                    maxWidth="90%">
-                    {item.messageType === 'text' ? (
-                      <Text fontSize={14} color={'mainblack'}>
-                        {item.message}
-                      </Text>
-                    ) : item.messageType === 'image' ? (
-                      <Image
-                        resizeMode="cover"
-                        source={{uri: item.message}}
-                        style={{width: 200, height: 200, borderRadius: 10}}
-                      />
-                    ) : item.messageType === 'post' ? (
-                      <>
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate('PostPage', {
-                              postId: item.message,
-                            })
-                          }>
-                          <SharePost postId={item?.message} />
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <TouchableWithoutFeedback onPress={ToggleMute}>
-                        <Video
-                          resizeMode="cover"
-                          source={{uri: item.message}}
-                          style={{width: 200, height: 200, borderRadius: 10}}
-                          playWhenInactive
-                          repeat
-                          muted={isMuted}
-                        />
+            const renderLeftActions = (progress, dragX) => {
+              return (
+                <TouchableOpacity onPress={() => setReplyingMessage(item)}>
+                  <Box padding="m" borderRadius="l" backgroundColor="lightgrey">
+                    <Text color="mainblack">Reply</Text>
+                  </Box>
+                </TouchableOpacity>
+              );
+            };
+
+            return (
+              <SafeAreaView>
+                <TouchableWithoutFeedback>
+                  <Box key={item.id}>
+                    <Text textAlign="center" color={'mainblack'} fontSize={10}>
+                      {dateText}
+                    </Text>
+                    <Text textAlign="center" color={'mainblack'} fontSize={10}>
+                      {messageDate.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </Text>
+                    <Swipeable
+                      dragOffsetFromLeftEdge={2}
+                      renderRightActions={() => {}}
+                      renderLeftActions={renderLeftActions}>
+                      <TouchableWithoutFeedback onLongPress={handleLongPress}>
+                        <Box
+                          margin="m"
+                          padding="m"
+                          elevation={2}
+                          backgroundColor={'mainwhite'}
+                          borderRadius="xl"
+                          alignSelf={
+                            item.userId === currentUser.userId
+                              ? 'flex-end'
+                              : 'flex-start'
+                          }
+                          maxWidth="90%">
+                          {item.replyingTo && (
+                            <Box
+                              backgroundColor="lightgrey"
+                              padding="s"
+                              borderRadius="m">
+                              <Text fontSize={12} color="darkgrey">
+                                Replied to {''}
+                                {item?.replyingTo?.messageType === 'text'
+                                  ? item?.replyingTo?.message
+                                  : item?.replyingTo?.messageType === 'post'
+                                  ? 'Post'
+                                  : item?.replyingTo?.messageType === 'video'
+                                  ? 'Video'
+                                  : item?.replyingTo.messageType === 'image'
+                                  ? 'Image'
+                                  : null}
+                              </Text>
+                            </Box>
+                          )}
+                          {item.messageType === 'text' ? (
+                            <Text fontSize={14} color={'mainblack'}>
+                              {item.message}
+                            </Text>
+                          ) : item.messageType === 'image' ? (
+                            <Image
+                              resizeMode="cover"
+                              source={{uri: item.message}}
+                              style={{
+                                width: 200,
+                                height: 200,
+                                borderRadius: 10,
+                              }}
+                            />
+                          ) : item.messageType === 'post' ? (
+                            <>
+                              <SharePost
+                                onMediaPress={() =>
+                                  navigation.navigate('PostPage', {
+                                    postId: item.message,
+                                  })
+                                }
+                                postId={item?.message}
+                              />
+                            </>
+                          ) : (
+                            <TouchableWithoutFeedback onPress={ToggleMute}>
+                              <Video
+                                resizeMode="cover"
+                                source={{uri: item.message}}
+                                style={{
+                                  width: 200,
+                                  height: 200,
+                                  borderRadius: 10,
+                                }}
+                                playWhenInactive
+                                repeat
+                                muted={isMuted}
+                              />
+                            </TouchableWithoutFeedback>
+                          )}
+                        </Box>
                       </TouchableWithoutFeedback>
-                    )}
+                    </Swipeable>
                   </Box>
                 </TouchableWithoutFeedback>
-              </Box>
-            </TouchableWithoutFeedback>
-          );
-        }}
-      />
+              </SafeAreaView>
+            );
+          }}
+        />
+      </GestureHandlerRootView>
 
-      <MessageBox
-        value={message}
-        onChangeText={setMessage}
-        CamPress={() => console.log('Camera')}
-        OnMedia={() => MediaRef.current.open()}
-        OnSend={handleSendMessage}
-      />
+      <Box>
+        {replyingMessage && (
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+            backgroundColor="lightgrey"
+            padding="m"
+            borderRadius="m">
+            <Box flex={1}>
+              <Text fontSize={12} color="mainblack">
+                Replying to:
+              </Text>
+              <Text fontSize={14} color="mainblack">
+                {replyingMessage?.messageType === 'text'
+                  ? replyingMessage?.message
+                  : replyingMessage?.messageType === 'post'
+                  ? 'Post'
+                  : replyingMessage?.messageType === 'image'
+                  ? 'Image'
+                  : replyingMessage?.messageType === 'video'
+                  ? 'Video'
+                  : null}
+              </Text>
+            </Box>
+            <Button
+              onPress={() => setReplyingMessage(null)}
+              title="Cancel"
+              buttonStyle={{backgroundColor: 'transparent'}}
+              titleStyle={{color: 'red'}}
+            />
+          </Box>
+        )}
+        <MessageBox
+          value={message}
+          onChangeText={setMessage}
+          CamPress={() => console.log('Camera')}
+          OnMedia={() => MediaRef.current.open()}
+          OnSend={handleSendMessage}
+        />
+      </Box>
 
       {/* Media View */}
       <RBSheet
@@ -434,19 +649,78 @@ const ChatBox = ({navigation, route}) => {
             elevation: 0,
           },
         }}
+        openDuration={200}
+        height={200}
         ref={ActionRef}
         draggable>
-        <Box flex={1}></Box>
+        <Box flex={1}>
+          <Text color={'mainblack'} fontSize={14} textAlign="center">
+            Message
+          </Text>
+          <Box
+            flex={1}
+            gap={'l'}
+            flexDirection="row"
+            justifyContent="space-evenly"
+            alignItems="center">
+            {selectedMessage?.userId === currentUser?.userId && (
+              <TouchableOpacity onPress={handleDeleteMessage}>
+                <Box
+                  padding={'m'}
+                  borderRadius={'l'}
+                  backgroundColor={'lightgrey'}>
+                  <Dustbin />
+                </Box>
+                <Text textAlign="center" color={'red'} fontSize={14}>
+                  Unsend
+                </Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => fwdRef.current.open()}>
+              <Box
+                padding={'m'}
+                borderRadius={'l'}
+                backgroundColor={'lightgrey'}>
+                <ForWard />
+              </Box>
+              <Text textAlign="center" color={'mainblack'} fontSize={14}>
+                Forward
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        </Box>
       </RBSheet>
-
-      {/* Image Viewer */}
-      <Modal visible={imageVisble}>
-        <FastImage
-          // source={{uri: imageUri}}
-          style={{width: '100%', height: '100%'}}
-          resizeMode="contain"
-        />
-      </Modal>
+      <RBSheet
+        draggable
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          },
+        }}
+        height={450}
+        openDuration={200}
+        ref={fwdRef}>
+        <Box flex={1}>
+          <SearchBar
+            inputStyle={{fontSize: 14}}
+            platform={Platform.OS === 'android' ? 'android' : 'ios'}
+            placeholder="Search"
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+          />
+          <FlatList
+            data={filteredUsers}
+            ListEmptyComponent={
+              <Text color={'mainblack'} fontSize={14} textAlign="center">
+                No users found
+              </Text>
+            }
+            renderItem={renderFwdUsers}
+            keyExtractor={item => item.id}
+          />
+        </Box>
+      </RBSheet>
     </Box>
   );
 };

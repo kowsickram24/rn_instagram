@@ -45,7 +45,9 @@ export {default as Log_out} from '../assets/icons/logout.svg';
 export {default as Dw_Arrow} from '../assets/icons/arrow_dwn.svg';
 export {default as Tick_blue} from '../assets/icons/tick_b.svg';
 export {default as Plus_blue} from '../assets/icons/plus_b.svg';
-
+export {default as ForWard} from '../assets/icons/forward.svg';
+export {default as Muted} from '../assets/icons/mute.svg';
+export {default as UnMuted} from '../assets/icons/unmute.svg';
 
 export const Defaultimage =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png';

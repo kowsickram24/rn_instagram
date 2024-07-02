@@ -18,6 +18,7 @@ const Home = ({navigation}) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mutedStates, setMutedStates] = useState({});
+
   const toggleMute = postId => {
     setMutedStates(prevState => ({
       ...prevState,
@@ -76,8 +77,8 @@ const Home = ({navigation}) => {
           navigation.navigate('ProfileView', {userId: item?.userId})
         }
         mediaSrc={item?.mediaUrls}
-        videoSrc={item?.videoUrl}
-        isMuted={!!mutedStates[item.postId]}
+      
+        isMuted={!mutedStates[item.postId]}
         toggleMute={() => toggleMute(item.postId)}
       />
     </Box>

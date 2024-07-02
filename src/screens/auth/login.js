@@ -30,9 +30,7 @@ const LoginScreen = ({navigation, getData}) => {
     }
     try {
       await auth().sendPasswordResetEmail(email);
-      setError(
-        'Email sent for reset password',
-      )
+      setError('Email sent for reset password');
     } catch (error) {
       console.log(error);
     }
@@ -168,7 +166,13 @@ const LoginScreen = ({navigation, getData}) => {
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
-                  <Text fontSize={14} textAlign='center' padding={'s'} color={'primaryBlue'} >{error && error}</Text>
+                    <Text
+                      fontSize={14}
+                      textAlign="center"
+                      padding={'s'}
+                      color={'primaryBlue'}>
+                      {error && error}
+                    </Text>
                   </Box>
                   <Authbutton
                     title={t('Auth.loginButton')}
@@ -191,7 +195,9 @@ const LoginScreen = ({navigation, getData}) => {
             </Box>
             <Box margin={'l'} gap={'l'}>
               <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <Text color={'darkgrey'}>{t('Auth.DontHaveAccount')} </Text>
+                <Text fontSize={14} color={'darkgrey'}>
+                  {t('Auth.DontHaveAccount')}{' '}
+                </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Register')}>
                   <Text color={'primaryBlue'} fontSize={14}>

@@ -43,13 +43,6 @@ const PostsView = ({user, navigation}) => {
             style={{width: width / 3, height: 125}}
             source={{uri: item?.mediaUrls[0]}}
           />
-        ) : item?.videoUrl ? (
-          <Video
-            paused
-            source={{uri: item?.videoUrl}}
-            style={{width: width / 3, height: 125}}
-            resizeMode="cover"
-          />
         ) : null}
       </TouchableOpacity>
     </Box>

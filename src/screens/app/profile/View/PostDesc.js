@@ -85,7 +85,6 @@ const PostDesc = ({route, navigation}) => {
         postId={item?.postId}
         time={item?.time}
         mediaSrc={item?.mediaUrls}
-        videoSrc={item?.videoUrl}
         isMuted={!!mutedStates[item.postId]}
         onProfilePress={() =>
           navigation.navigate('ProfileView', {userId: item?.userId})

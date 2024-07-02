@@ -1,7 +1,12 @@
 import firestore from '@react-native-firebase/firestore';
 import {Header, Input} from '@rneui/themed';
 import {useState} from 'react';
-import {Dimensions, ScrollView} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
@@ -9,16 +14,21 @@ import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
 import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
 import {Box, Text} from '../../../../theme';
-import Carousel from 'react-native-reanimated-carousel';
+
 const {width, height} = Dimensions.get('screen');
 const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);
+  const VideoUrl = posts?.mediaUrls.filter(key => key.endsWith('.mp4'));
+  const imageUrl = posts?.mediaUrls.filter(key => key.endsWith('.jpg'));
+  const [isMuted, setIsMuted] = useState(true)
 
+  const toggleMute = () => {
+
+  }
   const handleEdit = async () => {
     try {
       const postRef = firestore().collection('posts').doc(posts.postId);
-
       await postRef.update({
         caption: posts.caption,
         location: posts.location,
@@ -54,32 +64,36 @@ const EditPost = ({route, navigation}) => {
       />
       <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false}>
         <Box gap={'s'}>
-        {posts?.mediaUrls.length > 0 && (
-            <Carousel
-              snapEnabled
+          {imageUrl > 0 && (
+            <FlatList
+              showsHorizontalScrollIndicator={false}
               pagingEnabled
-              autoPlay={false}
-              width={400}
-              height={400}
-              data={posts?.mediaUrls}
+              scrollEnabled
+              horizontal
+              style={{borderRadius: 8}}
+              data={imageUrl}
               renderItem={({item}) => (
-                <FastImage
-                  source={{uri: item}}
-                  style={{width: 400, height: 400}}
-                  resizeMode={FastImage.resizeMode.cover}
-                />
+                <TouchableWithoutFeedback>
+                  <FastImage
+                    source={{uri: item}}
+                    style={{width: 350, height: 350, borderRadius: 8}}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                </TouchableWithoutFeedback>
               )}
             />
           )}
-          {posts?.videoUrls ? (
-            <Video
-              source={{uri: posts?.mediaUrl}}
-              style={{height: 350, borderRadius: 10}}
-              playWhenInactive
-              repeat
-              muted
-              resizeMode="cover"
-            />
+          {VideoUrl ? (
+            <TouchableWithoutFeedback onPress={toggleMute}>
+              <Video
+                source={{uri: VideoUrl[0]}}
+                style={{height: 350, borderRadius: 10}}
+                playWhenInactive
+                repeat
+                muted={isMuted}
+                resizeMode="cover"
+              />
+            </TouchableWithoutFeedback>
           ) : null}
 
           <Input

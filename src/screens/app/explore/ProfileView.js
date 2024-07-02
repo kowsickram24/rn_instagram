@@ -173,6 +173,7 @@ const ProfileView = ({route, navigation}) => {
 
       <ProfileCard
         onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
+        show={false}
         // onAvatarPressout={handlePressOut}
         userAvatar={selectedUser?.avatar}
         Postcount={selectedUser?.posts.length}

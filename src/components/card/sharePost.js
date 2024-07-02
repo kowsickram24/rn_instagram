@@ -4,14 +4,14 @@ import {useEffect, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {Box, Text} from '../../theme';
 import Video from 'react-native-video';
-import {TouchableWithoutFeedback} from 'react-native';
+import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 
-const SharePost = ({postId}) => {
+const SharePost = ({postId, onMediaPress, onProfilePress}) => {
   const [post, setPost] = useState(null);
-  const [isMuted, setIsMUted] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
   const toggleMute = () => {
-    setIsMUted(!isMuted);
+    setIsMuted(!isMuted);
   };
 
   useEffect(() => {
@@ -47,18 +47,22 @@ const SharePost = ({postId}) => {
   return (
     <>
       <Box gap={'s'} padding={'s'} width={250}>
-        <Box gap={'s'} flexDirection="row" alignItems="center">
-          <Avatar source={{uri: post?.user?.avatar}} rounded size={'small'} />
-          <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
-            {post?.user?.username}
-          </Text>
-        </Box>
+        <TouchableOpacity onPress={onProfilePress}>
+          <Box gap={'s'} flexDirection="row" alignItems="center">
+            <Avatar source={{uri: post?.user?.avatar}} rounded size={'small'} />
+            <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
+              {post?.user?.username}
+            </Text>
+          </Box>
+        </TouchableOpacity>
         {post?.mediaUrls ? (
-          <FastImage
-            source={{uri: post?.mediaUrls[0]}}
-            resizeMode="cover"
-            style={{width: '100%', height: 200}}
-          />
+          <TouchableOpacity onPress={onMediaPress}>
+            <FastImage
+              source={{uri: post?.mediaUrls[0]}}
+              resizeMode="cover"
+              style={{width: '100%', height: 250}}
+            />
+          </TouchableOpacity>
         ) : null}
         {post?.videoUrl ? (
           <TouchableWithoutFeedback onPress={toggleMute}>

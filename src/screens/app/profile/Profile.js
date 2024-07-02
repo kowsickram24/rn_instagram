@@ -54,6 +54,7 @@ const Profile = ({navigation, User}) => {
       {/* Profile Card*/}
 
       <ProfileCard
+        show={true}
         onAvatarLongPress={() => handleLongPress(User?.avatar)}
         // onAvatarPressout={handlePressOut}
         onFollowersPress={() =>
