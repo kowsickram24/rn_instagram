@@ -11,7 +11,8 @@ const ProfileCard = ({
   onFollowingPress,
   onAvatarLongPress,
   onAvatarPressout,
-  show
+  onPostPress,
+  show,
 }) => {
   return (
     <Box
@@ -22,16 +23,14 @@ const ProfileCard = ({
       <TouchableWithoutFeedback
         onPressOut={onAvatarPressout}
         onLongPress={onAvatarLongPress}>
-        <>
-          <Avatar
-            rounded
-            size={'large'}
-            source={{
-              uri: userAvatar,
-            }}>
-            {show && <Avatar.Accessory size={23} Component={Plus_blue} />}
-          </Avatar>
-        </>
+        <Avatar
+          rounded
+          size={'large'}
+          source={{
+            uri: userAvatar,
+          }}>
+          {show && <Avatar.Accessory size={23} Component={Plus_blue} />}
+        </Avatar>
       </TouchableWithoutFeedback>
       <Box gap={'xl'} alignItems="center" flexDirection="row">
         <Card
@@ -41,16 +40,18 @@ const ProfileCard = ({
             elevation: 0,
             borderWidth: 0,
           }}>
-          <Text
-            color={'mainblack'}
-            fontWeight={'500'}
-            fontSize={16}
-            textAlign="center">
-            {Postcount}
-          </Text>
-          <Text color={'mainblack'} fontSize={13}>
-            posts
-          </Text>
+          <TouchableOpacity onPress={onPostPress}>
+            <Text
+              color={'mainblack'}
+              fontWeight={'500'}
+              fontSize={16}
+              textAlign="center">
+              {Postcount}
+            </Text>
+            <Text color={'mainblack'} fontSize={13}>
+              posts
+            </Text>
+          </TouchableOpacity>
         </Card>
 
         <Card

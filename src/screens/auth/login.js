@@ -175,9 +175,9 @@ const LoginScreen = ({navigation, getData}) => {
                     </Text>
                   </Box>
                   <Authbutton
+                    loading={isSubmitting ? true : false }
                     title={t('Auth.loginButton')}
                     onPress={handleSubmit}
-                    disabled={isSubmitting}
                   />
                 </Box>
               )}

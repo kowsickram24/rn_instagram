@@ -33,7 +33,7 @@ const PostInfo = ({route}) => {
           setUser(userDoc.data());
         } else {
           console.log(`User with ID ${post.userId} not found.`);
-          setUser(null); // Handle case where user document doesn't exist
+          setUser(null); 
         }
       } catch (error) {
         console.error('Error fetching user:', error);

@@ -12,7 +12,6 @@ const ProfileTab = ({user}) => {
         tabBarShowLabel: false,
         tabBarIndicatorStyle: {
           backgroundColor: '#000',
-          margin:2
         },
       }}>
       <TopTab.Screen

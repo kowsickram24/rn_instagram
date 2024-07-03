@@ -1,5 +1,5 @@
 import {Box, Text} from '../../theme';
-import {Avatar} from '@rneui/themed';
+import {Avatar, Divider} from '@rneui/themed';
 import {Skeleton} from '@rneui/themed';
 import {useState, useEffect} from 'react';
 import {Camera, Share} from '../../constants/assets';
@@ -31,12 +31,14 @@ const ChatCard = ({
           alignItems="center"
           justifyContent="space-between">
           <Box flexDirection="column">
-            <Text fontWeight={'400'} fontSize={16} color={'mainblack'}>
-              {' '}
+            <Text
+              numberOfLines={1}
+              fontWeight={'400'}
+              fontSize={16}
+              color={'mainblack'}>
               {Username}
             </Text>
-            <Text fontSize={14} color={'darkgrey'}>
-              {' '}
+            <Text numberOfLines={1} fontSize={14} color={'darkgrey'}>
               {LastMessage}
             </Text>
           </Box>
@@ -47,6 +49,7 @@ const ChatCard = ({
           </Box>
         </Box>
       </Box>
+
     </Card>
   );
 };

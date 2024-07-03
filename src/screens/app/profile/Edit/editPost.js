@@ -2,6 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import {Header, Input} from '@rneui/themed';
 import {useState} from 'react';
 import {
+  Animated,
   Dimensions,
   FlatList,
   ScrollView,
@@ -20,12 +21,12 @@ const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);
   const VideoUrl = posts?.mediaUrls.filter(key => key.endsWith('.mp4'));
+  console.log('VideoUrl: ', VideoUrl);
   const imageUrl = posts?.mediaUrls.filter(key => key.endsWith('.jpg'));
-  const [isMuted, setIsMuted] = useState(true)
+  console.log('imageUrl: ', imageUrl > 0);
+  const [isMuted, setIsMuted] = useState(true);
 
-  const toggleMute = () => {
-
-  }
+  const toggleMute = () => {};
   const handleEdit = async () => {
     try {
       const postRef = firestore().collection('posts').doc(posts.postId);
@@ -64,41 +65,50 @@ const EditPost = ({route, navigation}) => {
       />
       <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false}>
         <Box gap={'s'}>
-          {imageUrl > 0 && (
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled
-              scrollEnabled
-              horizontal
-              style={{borderRadius: 8}}
-              data={imageUrl}
-              renderItem={({item}) => (
-                <TouchableWithoutFeedback>
-                  <FastImage
-                    source={{uri: item}}
-                    style={{width: 350, height: 350, borderRadius: 8}}
-                    resizeMode={FastImage.resizeMode.cover}
-                  />
-                </TouchableWithoutFeedback>
-              )}
-            />
+          {imageUrl?.length > 0 && (
+            <Box flex={1} justifyContent="center" alignItems="center">
+              <Animated.FlatList
+                showsHorizontalScrollIndicator={false}
+                pagingEnabled
+                scrollEnabled
+                horizontal
+                data={imageUrl}
+                renderItem={({item}) => (
+                  <TouchableWithoutFeedback>
+                    <FastImage
+                      source={{uri: item}}
+                      style={{width: 370, height: 350, alignSelf:'center'}}
+                      resizeMode={FastImage.resizeMode.cover}
+                    />
+                  </TouchableWithoutFeedback>
+                )}
+              />
+            </Box>
           )}
-          {VideoUrl ? (
+          {VideoUrl.length > 0 && (
             <TouchableWithoutFeedback onPress={toggleMute}>
               <Video
                 source={{uri: VideoUrl[0]}}
-                style={{height: 350, borderRadius: 10}}
+                style={{alignSelf:'center', height: 350,width:350, borderRadius: 10}}
                 playWhenInactive
                 repeat
                 muted={isMuted}
                 resizeMode="cover"
               />
             </TouchableWithoutFeedback>
-          ) : null}
+          )}
 
           <Input
+            label={'Caption'}
+            labelStyle={{
+              fontWeight: '400',
+              fontSize: 12,
+              color: 'grey',
+              paddingVertical: 6,
+            }}
             inputStyle={{fontSize: 14, height: 60, textAlignVertical: 'top'}}
             value={posts.caption}
+            placeholder="Caption"
             onChangeText={text => setPosts({...posts, caption: text})}
             multiline
             inputContainerStyle={{
@@ -106,10 +116,18 @@ const EditPost = ({route, navigation}) => {
               borderWidth: 0.5,
               borderBottomWidth: 0.5,
             }}
-          />
+            />
           <Input
+            label={'Location'}
+            labelStyle={{
+              fontWeight: '400',
+              fontSize: 12,
+              color: 'grey',
+              paddingVertical: 6,
+            }}
             inputStyle={{fontSize: 14, textAlignVertical: 'center'}}
             value={posts.location}
+            placeholder="Location"
             onChangeText={handleLocationChange}
             inputContainerStyle={{
               borderWidth: 0.5,

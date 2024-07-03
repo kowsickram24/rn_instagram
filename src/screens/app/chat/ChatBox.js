@@ -201,7 +201,6 @@ const ChatBox = ({navigation, route}) => {
       });
       console.log(chatDoc);
       if (!chatDoc) {
-        // Create a new chat
         chatDoc = await firestore()
           .collection('chats')
           .add({
@@ -211,10 +210,9 @@ const ChatBox = ({navigation, route}) => {
           });
       }
 
-      // Share the message in the chat
       const timestamp = firestore.Timestamp.now();
       const newMessage = {
-        userId: currentUser.userId, // Explicitly set the userId to the current user
+        userId: currentUser.userId,
         messageType: selectedMessage.messageType,
         message: selectedMessage.message,
         time: timestamp,
@@ -415,8 +413,8 @@ const ChatBox = ({navigation, route}) => {
             const renderLeftActions = (progress, dragX) => {
               return (
                 <TouchableOpacity onPress={() => setReplyingMessage(item)}>
-                  <Box padding="m" borderRadius="l" backgroundColor="lightgrey">
-                    <Text color="mainblack">Reply</Text>
+                  <Box padding="m" borderRadius="l"  >
+                    <Text color="primaryBlue">Reply</Text>
                   </Box>
                 </TouchableOpacity>
               );

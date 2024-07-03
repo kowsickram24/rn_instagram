@@ -8,7 +8,7 @@ const TagsView = ({user}) => {
       flex={1}
       justifyContent="center"
       alignItems="center">
-      <Text>Tags View</Text>
+      <Text>No Tags Yet</Text>
     </Box>
   );
 };

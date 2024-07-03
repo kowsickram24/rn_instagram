@@ -36,7 +36,8 @@ const ProfileView = ({route, navigation}) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
 
-  const isSameUser = currentUser?.username === selectedUser?.username;
+  const isSameUser = currentUser?.userId === selectedUser?.userId;
+  console.log('isSameUser: ', isSameUser);
 
   const handleChat = async () => {
     try {
@@ -163,15 +164,19 @@ const ProfileView = ({route, navigation}) => {
       <Header
         statusBarProps={{hidden: true}}
         backgroundColor="white"
+        leftContainerStyle={{flex: 3}}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'s'}>
             <BackBtn onPress={() => navigation.goBack()} />
-            <Text color={'mainblack'}>{selectedUser?.username}</Text>
+            <Text numberOfLines={1} color={'mainblack'}>
+              {selectedUser?.username}
+            </Text>
           </Box>
         }
       />
 
       <ProfileCard
+      onPostPress={() => navigation.navigate('PublicPost')}
         onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
         show={false}
         // onAvatarPressout={handlePressOut}
@@ -195,13 +200,17 @@ const ProfileView = ({route, navigation}) => {
 
       <Box padding={'m'}>
         {selectedUser?.username && (
-          <Text fontSize={12} color={'mainblack'}>
-            {selectedUser?.username}
+          <Text fontWeight={'500'} fontSize={12} color={'mainblack'}>
+            {selectedUser?.fullname}
           </Text>
         )}
 
         {selectedUser?.bio && (
-          <Text fontSize={12} color={'mainblack'}>
+          <Text
+            ellipsizeMode="tail"
+            numberOfLines={3}
+            fontSize={12}
+            color={'mainblack'}>
             {selectedUser?.bio}
           </Text>
         )}

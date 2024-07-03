@@ -53,8 +53,7 @@ const ChatInfo = ({navigation, route}) => {
           </Box>
         </TouchableOpacity>
       </Card>
-      <Card
-      
+      {/* <Card
         wrapperStyle={{padding: 10}}
         containerStyle={{
           padding: 0,
@@ -70,7 +69,7 @@ const ChatInfo = ({navigation, route}) => {
             </Text>
           </Box>
         </TouchableOpacity>
-      </Card>
+      </Card> */}
       <RBSheet
       height={height/2}
         customStyles={{

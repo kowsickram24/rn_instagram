@@ -26,3 +26,17 @@ export const RegSchema = yup.object({
     )
     .required('Password is required'),
 });
+
+export const ProfileSchema = yup.object().shape({
+  username: yup
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(30, 'Username must be at most 30 characters')
+    .matches(
+      /^[a-z0-9_.]+$/,
+      'Username can only contain letters, numbers, and underscores',
+    )
+    .required('Username is required'),
+  fullname: yup.string().required('Full name is required'),
+  bio: yup.string().max(150, 'Bio cannot exceed 150 characters'),
+});

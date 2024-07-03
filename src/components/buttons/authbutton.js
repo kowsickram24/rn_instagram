@@ -1,9 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
-import { Button } from '@rneui/themed';
-import { palette } from '../../theme';
+import {Button} from '@rneui/themed';
+import {palette} from '../../theme';
 
-const AuthButton = ({ title, onPress, disabled }) => {
+const AuthButton = ({loading, title, onPress, disabled}) => {
   const buttonStyle = disabled ? styles.disabledBtn : styles.activebtn;
 
   return (
@@ -13,6 +13,7 @@ const AuthButton = ({ title, onPress, disabled }) => {
         onPress={onPress}
         buttonStyle={buttonStyle}
         title={title}
+        loading={loading}
       />
     </View>
   );

@@ -2,7 +2,6 @@ import firestore from '@react-native-firebase/firestore';
 import {Skeleton} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   FlatList,
   RefreshControl,
@@ -13,63 +12,60 @@ import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
 import {Box, Text} from '../../../../theme';
 const {width} = Dimensions.get('screen');
-const MyPosts = ({navigation}) => {
+
+const MyPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector(state => state.user.user);
 
-  const fetchPosts = async () => {
-    setLoading(true);
-    try {
-      const postSnapshot = await firestore()
-        .collection('posts')
-        .where('userId', '==', currentUser?.userId)
-        .get();
-
-      const userPosts = await Promise.all(
-        postSnapshot.docs.map(async doc => {
-          const postData = doc.data();
-          const userSnapshot = await firestore()
-            .collection('users')
-            .doc(postData.userId)
-            .get();
-          const userData = userSnapshot.exists ? userSnapshot.data() : {};
-          return {...postData, user: userData};
-        }),
-      );
-
-      setPosts(userPosts);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (currentUser) {
-      fetchPosts();
+      const unsubscribe = firestore()
+        .collection('posts')
+        .where('userId', '==', currentUser?.userId)
+        .onSnapshot(async snapshot => {
+          setLoading(true);
+          const userPosts = await Promise.all(
+            snapshot.docs.map(async doc => {
+              const postData = doc.data();
+              const userSnapshot = await firestore()
+                .collection('users')
+                .doc(postData.userId)
+                .get();
+              const userData = userSnapshot.exists ? userSnapshot.data() : {};
+              return { id: doc.id, ...postData, user: userData };
+            })
+          );
+          setPosts(userPosts);
+          setLoading(false);
+        }, error => {
+          console.error('Error fetching posts:', error);
+          setLoading(false);
+        });
+      return () => unsubscribe();
     }
   }, [currentUser]);
 
-  const renderPostItem = ({item}) => (
+
+
+  const renderPostItem = ({ item }) => (
     <Box>
       <TouchableOpacity
-        onPress={() => navigation.navigate('PostDesc', {post: item})}>
+        onPress={() => navigation.navigate('PostDesc', { post: item })}>
         {item?.mediaUrls ? (
           <FastImage
-          resizeMode="cover"
-          style={{width: 120, height: 120}}
-            source={{uri: item?.mediaUrls[0]}}
-            />
-          ) : item?.videoUrl ? (
-            <Video
-            paused
-            source={{uri: item?.videoUrl}}
-            style={{backgroundColor:'red',width: 120, height: 120}}
             resizeMode="cover"
-            />
-          ) : null}
+            style={{ width: width / 3, height: width / 3 }}
+            source={{ uri: item?.mediaUrls[0] }}
+          />
+        ) : item?.videoUrl ? (
+          <Video
+            paused
+            source={{ uri: item?.videoUrl }}
+            style={{ backgroundColor: 'red', width: 120, height: 120 }}
+            resizeMode="cover"
+          />
+        ) : null}
       </TouchableOpacity>
     </Box>
   );
@@ -101,9 +97,7 @@ const MyPosts = ({navigation}) => {
         />
       ) : (
         <FlatList
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={fetchPosts} />
-          }
+          style={{ flex: 1 }}
           data={posts}
           renderItem={renderPostItem}
           keyExtractor={(item, index) => index.toString()}

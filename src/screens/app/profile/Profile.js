@@ -13,6 +13,7 @@ import TopNavigator from '../../../navigation/TopTab/TopTab';
 import {Box, Text, height, width} from '../../../theme';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import StoryHighlight from '../../../components/avatar/StoryHighlight';
+import { ScrollView } from 'react-native';
 const Profile = ({navigation, User}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -35,10 +36,11 @@ const Profile = ({navigation, User}) => {
             <Menu />
           </TouchableOpacity>
         }
+        leftContainerStyle={{flex: 1}}
         leftComponent={
           <TouchableOpacity onPress={() => ProfileRef.current.open()}>
             <Box flexDirection="row" alignItems="center" gap={'s'}>
-              <Text color={'mainblack'} fontWeight={'400'} fontSize={16}>
+              <Text color={'mainblack'} numberOfLines={1} fontWeight={'400'} fontSize={14}>
                 {User?.username}
               </Text>
               <Dw_Arrow />
@@ -55,6 +57,7 @@ const Profile = ({navigation, User}) => {
 
       <ProfileCard
         show={true}
+        onPostPress={() => navigation.navigate('MyPosts')  }
         onAvatarLongPress={() => handleLongPress(User?.avatar)}
         // onAvatarPressout={handlePressOut}
         onFollowersPress={() =>
@@ -75,7 +78,7 @@ const Profile = ({navigation, User}) => {
           </Text>
         )}
         {User?.bio && (
-          <Text fontSize={12} color={'mainblack'}>
+          <Text ellipsizeMode='tail' numberOfLines={3} fontSize={12} color={'mainblack'}>
             {User?.bio}
           </Text>
         )}

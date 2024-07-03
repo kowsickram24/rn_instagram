@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Dimensions, FlatList, Image, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 import {Box, Text} from '../../../../theme';
+import FastImage from 'react-native-fast-image';
 const {width, height} = Dimensions.get('screen');
 const PostsView = ({user, navigation}) => {
   const [posts, setPosts] = useState([]);
@@ -38,10 +39,17 @@ const PostsView = ({user, navigation}) => {
     <Box>
       <TouchableOpacity onPress={() => navigation.navigate('PostInfo', {item})}>
         {item?.mediaUrls ? (
-          <Image
+          <FastImage
             resizeMode="cover"
-            style={{width: width / 3, height: 125}}
+            style={{width: 120, height: 120}}
             source={{uri: item?.mediaUrls[0]}}
+          />
+        ) : item?.videoUrl ? (
+          <Video
+            paused
+            source={{uri: item?.videoUrl}}
+            style={{backgroundColor: 'red', width: 120, height: 120}}
+            resizeMode="cover"
           />
         ) : null}
       </TouchableOpacity>

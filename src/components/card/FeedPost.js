@@ -16,6 +16,8 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  StyleSheet,
+  Animated,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Divider} from 'react-native-paper';
@@ -61,7 +63,7 @@ const PostHeader = ({
       <Box flex={1} flexDirection="row" justifyContent="space-between">
         <Box flexDirection="column">
           <TouchableOpacity onPress={onProfilePress}>
-            <Text fontWeight={'500'} color={'mainblack'}>
+            <Text fontSize={14} fontWeight={'500'} color={'mainblack'}>
               {user}
             </Text>
           </TouchableOpacity>
@@ -105,7 +107,9 @@ const FeedPost = ({
   const [likedId, setLikedId] = useState([]);
   const images = mediaSrc?.filter(key => key.endsWith('.jpg'));
   const videos = mediaSrc?.filter(key => key.endsWith('.mp4'));
+  const totalImages = images?.length || 0;
 
+  const animatedValue = useRef(new Animated.Value(0)).current;
   let formattedTime = '';
 
   try {
@@ -135,6 +139,42 @@ const FeedPost = ({
       };
     }, []),
   );
+
+  const handleImageChange = event => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.floor(contentOffsetX / width);
+    setCurrentIndex(index);
+  };
+
+  const renderPaginationDots = () => {
+    const dotPosition = Animated.divide(animatedValue, width);
+
+    return (
+      <Box flexDirection="row">
+        {images?.map((_, index) => {
+          const opacity = dotPosition.interpolate({
+            inputRange: [index - 1, index, index + 1],
+            outputRange: [0.3, 1, 0.3],
+            extrapolate: 'clamp',
+          });
+
+          return (
+            <Animated.View
+              key={index}
+              style={{
+                opacity,
+                height: 5,
+                width: 5,
+                backgroundColor: '#3797EF',
+                marginHorizontal: 5,
+                borderRadius: 5,
+              }}
+            />
+          );
+        })}
+      </Box>
+    );
+  };
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -288,10 +328,9 @@ const FeedPost = ({
 
   return (
     <TouchableWithoutFeedback>
-      <Box flex={1}>
+      <Box>
         <Card
           containerStyle={{
-            flex: 1,
             padding: 0,
             margin: 0,
             elevation: 0,
@@ -305,11 +344,15 @@ const FeedPost = ({
             onProfilePress={onProfilePress}
           />
           {images?.length > 0 && (
-            <FlatList
+            <Animated.FlatList
               showsHorizontalScrollIndicator={false}
               scrollEnabled
               pagingEnabled
               horizontal
+              onScroll={Animated.event(
+                [{nativeEvent: {contentOffset: {x: animatedValue}}}],
+                {useNativeDriver: true},
+              )}
               data={images}
               renderItem={({item}) => (
                 <TouchableWithoutFeedback>
@@ -322,6 +365,7 @@ const FeedPost = ({
               )}
             />
           )}
+
           {videos?.length > 0 && (
             <TouchableWithoutFeedback onPress={toggleMute}>
               <>
@@ -337,12 +381,13 @@ const FeedPost = ({
             </TouchableWithoutFeedback>
           )}
           <Box
+          flex={1}
             flexDirection="row"
-            justifyContent="space-between"
+            justifyContent='space-between'
             alignItems="center"
-            paddingTop={'s'}
+            paddingVertical={'m'}
             paddingHorizontal={'xs'}>
-            <Box flexDirection="row" justifyContent="center" gap={'m'}>
+            <Box flexDirection="row" alignItems='flex-start'  gap={'m'}>
               <TouchableOpacity onPress={onLikePress}>
                 {isLiked ? <Heaty_f /> : <Heaty_uf />}
               </TouchableOpacity>
@@ -353,22 +398,40 @@ const FeedPost = ({
                 <Share />
               </TouchableOpacity>
             </Box>
-            <TouchableOpacity onPress={onSavePress} style={{padding: 10}}>
-              {isSaved ? <Save_f /> : <Save />}
-            </TouchableOpacity>
+            <Box  justifyContent='center' alignItems='center'>
+              {images?.length != 1 && totalImages > 0 && renderPaginationDots()}
+            </Box>
+            <Box >
+              <TouchableOpacity onPress={onSavePress}>
+                {isSaved ? <Save_f /> : <Save />}
+              </TouchableOpacity>
+            </Box>
           </Box>
           {/* {likedUsers} */}
           <TouchableOpacity
             onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-            {likedUsers.length !== 0 ? (
+             
+            {likedUsers && likedUsers.length !== 0 ? (
               <Box paddingHorizontal={'s'}>
                 {likedUsers.length > 0 && (
                   <Text fontSize={14} color={'mainblack'}>
-                    {likedUsers.length === 1
-                      ? `Liked by ${likedUsers[0]}`
-                      : `Liked by ${likedUsers[0]} and ${
-                          likedUsers.length - 1
-                        } others`}
+                    {likedUsers.length === 1 ? (
+                      <Text fontSize={14}>
+                        {`Liked by `}
+                        <Text
+                          fontSize={14}
+                          fontWeight={'500'}>{`${likedUsers[0]}`}</Text>
+                      </Text>
+                    ) : (
+                      <Text fontSize={14}>
+                        {`Liked by `}
+                        <Text fontWeight={'500'} fontSize={14}>
+                          {`${likedUsers[0]} and ${
+                            likedUsers.length - 1
+                          } others`}
+                        </Text>
+                      </Text>
+                    )}
                   </Text>
                 )}
               </Box>
@@ -384,10 +447,10 @@ const FeedPost = ({
               </Text>
             </Text>
           </Box>
-          {console.log('comments: ', comments)}
+
           {comments?.length > 0 && (
             <TouchableOpacity onPress={ViewCmnt}>
-              <Text paddingHorizontal={'s'} fontSize={14}>
+              <Text paddingHorizontal={'s'} fontSize={12}>
                 View{' '}
                 {comments?.length > 1
                   ? `${comments?.length} comments`
@@ -396,6 +459,9 @@ const FeedPost = ({
             </TouchableOpacity>
           )}
         </Card>
+        <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
+          {formattedTime}
+        </Text>
 
         <ShareBox postId={postId} ref={Shareref} />
         <CommentBox
@@ -404,9 +470,6 @@ const FeedPost = ({
           postId={postId}
           userId={userId}
         />
-        <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
-          {formattedTime}
-        </Text>
       </Box>
     </TouchableWithoutFeedback>
   );
@@ -748,7 +811,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
             onPress={() =>
               navigation.push('ProfileView', {userId: item.userId})
             }>
-            <Text fontSize={14} color="mainblack" fontWeight="400">
+            <Text fontSize={10} color="mainblack" fontWeight="400">
               {item.username}
             </Text>
           </TouchableOpacity>
@@ -758,24 +821,27 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
             alignItems="center"
             gap={'s'}
             justifyContent="space-between">
-            <Text fontSize={14} color="mainblack">
+            <Text fontSize={12} color="mainblack">
               {item.comment}
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                handleLikeComment(item, item.likes.includes(userId))
-              }>
-              {item.likes.includes(userId) ? (
-                <Heaty_f height="10" width="10" />
-              ) : (
-                <Heaty_uf height="10" width="10" />
-              )}
-            </TouchableOpacity>
+            <Box justifyContent="flex-end" alignItems="center">
+              <TouchableOpacity
+                onPress={() =>
+                  handleLikeComment(item, item.likes.includes(userId))
+                }>
+                {item.likes.includes(userId) ? (
+                  <Heaty_f height="14" width="14" />
+                ) : (
+                  <Heaty_uf height="14" width="14" />
+                )}
+              </TouchableOpacity>
+              {/* <Text fontSize={10}> {item?.likes?.length}</Text> */}
+            </Box>
           </Box>
         </Box>
       </Box>
       <TouchableOpacity onPress={() => setReplyingTo(item)}>
-        <Text color={'mainblack'} fontSize={12}>
+        <Text color={'darkgrey'} fontSize={10}>
           Reply
         </Text>
       </TouchableOpacity>
@@ -790,7 +856,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
               marginTop="s">
               <Avatar source={{uri: reply.userAvatar}} size="small" rounded />
               <Box marginLeft="s">
-                <Text fontSize={12} color={'mainblack'}>
+                <Text fontSize={10} color={'mainblack'}>
                   {reply.username}
                 </Text>
                 <Text fontSize={12} color={'mainblack'}>

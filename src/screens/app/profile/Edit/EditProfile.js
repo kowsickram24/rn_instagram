@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Button, Header, Input, LinearProgress} from '@rneui/themed';
+import {Avatar, Button, Header, Input} from '@rneui/themed';
 import {Buffer} from 'buffer';
+import {Formik} from 'formik';
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, TouchableOpacity} from 'react-native';
 import RNFS from 'react-native-fs';
-import {HelperText} from 'react-native-paper';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useSelector} from 'react-redux';
@@ -14,12 +14,13 @@ import config from '../../../../config';
 import {Defaultimage} from '../../../../constants/assets';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
 import {Box, Text} from '../../../../theme';
-
+import {ProfileSchema} from '../../../../utils/validation';
+import {ActivityIndicator} from 'react-native';
 const {width, height} = Dimensions.get('screen');
+
 const EditProfile = ({navigation, route}) => {
   const UserDefault = Defaultimage;
   const currentUser = route?.params;
-  const [uploadProgress, setUploadProgress] = useState(0);
   const user = useSelector(state => state.user.user);
   const [newImage, setNewImage] = useState(null);
   const [userData, setUserData] = useState({
@@ -29,7 +30,6 @@ const EditProfile = ({navigation, route}) => {
     gender: '',
   });
   const RBSheetref = useRef();
-  const [isLoading, setIsLoading] = useState(false);
   const [items, setItems] = useState([
     {label: 'Male', value: 'Male'},
     {label: 'Female', value: 'Female'},
@@ -63,7 +63,7 @@ const EditProfile = ({navigation, route}) => {
   const removeProfile = async () => {
     try {
       setNewImage(UserDefault);
-      await updateFirestore(UserDefault);
+      await updateFirestore(UserDefault, userData);
       navigation.navigate('Profile');
       console.log('Profile picture updated to default successfully');
     } catch (error) {
@@ -110,11 +110,11 @@ const EditProfile = ({navigation, route}) => {
         queueSize: 1,
         onProgress: event => {
           const progress = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(progress);
+          console.log(`Upload Progress: ${progress}%`);
         },
       };
       await S3Bucket.upload(params, options).promise();
-      const imageUrl = `https://${config.BUCKETNAME}.s3.amazonaws.com/${filename}`;
+      const imageUrl = `${config.CLDFRNTDOM}/${filename}`;
       return imageUrl;
     } catch (error) {
       console.error('Error uploading image: ', error);
@@ -122,7 +122,7 @@ const EditProfile = ({navigation, route}) => {
     }
   };
 
-  const updateFirestore = async imageUrl => {
+  const updateFirestore = async (imageUrl, values) => {
     try {
       const userDoc = await firestore()
         .collection('users')
@@ -133,12 +133,12 @@ const EditProfile = ({navigation, route}) => {
         const userDocRef = userDoc.docs[0].ref;
         await userDocRef.update({
           avatar: imageUrl || userData?.avatar,
-          username: userData?.username,
-          fullname: userData?.fullname,
-          bio: userData.bio,
-          gender: userData.gender, // Update gender field
+          username: values?.username,
+          fullname: values?.fullname,
+          bio: values?.bio,
+          gender: values.gender,
         });
-        setUserData(prevState => ({...prevState, avatar: imageUrl}));
+        setUserData(prevState => ({...prevState, ...values, avatar: imageUrl}));
         console.log('User profile updated successfully');
       } else {
         console.log('No matching documents.');
@@ -148,21 +148,18 @@ const EditProfile = ({navigation, route}) => {
     }
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async values => {
     try {
-      setIsLoading(true);
       let imageUrl = userData.avatar;
       if (newImage) {
         imageUrl = await uploadImageToS3(newImage);
       }
-      await updateFirestore(imageUrl);
+      await updateFirestore(imageUrl, values);
       setNewImage(null);
       navigation.navigate('Profile');
     } catch (error) {
       console.error('Error saving changes: ', error);
       alert('Failed to update profile. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -187,88 +184,148 @@ const EditProfile = ({navigation, route}) => {
       />
       <Box padding={'m'} flex={1} paddingVertical={'l'}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Avatar
-            containerStyle={{alignSelf: 'center'}}
-            rounded
-            size={'large'}
-            source={{uri: newImage || currentUser?.avatar}}
-          />
-          <TouchableOpacity onPress={() => RBSheetref.current.open()}>
-            <Text
-              padding={'s'}
-              fontSize={12}
-              color="primaryBlue"
-              textAlign="center">
-              Edit Picture
-            </Text>
-          </TouchableOpacity>
-          <Box gap={'l'}>
-            <Input
-              label={'Name'}
-              renderErrorMessage={false}
-              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-              inputContainerStyle={{
-                borderBottomWidth: 0.5,
-              }}
-              inputStyle={{padding: 6, fontSize: 14}}
-              value={userData?.username}
-              onChangeText={text => setUserData({...userData, username: text})}
-            />
-            <Input
-              label={'User Name'}
-              renderErrorMessage={false}
-              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-              inputContainerStyle={{
-                borderBottomWidth: 0.5,
-              }}
-              inputStyle={{padding: 6, fontSize: 14}}
-              placeholder="Bio"
-              value={userData?.fullname}
-              onChangeText={text => setUserData({...userData, fullname: text})}
-            />
-            <Input
-              label={'Bio'}
-              renderErrorMessage={false}
-              labelStyle={{fontWeight: '400', fontSize: 12, color: 'grey'}}
-              inputContainerStyle={{
-                borderBottomWidth: 0.5,
-              }}
-              inputStyle={{padding: 6, fontSize: 14}}
-              placeholder="Bio"
-              value={userData?.bio}
-              onChangeText={text => setUserData({...userData, bio: text})}
-            />
-          </Box>
-          <Box alignSelf="flex-end">
-            <HelperText type="info">
-              <Text textAlign="right" fontSize={12}>
-                150
-              </Text>
-            </HelperText>
-          </Box>
-          <DropdownComponent
-            label={'Gender'}
-            data={items}
-            value={userData.gender}
-            onChange={item => setUserData({...userData, gender: item.value})}
-            placeholder={'Select gender'}
-          />
-          {isLoading && (
-            <LinearProgress
-              variant="indeterminate"
-              color="blue"
-              value={uploadProgress / 100}
-            />
-          )}
-          <Button
-            titleStyle={{fontSize: 14}}
-            buttonStyle={{
-              borderRadius: 6,
+          <Formik
+            enableReinitialize
+            initialValues={{
+              username: userData.username,
+              fullname: userData.fullname,
+              bio: userData.bio,
+              gender: userData.gender,
             }}
-            containerStyle={{paddingVertical: 24}}
-            title={'Save Changes'}
-            onPress={handleSaveChanges}
-          />
+            validationSchema={ProfileSchema}
+            onSubmit={handleSaveChanges}>
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+              isSubmitting,
+            }) => (
+              <>
+                <Avatar
+                  containerStyle={{alignSelf: 'center'}}
+                  rounded
+                  size={'large'}
+                  source={{uri: newImage || currentUser?.avatar}}
+                />
+                <TouchableOpacity onPress={() => RBSheetref.current.open()}>
+                  <Text
+                    padding={'s'}
+                    fontSize={12}
+                    color="primaryBlue"
+                    textAlign="center">
+                    Edit Picture
+                  </Text>
+                </TouchableOpacity>
+                <Box gap={'l'}>
+                  <Input
+                    label={'Username'}
+                    renderErrorMessage={false}
+                    labelStyle={{
+                      fontWeight: '400',
+                      fontSize: 12,
+                      color: 'grey',
+                      paddingVertical: 6,
+                    }}
+                    inputContainerStyle={{
+                      borderBottomWidth: 0.5,
+                      borderWidth: 0.5,
+                      borderRadius: 10,
+                    }}
+                    inputStyle={{padding: 6, fontSize: 14}}
+                    value={values.username}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    errorMessage={
+                      touched.username && errors.username ? errors.username : ''
+                    }
+                  />
+                  <Input
+                    label={'Full Name'}
+                    renderErrorMessage={false}
+                    labelStyle={{
+                      fontWeight: '400',
+                      fontSize: 12,
+                      color: 'grey',
+                      paddingVertical: 6,
+                    }}
+                    inputContainerStyle={{
+                      borderBottomWidth: 0.5,
+                      borderWidth: 0.5,
+                      borderRadius: 10,
+                    }}
+                    inputStyle={{padding: 6, fontSize: 14}}
+                    value={values.fullname}
+                    onChangeText={handleChange('fullname')}
+                    onBlur={handleBlur('fullname')}
+                    errorMessage={
+                      touched.fullname && errors.fullname ? errors.fullname : ''
+                    }
+                  />
+                  <Input
+                    label={'Bio'}
+                    renderErrorMessage={false}
+                    labelStyle={{
+                      fontWeight: '400',
+                      fontSize: 12,
+                      color: 'grey',
+                      paddingVertical: 6,
+                    }}
+                    inputContainerStyle={{
+                      borderBottomWidth: 0.5,
+                      borderWidth: 0.5,
+                      borderRadius: 10,
+                      height: 100,
+                    }}
+                    inputStyle={{
+                      verticalAlign: 'top',
+                      padding: 6,
+                      fontSize: 14,
+                    }}
+                    multiline
+                    value={values.bio}
+                    onChangeText={handleChange('bio')}
+                    onBlur={handleBlur('bio')}
+                    errorMessage={touched.bio && errors.bio ? errors.bio : ''}
+                  />
+
+                  <DropdownComponent
+                    label={'Gender'}
+                    data={items}
+                    value={values.gender}
+                    onChange={item => handleChange('gender')(item.value)}
+                    onBlur={handleBlur('gender')}
+                    errorMessage={
+                      touched.gender && errors.gender ? errors.gender : ''
+                    }
+                    placeholder={'Select gender'}
+                  />
+                </Box>
+                <Button
+                  buttonStyle={{
+                    borderRadius: 6,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  containerStyle={{paddingVertical: 24}}
+                  onPress={handleSubmit}>
+                  {isSubmitting && (
+                    <ActivityIndicator
+                      size="small"
+                      color="#fff"
+                      style={{marginRight: 8}}
+                    />
+                  )}
+                  <Text style={{fontSize: 14, color: '#fff'}}>
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
+                  </Text>
+                </Button>
+              </>
+            )}
+          </Formik>
         </ScrollView>
       </Box>
       <RBSheet
@@ -299,5 +356,4 @@ const EditProfile = ({navigation, route}) => {
     </Box>
   );
 };
-
 export default EditProfile;

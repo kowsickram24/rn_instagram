@@ -39,10 +39,11 @@ const AccountReach = ({navigation, route}) => {
     <Box backgroundColor={'mainwhite'} flex={1}>
       <Header
         statusBarProps={{hidden: true}}
+        leftContainerStyle={{flex:3}}
         leftComponent={
           <Box flexDirection="row" gap={'s'} alignItems="center">
             <BackBtn onPress={() => navigation.goBack()} />
-            <Text color={'mainblack'}>{userData?.username}</Text>
+            <Text fontSize={14} numberOfLines={1} color={'mainblack'}>{userData?.username}</Text>
           </Box>
         }
         backgroundColor="white"

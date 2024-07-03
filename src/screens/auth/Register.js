@@ -167,7 +167,7 @@ const RegisterScreen = ({navigation, getData}) => {
                   <Authbutton
                     title={t('Auth.Signup')}
                     onPress={handleSubmit}
-                    disabled={isSubmitting}
+                    loading={isSubmitting ? true : false}
                   />
                 </>
               )}
