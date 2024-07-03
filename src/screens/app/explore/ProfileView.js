@@ -21,6 +21,7 @@ import FastImage from 'react-native-fast-image';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
+  console.log('userId: ', userId);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 

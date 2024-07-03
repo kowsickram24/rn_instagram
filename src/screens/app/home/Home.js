@@ -10,7 +10,7 @@ import {
 import {useSelector} from 'react-redux';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
-import {Heaty_uf, Insta_Typo_logo, Msg_Icon} from '../../../constants/assets';
+import {Heaty_uf, Insta_Typo_logo, Msg_Icon, Notifi} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Data} from '../../../utils/randomData';
 const Home = ({navigation}) => {
@@ -78,7 +78,7 @@ const Home = ({navigation}) => {
         }
         mediaSrc={item?.mediaUrls}
       
-        isMuted={!mutedStates[item.postId]}
+        isMuted={!!mutedStates[item.postId]}
         toggleMute={() => toggleMute(item.postId)}
       />
     </Box>
@@ -106,7 +106,7 @@ const Home = ({navigation}) => {
             <Box>
               <TouchableOpacity
                 onPress={() => navigation.navigate('Notifications')}>
-                <Heaty_uf />
+                <Notifi />
               </TouchableOpacity>
             </Box>
             <Box>

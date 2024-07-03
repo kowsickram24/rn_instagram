@@ -108,7 +108,7 @@ const FeedPost = ({
   const images = mediaSrc?.filter(key => key.endsWith('.jpg'));
   const videos = mediaSrc?.filter(key => key.endsWith('.mp4'));
   const totalImages = images?.length || 0;
-
+  const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(0)).current;
   let formattedTime = '';
 
@@ -139,12 +139,6 @@ const FeedPost = ({
       };
     }, []),
   );
-
-  const handleImageChange = event => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.floor(contentOffsetX / width);
-    setCurrentIndex(index);
-  };
 
   const renderPaginationDots = () => {
     const dotPosition = Animated.divide(animatedValue, width);
@@ -351,43 +345,83 @@ const FeedPost = ({
               horizontal
               onScroll={Animated.event(
                 [{nativeEvent: {contentOffset: {x: animatedValue}}}],
-                {useNativeDriver: true},
+                {
+                  useNativeDriver: true,
+                  listener: event => {
+                    const offsetX = event.nativeEvent.contentOffset.x;
+                    const index = Math.round(offsetX / width);
+                    setCurrentIndex(index);
+                  },
+                },
               )}
               data={images}
               renderItem={({item}) => (
                 <TouchableWithoutFeedback>
-                  <FastImage
-                    source={{uri: item}}
-                    style={{width: width, height: 400}}
-                    resizeMode={FastImage.resizeMode.cover}
+
+                <FastImage
+                  source={{uri: item}}
+                  style={{width: width, height: 400}}
+                  resizeMode={FastImage.resizeMode.cover}
                   />
-                </TouchableWithoutFeedback>
+                  </TouchableWithoutFeedback>
               )}
             />
           )}
-
-          {videos?.length > 0 && (
-            <TouchableWithoutFeedback onPress={toggleMute}>
-              <>
-                <Video
-                  source={{uri: videos[0]}}
-                  style={{height: 400, width: width}}
-                  playWhenInactive
-                  resizeMode="cover"
-                  repeat
-                  muted={isMuted}
-                />
-              </>
-            </TouchableWithoutFeedback>
+          {images?.length > 0 && images?.length != 1 && (
+            <Box
+              top={70}
+              right={10}
+              alignItems="center"
+              justifyContent="center"
+              position="absolute"
+              backgroundColor={'mainblack'}
+              borderRadius={'m'}
+              width={30}
+              height={25}>
+              <Text textAlign="center" fontSize={10} color={'mainwhite'}>
+                {`${currentIndex + 1} / ${totalImages}`}
+              </Text>
+            </Box>
           )}
+          {videos?.length > 0 && (
+            <>
+              <Video
+                source={{uri: videos[0]}}
+                style={{height: 400, width: width}}
+                playWhenInactive
+                resizeMode="cover"
+                repeat
+                muted={isMuted}
+              />
+            </>
+          )}
+            {videos?.length > 0 && (
+          <TouchableWithoutFeedback onPress={toggleMute}>
+              <Box
+                bottom={140}
+                right={20}
+                alignItems="center"
+                justifyContent="center"
+                position="absolute"
+                backgroundColor={'mainblack'}
+                borderRadius={'l'}
+                width={20}
+                height={20}>
+                {isMuted ? (
+                  <Muted height="12" width="12" />
+                ) : (
+                  <UnMuted height="12" width="12" />
+                )}
+              </Box>
+          </TouchableWithoutFeedback>
+            )}
           <Box
-          flex={1}
             flexDirection="row"
-            justifyContent='space-between'
+            justifyContent="space-between"
             alignItems="center"
             paddingVertical={'m'}
             paddingHorizontal={'xs'}>
-            <Box flexDirection="row" alignItems='flex-start'  gap={'m'}>
+            <Box flexDirection="row" alignItems="flex-start" gap={'m'}>
               <TouchableOpacity onPress={onLikePress}>
                 {isLiked ? <Heaty_f /> : <Heaty_uf />}
               </TouchableOpacity>
@@ -398,45 +432,51 @@ const FeedPost = ({
                 <Share />
               </TouchableOpacity>
             </Box>
-            <Box  justifyContent='center' alignItems='center'>
+            <Box
+              right={'50%'}
+              left={'50%'}
+              position="absolute"
+              alignItems="center">
               {images?.length != 1 && totalImages > 0 && renderPaginationDots()}
             </Box>
-            <Box >
+            <Box>
               <TouchableOpacity onPress={onSavePress}>
                 {isSaved ? <Save_f /> : <Save />}
               </TouchableOpacity>
             </Box>
           </Box>
           {/* {likedUsers} */}
-          <TouchableOpacity
-            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-             
-            {likedUsers && likedUsers.length !== 0 ? (
-              <Box paddingHorizontal={'s'}>
-                {likedUsers.length > 0 && (
-                  <Text fontSize={14} color={'mainblack'}>
-                    {likedUsers.length === 1 ? (
-                      <Text fontSize={14}>
-                        {`Liked by `}
-                        <Text
-                          fontSize={14}
-                          fontWeight={'500'}>{`${likedUsers[0]}`}</Text>
-                      </Text>
-                    ) : (
-                      <Text fontSize={14}>
-                        {`Liked by `}
-                        <Text fontWeight={'500'} fontSize={14}>
-                          {`${likedUsers[0]} and ${
-                            likedUsers.length - 1
-                          } others`}
+          {likedUsers && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+              {likedUsers && likedUsers.length !== 0 ? (
+                <Box paddingHorizontal={'s'}>
+                  {likedUsers.length > 0 && (
+                    <Text fontSize={14} color={'mainblack'}>
+                      {likedUsers.length === 1 ? (
+                        <Text fontSize={14}>
+                          {`Liked by `}
+                          <Text
+                            fontSize={14}
+                            fontWeight={'500'}>{`${likedUsers[0]}`}</Text>
                         </Text>
-                      </Text>
-                    )}
-                  </Text>
-                )}
-              </Box>
-            ) : null}
-          </TouchableOpacity>
+                      ) : (
+                        <Text fontSize={14}>
+                          {`Liked by `}
+                          <Text fontWeight={'500'} fontSize={14}>
+                            {`${likedUsers[0]} and ${
+                              likedUsers.length - 1
+                            } others`}
+                          </Text>
+                        </Text>
+                      )}
+                    </Text>
+                  )}
+                </Box>
+              ) : null}
+            </TouchableOpacity>
+          )}
+
           <Box padding={'s'}>
             <Text width={300} numberOfLines={1}>
               <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
@@ -459,9 +499,11 @@ const FeedPost = ({
             </TouchableOpacity>
           )}
         </Card>
-        <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
-          {formattedTime}
-        </Text>
+        {formattedTime && (
+          <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
+            {formattedTime}
+          </Text>
+        )}
 
         <ShareBox postId={postId} ref={Shareref} />
         <CommentBox
@@ -629,6 +671,7 @@ const ShareBox = forwardRef(({postId}, ref) => {
           value={searchQuery}
         />
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={filteredUsers}
           renderItem={renderSharelist}
           keyExtractor={item => item.id}
@@ -881,7 +924,7 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
       }}
       closeOnPressBack
       ref={ref}
-      height={400}>
+      height={450}>
       <Box flex={1}>
         <Text
           padding="s"
@@ -892,18 +935,26 @@ const CommentBox = forwardRef(({postId, userId, navigation}, ref) => {
           Comments
         </Text>
         <FlatList
+          contentContainerStyle={{
+            flex: 1,
+          }}
           showsVerticalScrollIndicator={false}
           data={comments}
           renderItem={renderCommentItem}
           keyExtractor={item => item.time}
           ListEmptyComponent={
-            <Box flex={1} alignItems="center" justifyContent="center">
-              <Text color={'mainblack'} fontWeight={'bold'} paddingVertical="s">
+            <Box flex={1} justifyContent="center" alignItems="center">
+              <Text
+                color={'mainblack'}
+                textAlign="center"
+                fontWeight={'bold'}
+                paddingVertical="s">
                 No Comments Yet
               </Text>
             </Box>
           }
         />
+
         {replyingTo && (
           <Box flexDirection="row" alignItems="center" padding="s">
             <Avatar source={{uri: userAvatar}} size="small" rounded />

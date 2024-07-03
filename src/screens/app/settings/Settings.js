@@ -31,8 +31,8 @@ const Settings = ({navigation, getData}) => {
       icon: <User />,
       screen: 'AccountCenter',
     },
-    {id: 'saves', label: 'Saves', icon: <Save />, screen: 'MySaves'},
-    {id: 'likes', label: 'Likes', icon: <Heaty_uf />, screen: 'LikedPosts'},
+    {id: 'saves', label: 'Saved', icon: <Save />, screen: 'MySaves'},
+    {id: 'likes', label: 'Liked', icon: <Heaty_uf />, screen: 'LikedPosts'},
     {
       id: 'logout',
       label: 'Logout',

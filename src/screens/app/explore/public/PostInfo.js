@@ -7,7 +7,7 @@ import FeedPost from '../../../../components/card/FeedPost';
 import {Box, Text} from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
-const PostInfo = ({route}) => {
+const PostInfo = ({navigation,route}) => {
   const currentUser = useSelector(state => state.user.user);
   const RBref = useRef();
   const Optionref = useRef();
@@ -33,7 +33,7 @@ const PostInfo = ({route}) => {
           setUser(userDoc.data());
         } else {
           console.log(`User with ID ${post.userId} not found.`);
-          setUser(null); 
+          setUser(null);
         }
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -41,7 +41,7 @@ const PostInfo = ({route}) => {
     };
 
     fetchUser();
-  }, [post.userId]); // Fetch user whenever post.userId changes
+  }, [post.userId]);
 
   const handleOption = () => {
     Optionref.current.open();

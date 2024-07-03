@@ -77,7 +77,7 @@ const EditPost = ({route, navigation}) => {
                   <TouchableWithoutFeedback>
                     <FastImage
                       source={{uri: item}}
-                      style={{width: 370, height: 350, alignSelf:'center'}}
+                      style={{width: 350, height: 350, alignSelf:'center'}}
                       resizeMode={FastImage.resizeMode.cover}
                     />
                   </TouchableWithoutFeedback>

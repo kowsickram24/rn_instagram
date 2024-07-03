@@ -228,6 +228,7 @@ const NewPost = ({navigation, route, getData}) => {
                 </>
               ) : selectedVideo ? (
                 <Video
+                  muted
                   source={{uri: selectedVideo}}
                   resizeMode="cover"
                   style={styles.media}
@@ -242,15 +243,18 @@ const NewPost = ({navigation, route, getData}) => {
               padding={'s'}
               justifyContent="space-evenly"
               flexDirection="row">
-              <Button
-                buttonStyle={{
-                  elevation: 1,
-                  borderRadius: 10,
-                  backgroundColor: 'powderblue',
-                }}
-                icon={<Gal_Image />}
-                onPress={pickImage}
-              />
+              {!selectedVideo &&  (
+                <Button
+                  buttonStyle={{
+                    elevation: 1,
+                    borderRadius: 10,
+                    backgroundColor: 'powderblue',
+                  }}
+                  icon={<Gal_Image />}
+                  onPress={pickImage}
+                />
+              )}
+
               <Button
                 buttonStyle={{
                   elevation: 1,

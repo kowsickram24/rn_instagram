@@ -5,7 +5,6 @@ import {
   TouchableWithoutFeedback,
   Modal,
   View,
-  Vibration,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Box} from '../../../theme';
@@ -21,7 +20,6 @@ const Gallery = () => {
   const handleLongPress = item => {
     setSelectedImage(item.PostUrl);
     setModalVisible(true);
-    Vibration.vibrate()
   };
 
   const handlePressOut = () => {
@@ -70,10 +68,8 @@ const Gallery = () => {
               backgroundColor: 'rgba(0,0,0,0.5)',
             }}>
             {selectedImage && (
-              <Card containerStyle={{margin:0, padding:0}}>
-                <Card.Title h4 >
-                  Explore Images
-                </Card.Title>
+              <Card containerStyle={{margin: 0, padding: 0}}>
+                <Card.Title h4>Explore Images</Card.Title>
                 <FastImage
                   source={{uri: selectedImage}}
                   style={{width: width, height: height / 2}}

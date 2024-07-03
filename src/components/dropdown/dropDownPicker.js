@@ -39,6 +39,7 @@ const DropdownComponent = ({
         placeholder={placeholder}
         searchPlaceholder={searchPlaceholder}
         value={value}
+        showsVerticalScrollIndicator={false}
         onChange={onChange}
       />
     </Box>

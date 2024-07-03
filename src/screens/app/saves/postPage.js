@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { Header } from '@rneui/themed';
 import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import FeedPost from '../../../components/card/FeedPost';
@@ -9,15 +9,21 @@ import { Insta_Typo_logo } from '../../../constants/assets';
 import { Box } from '../../../theme';
 const PostPage = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
-  console.log('route.params?.postId;: ', route.params?.postId);
+  const postId = route.params?.postId;
   const [post, setPost] = useState(null);
-  console.log('post: ', post);
   const [loading, setLoading] = useState(true);
+  const [mutedStates, setMutedStates] = useState({});
+
+  const toggleMute = (postId) => {
+    setMutedStates(prevState => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postId = route.params?.postId;
         if (!postId) {
           console.log('No postId provided in route params.');
           return;
@@ -42,19 +48,26 @@ const PostPage = ({route, navigation}) => {
           }
 
           setPost(postData);
-          setLoading(false);
         } else {
           console.log(`Post with ID ${postId} not found.`);
-          setLoading(false);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchPost();
-  }, [route.params?.postId]);
+  }, [postId]);
+
+  if (loading) {
+    return (
+      <Box flex={1} justifyContent="center" alignItems="center">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </Box>
+    );
+  }
 
   return (
     <Box flex={1} backgroundColor="mainwhite">
@@ -70,22 +83,25 @@ const PostPage = ({route, navigation}) => {
         backgroundColor="white"
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <FeedPost
-          onProfilePress={() =>
-            navigation.navigate('ProfileView', {userId: post?.user?.userId})
-          }
-          ProfileUrl={post?.user?.avatar}
-          userId={currentUser?.userId}
-          postId={post?.postId}
-          mediaSrc={post?.mediaUrls}
-          isMuted={true}
-          mediaType={post?.mediaType}
-          Caption={post?.caption}
-          user={post?.user?.username}
-          location={post?.location}
-          time={post?.time}
-          comments={post?.comments}
-        />
+        {post && (
+          <FeedPost
+            onProfilePress={() =>
+              navigation.navigate('ProfileView', {userId: post.user?.userId})
+            }
+            ProfileUrl={post.user?.avatar}
+            userId={currentUser?.userId}
+            postId={post.id}
+            mediaSrc={post.mediaUrls}
+            isMuted={!!mutedStates[post.id]}
+            toggleMute={() => toggleMute(post.id)}
+            mediaType={post.mediaType}
+            Caption={post.caption}
+            user={post.user?.username}
+            location={post.location}
+            time={post.time}
+            comments={post.comments}
+          />
+        )}
       </ScrollView>
     </Box>
   );

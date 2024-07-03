@@ -51,6 +51,7 @@ const ChatBox = ({navigation, route}) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [replyingMessage, setReplyingMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   const cloudFrontDomain = config.CLDFRNTDOM;
   const ToggleMute = () => {
@@ -96,6 +97,7 @@ const ChatBox = ({navigation, route}) => {
         mediaType: 'photo',
       });
       setSelectedImage(result.path);
+      setSelectedVideo('')
     } catch (error) {
       console.error('Error picking image: ', error);
     }
@@ -107,6 +109,7 @@ const ChatBox = ({navigation, route}) => {
         mediaType: 'video',
       });
       setSelectedVideo(result.path);
+      setSelectedImage('')
     } catch (error) {
       console.error('Error picking video: ', error);
     }
@@ -413,7 +416,7 @@ const ChatBox = ({navigation, route}) => {
             const renderLeftActions = (progress, dragX) => {
               return (
                 <TouchableOpacity onPress={() => setReplyingMessage(item)}>
-                  <Box padding="m" borderRadius="l"  >
+                  <Box padding="m" borderRadius="l">
                     <Text color="primaryBlue">Reply</Text>
                   </Box>
                 </TouchableOpacity>
@@ -589,6 +592,8 @@ const ChatBox = ({navigation, route}) => {
             />
           ) : selectedVideo ? (
             <Video
+              resizeMode="cover"
+              muted
               style={{
                 width: 300,
                 alignSelf: 'center',
@@ -596,7 +601,6 @@ const ChatBox = ({navigation, route}) => {
                 borderRadius: 10,
               }}
               source={{uri: selectedVideo}}
-              controls
             />
           ) : (
             <Box
@@ -612,26 +616,31 @@ const ChatBox = ({navigation, route}) => {
           )}
           <Divider />
           <Box gap={'s'} justifyContent="space-evenly" flexDirection="row">
-            <Button
-              buttonStyle={{
-                elevation: 1,
-                borderRadius: 10,
-                backgroundColor: 'powderblue',
-              }}
-              icon={<Gal_Image />}
-              onPress={PickImage}
-            />
-            <Button
-              buttonStyle={{
-                elevation: 1,
-                borderRadius: 10,
-                backgroundColor: 'pink',
-              }}
-              icon={<Gal_Video />}
-              onPress={PickVideo}
-            />
+            {!selectedVideo && (
+              <Button
+                buttonStyle={{
+                  elevation: 1,
+                  borderRadius: 10,
+                  backgroundColor: 'powderblue',
+                }}
+                icon={<Gal_Image />}
+                onPress={PickImage}
+              />
+            )}
+            {!selectedImage && (
+              <Button
+                buttonStyle={{
+                  elevation: 1,
+                  borderRadius: 10,
+                  backgroundColor: 'pink',
+                }}
+                icon={<Gal_Video />}
+                onPress={PickVideo}
+              />
+            )}
           </Box>
           <Button
+          loading={isLoading}
             onPress={handleShare}
             buttonStyle={{borderRadius: 8, marginVertical: 5}}
             titleStyle={{fontSize: 14}}

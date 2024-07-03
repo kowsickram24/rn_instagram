@@ -88,6 +88,7 @@ const EditProfile = ({navigation, route}) => {
         hideBottomControls: true,
       });
       setNewImage(result.path);
+      RBSheetref.current.close();
     } catch (error) {
       console.error('Error picking image: ', error);
     }
@@ -280,7 +281,8 @@ const EditProfile = ({navigation, route}) => {
                       height: 100,
                     }}
                     inputStyle={{
-                      verticalAlign: 'top',
+                      height: 100,
+                      textAlignVertical:'top',
                       padding: 6,
                       fontSize: 14,
                     }}

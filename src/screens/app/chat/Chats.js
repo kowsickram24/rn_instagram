@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {Header, SearchBar} from '@rneui/themed';
+import {Divider, Header, SearchBar} from '@rneui/themed';
 import React, {useEffect, useRef, useState} from 'react';
 import {FlatList, Platform, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
@@ -13,6 +13,7 @@ const ChatBox = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedChat, setSelectedChat] = useState('');
+  console.log('selectedChat: ', selectedChat);
   const Actionref = useRef();
 
   const handleDeleteChat = async () => {
@@ -132,7 +133,9 @@ const ChatBox = ({navigation}) => {
           },
         }}
         ref={Actionref}>
-        <Box flex={1} gap={'l'} justifyContent="center">
+        <Box flex={1} gap={'l'} >
+          <Text textAlign='center' color={'mainblack'} > {selectedChat?.secondUser?.username}</Text>
+          <Divider />
           <TouchableOpacity onPress={handleDeleteChat}>
             <Text textAlign="center" color={'red'}>
               Delete
