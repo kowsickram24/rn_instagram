@@ -1,33 +1,33 @@
 import firestore from '@react-native-firebase/firestore';
-import {Button, Header, Input} from '@rneui/themed';
-import {Buffer} from 'buffer';
-import React, {useEffect, useState} from 'react';
+import { Button, Header, Input } from '@rneui/themed';
+import { Buffer } from 'buffer';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-  Image,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
-import {Loader} from '../../../../components/loader/Loader';
+import { Loader } from '../../../../components/loader/Loader';
 import config from '../../../../config';
-import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
-import {S3Bucket} from '../../../../services/aws/s3bucket';
-import {Box, Text, width} from '../../../../theme';
+import { Gal_Image, Gal_Video, Gallery_Icon } from '../../../../constants/assets';
+import { ProgressContext } from '../../../../context/Upload/progressCtxt';
+import { S3Bucket } from '../../../../services/aws/s3bucket';
+import { Box, Text } from '../../../../theme';
 const cloudFrontDomain = config.CLDFRNTDOM;
 
+import { FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {FlatList} from 'react-native';
 
-const NewPost = ({navigation, route, getData}) => {
+const NewPost = ({navigation}) => {
   const currentuser = useSelector(state => state.user.user);
   const [userData, setUserData] = useState();
   const [selectedImages, setSelectedImages] = useState([]);
-  console.log('selectedImages: ', selectedImages);
+  const {setProgress} = useContext(ProgressContext);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
@@ -70,6 +70,7 @@ const NewPost = ({navigation, route, getData}) => {
 
       const imagePaths = results.map(result => result.path);
       setSelectedImages(imagePaths);
+      setSelectedVideo('');
     } catch (error) {
       console.error('Error picking images: ', error);
     }
@@ -83,6 +84,7 @@ const NewPost = ({navigation, route, getData}) => {
         loadingLabelText: 'loading',
       });
       setSelectedVideo(result.path);
+      setSelectedImages('');
     } catch (error) {
       console.error('Error picking video: ', error);
     }
@@ -139,12 +141,36 @@ const NewPost = ({navigation, route, getData}) => {
   const handleCreatePost = async () => {
     if (selectedImages.length > 0 || selectedVideo) {
       try {
+        navigation.navigate('Home');
         setLoading(true);
+        const totalFiles = selectedImages.length + (selectedVideo ? 1 : 0);
+        let uploadedFiles = 0;
+        let totalProgress = 0;
+
+        const updateProgress = progress => {
+          totalProgress += progress;
+          const overallProgress = totalProgress / totalFiles;
+          setProgress(overallProgress);
+        };
+
         const imageUrls = await Promise.all(
-          selectedImages.map(image => uploadMediaToAWS(image, 'image')),
+          selectedImages.map(image =>
+            uploadMediaToAWS(image, 'image', updateProgress).then(url => {
+              uploadedFiles++;
+              updateProgress(100);
+              return url;
+            }),
+          ),
         );
+
         const videoUrl = selectedVideo
-          ? await uploadMediaToAWS(selectedVideo, 'video')
+          ? await uploadMediaToAWS(selectedVideo, 'video', updateProgress).then(
+              url => {
+                uploadedFiles++;
+                updateProgress(100);
+                return url;
+              },
+            )
           : null;
 
         const mediaUrls = [...imageUrls, ...(videoUrl ? [videoUrl] : [])];
@@ -161,6 +187,7 @@ const NewPost = ({navigation, route, getData}) => {
           comments: [],
           time: new Date().toLocaleString(),
         };
+
         console.log('newPost: ', newPost);
 
         await newPostRef.set(newPost);
@@ -172,13 +199,11 @@ const NewPost = ({navigation, route, getData}) => {
         await userDocRef.update({
           posts: firestore.FieldValue.arrayUnion(newPostId),
         });
-
-        // await getData();
-        navigation.navigate('Home');
       } catch (error) {
         console.error('Error creating post:', error);
       } finally {
         setLoading(false);
+        setUploadProgress(0); // Reset progress
       }
     }
   };
@@ -243,17 +268,15 @@ const NewPost = ({navigation, route, getData}) => {
               padding={'s'}
               justifyContent="space-evenly"
               flexDirection="row">
-              {!selectedVideo &&  (
-                <Button
-                  buttonStyle={{
-                    elevation: 1,
-                    borderRadius: 10,
-                    backgroundColor: 'powderblue',
-                  }}
-                  icon={<Gal_Image />}
-                  onPress={pickImage}
-                />
-              )}
+              <Button
+                buttonStyle={{
+                  elevation: 1,
+                  borderRadius: 10,
+                  backgroundColor: 'powderblue',
+                }}
+                icon={<Gal_Image />}
+                onPress={pickImage}
+              />
 
               <Button
                 buttonStyle={{

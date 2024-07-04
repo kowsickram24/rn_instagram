@@ -1,85 +1,82 @@
 import firestore from '@react-native-firebase/firestore';
-import {Divider, Header, SearchBar} from '@rneui/themed';
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList, Platform, TouchableOpacity} from 'react-native';
-import {useSelector} from 'react-redux';
+import { Divider, Header, SearchBar } from '@rneui/themed';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useRef, useState } from 'react';
+import { FlatList, Platform, TouchableOpacity } from 'react-native';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
-import {Box, Text} from '../../../theme';
-import RBSheet from 'react-native-raw-bottom-sheet';
-const ChatBox = ({navigation}) => {
-  const currentUser = useSelector(state => state.user.user);
-  const [chats, setChats] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [selectedChat, setSelectedChat] = useState('');
-  console.log('selectedChat: ', selectedChat);
-  const Actionref = useRef();
+import { Box, Text } from '../../../theme';
 
-  const handleDeleteChat = async () => {
-    try {
-      await firestore().collection('chats').doc(selectedChat.id).delete();
+const fetchChats = async (currentUser) => {
+  const snapshot = await firestore()
+    .collection('chats')
+    .where('members', 'array-contains', currentUser.userId)
+    .get();
+  
+  const chatData = await Promise.all(
+    snapshot.docs.map(async doc => {
+      const chat = doc.data();
+      const secondUserId = chat.members.find(id => id !== currentUser.userId);
+      const userDoc = await firestore()
+        .collection('users')
+        .doc(secondUserId)
+        .get();
+      const secondUser = userDoc.data();
+      return { id: doc.id, ...chat, secondUser };
+    })
+  );
+
+  return chatData;
+};
+
+const ChatBox = ({ navigation }) => {
+  const currentUser = useSelector(state => state.user.user);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedChat, setSelectedChat] = useState('');
+  const Actionref = useRef();
+  const queryClient = useQueryClient();
+
+  const { data: chats, isLoading, error } = useQuery({
+    queryKey: ['chats', currentUser],
+    queryFn: () => fetchChats(currentUser),
+    enabled: !!currentUser,
+    select: data =>
+      data.filter(chat =>
+        chat.secondUser.username
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      ).sort(
+        (a, b) => b.lastMessage.time.toDate() - a.lastMessage.time.toDate()
+      ),
+  });
+
+  const deleteChatMutation = useMutation({
+    mutationFn: async (chatId) => {
+      await firestore().collection('chats').doc(chatId).delete();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['chats', currentUser]);
       Actionref.current.close();
-    } catch (error) {
-      console.error('Error deleting chat: ', error);
-    }
+    },
+  });
+
+  const handleDeleteChat = () => {
+    deleteChatMutation.mutate(selectedChat.id);
   };
 
-  useEffect(() => {
-    setLoading(true);
-    const unsubscribe = firestore()
-      .collection('chats')
-      .where('members', 'array-contains', currentUser.userId)
-      .onSnapshot(
-        async snapshot => {
-          const chatData = await Promise.all(
-            snapshot.docs.map(async doc => {
-              const chat = doc.data();
-              const secondUserId = chat.members.find(
-                id => id !== currentUser.userId,
-              );
-              const userDoc = await firestore()
-                .collection('users')
-                .doc(secondUserId)
-                .get();
-              const secondUser = userDoc.data();
-              return {id: doc.id, ...chat, secondUser};
-            }),
-          );
-
-          const filteredChats = chatData.filter(chat =>
-            chat.secondUser.username
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()),
-          );
-
-          filteredChats.sort(
-            (a, b) => b.lastMessage.time.toDate() - a.lastMessage.time.toDate(),
-          );
-
-          setChats(filteredChats);
-          setLoading(false);
-        },
-        error => {
-          console.error('Error fetching chats: ', error);
-          setLoading(false);
-        },
-      );
-
-    return () => unsubscribe();
-  }, [currentUser.userId, searchQuery]);
-
-  const RenderChats = ({item}) => (
+  const RenderChats = ({ item }) => (
     <TouchableOpacity
       onLongPress={() => {
         setSelectedChat(item);
         Actionref.current.open();
       }}
       onPress={() =>
-        navigation.navigate('ChatBox', {params: {chatId: item.id}})
+        navigation.navigate('ChatBox', { params: { chatId: item.id } })
       }>
       <ChatCard
-        loading={loading}
+        loading={isLoading}
         ProfileUrl={item?.secondUser.avatar}
         Username={item?.secondUser.username}
         LastMessage={
@@ -108,10 +105,10 @@ const ChatBox = ({navigation}) => {
           </Text>
         }
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
-        statusBarProps={{hidden: true}}
+        statusBarProps={{ hidden: true }}
       />
       <SearchBar
-        inputStyle={{fontSize: 14}}
+        inputStyle={{ fontSize: 14 }}
         placeholder="Search"
         platform={Platform.OS === 'android' ? 'android' : 'ios'}
         value={searchQuery}
@@ -122,7 +119,6 @@ const ChatBox = ({navigation}) => {
         renderItem={RenderChats}
         keyExtractor={item => item.id}
       />
-
       <RBSheet
         height={200}
         draggable
@@ -133,8 +129,8 @@ const ChatBox = ({navigation}) => {
           },
         }}
         ref={Actionref}>
-        <Box flex={1} gap={'l'} >
-          <Text textAlign='center' color={'mainblack'} > {selectedChat?.secondUser?.username}</Text>
+        <Box flex={1} gap={'l'}>
+          <Text textAlign='center' color={'mainblack'}>{selectedChat?.secondUser?.username}</Text>
           <Divider />
           <TouchableOpacity onPress={handleDeleteChat}>
             <Text textAlign="center" color={'red'}>

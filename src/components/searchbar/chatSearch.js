@@ -1,6 +1,6 @@
+import { Input } from '@rneui/themed';
 import React from 'react';
-import {Input} from '@rneui/themed';
-import {Magnify} from '../../constants/assets';
+import { Magnify } from '../../constants/assets';
 
 const ChatSearch = ({value, onChangeText}) => {
   return (

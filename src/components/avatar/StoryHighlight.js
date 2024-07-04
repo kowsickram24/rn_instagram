@@ -1,6 +1,6 @@
-import {Avatar} from '@rneui/themed';
-import {Box} from '../../theme';
-import {TouchableWithoutFeedback} from 'react-native';
+import { Avatar } from '@rneui/themed';
+import { TouchableWithoutFeedback } from 'react-native';
+import { Box } from '../../theme';
 
 const StoryHighlight = ({ImgSrc}) => {
   return (

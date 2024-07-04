@@ -1,7 +1,6 @@
-import {View, StyleSheet} from 'react-native';
-import {Input} from '@rneui/themed';
+import { Input } from '@rneui/themed';
 import React from 'react';
-import {palette} from '../../theme';
+import { palette } from '../../theme';
 
 const Inputbox = ({
   placeholder,

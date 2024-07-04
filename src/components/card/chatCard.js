@@ -1,10 +1,7 @@
-import {Box, Text} from '../../theme';
-import {Avatar, Divider} from '@rneui/themed';
-import {Skeleton} from '@rneui/themed';
-import {useState, useEffect} from 'react';
-import {Camera, Share} from '../../constants/assets';
-import {TouchableOpacity} from 'react-native';
-import {Card} from '@rneui/themed';
+import { Avatar, Card, Skeleton } from '@rneui/themed';
+import { TouchableOpacity } from 'react-native';
+import { Share } from '../../constants/assets';
+import { Box, Text } from '../../theme';
 
 const ChatCard = ({
   Username = 'Charles Clark',

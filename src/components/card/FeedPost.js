@@ -1,6 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {Avatar, Button, Card, Input} from '@rneui/themed';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Avatar, Button, Card, Input, SearchBar } from '@rneui/themed';
+import { formatDistanceToNow, parse } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import React, {
   forwardRef,
   useCallback,
@@ -9,24 +11,19 @@ import React, {
   useState,
 } from 'react';
 import {
-  Platform,
+  Animated,
   Dimensions,
   FlatList,
+  Platform,
   Share as Shre,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  StyleSheet,
-  Animated,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Divider} from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
-import {formatDistanceToNow} from 'date-fns';
-import {parse} from 'date-fns';
-import {enUS} from 'date-fns/locale';
+import { useSelector } from 'react-redux';
 import {
   Comment,
   Heaty_f,
@@ -39,10 +36,9 @@ import {
   Three_dots,
   UnMuted,
 } from '../../constants/assets';
-import {Box, Text} from '../../theme';
+import { Box, Text } from '../../theme';
 import SkeletonCard from '../Skeleton/skeletonCard';
 const {width, height} = Dimensions.get('screen');
-import {SearchBar} from '@rneui/themed';
 
 const PostHeader = ({
   location,
@@ -357,13 +353,12 @@ const FeedPost = ({
               data={images}
               renderItem={({item}) => (
                 <TouchableWithoutFeedback>
-
-                <FastImage
-                  source={{uri: item}}
-                  style={{width: width, height: 400}}
-                  resizeMode={FastImage.resizeMode.cover}
+                  <FastImage
+                    source={{uri: item}}
+                    style={{width: width, height: 400}}
+                    resizeMode={FastImage.resizeMode.cover}
                   />
-                  </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
               )}
             />
           )}
@@ -395,8 +390,8 @@ const FeedPost = ({
               />
             </>
           )}
-            {videos?.length > 0 && (
-          <TouchableWithoutFeedback onPress={toggleMute}>
+          {videos?.length > 0 && (
+            <TouchableWithoutFeedback onPress={toggleMute}>
               <Box
                 bottom={140}
                 right={20}
@@ -413,8 +408,8 @@ const FeedPost = ({
                   <UnMuted height="12" width="12" />
                 )}
               </Box>
-          </TouchableWithoutFeedback>
-            )}
+            </TouchableWithoutFeedback>
+          )}
           <Box
             flexDirection="row"
             justifyContent="space-between"
@@ -482,7 +477,7 @@ const FeedPost = ({
               <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
                 {user}{' '}
               </Text>
-              <Text fontSize={14} color={'mainblack'}>
+              <Text numberOfLines={3} fontSize={14} color={'mainblack'}>
                 {Caption}
               </Text>
             </Text>

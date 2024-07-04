@@ -1,6 +1,6 @@
-import React from 'react';
-import {View, Button, StyleSheet} from 'react-native';
 import notifee from '@notifee/react-native';
+import React from 'react';
+import { Button, View } from 'react-native';
 
 const Push = () => {
   async function onDisplayNotification() {
@@ -31,19 +31,11 @@ const Push = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View >
       <Button title="Display Notification" onPress={onDisplayNotification} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-});
 
 export default Push;

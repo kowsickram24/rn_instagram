@@ -1,5 +1,5 @@
-import {Dropdown} from 'react-native-element-dropdown';
-import {Box, Text} from '../../theme';
+import { Dropdown } from 'react-native-element-dropdown';
+import { Box, Text } from '../../theme';
 const DropdownComponent = ({
   data,
   value,

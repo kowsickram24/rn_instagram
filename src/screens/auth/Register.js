@@ -1,24 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Divider, Header } from '@rneui/themed';
 import S3 from 'aws-sdk/clients/s3';
-import {Formik} from 'formik';
-import React, {useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {ScrollView, TouchableOpacity} from 'react-native';
-import {useDispatch} from 'react-redux';
-import ToastManager, {Toast} from 'toastify-react-native';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import {Loader} from '../../components/loader/Loader';
-import config from '../../config';
-import {Back, Eye, Eye_Slash, Insta_Typo_logo} from '../../constants/assets';
-import {login} from '../../store/slices/userSlice';
-import {Box, Text} from '../../theme';
-import {RegSchema} from '../../utils/validation';
-import {Divider, Header} from '@rneui/themed';
-import {Defaultimage} from '../../constants/assets';
 import BackBtn from '../../components/buttons/backButton';
+import { Loader } from '../../components/loader/Loader';
+import config from '../../config';
+import { Defaultimage, Eye, Eye_Slash, Insta_Typo_logo } from '../../constants/assets';
+import { login } from '../../store/slices/userSlice';
+import { Box, Text } from '../../theme';
+import { RegSchema } from '../../utils/validation';
 const s3 = new S3({
   accessKeyId: config.ACCESSKEYID,
   secretAccessKey: config.SECRETACCESSKEY,

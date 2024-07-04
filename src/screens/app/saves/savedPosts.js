@@ -1,6 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
-import {Header} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
+import { Header } from '@rneui/themed';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -9,66 +10,54 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
-import {Box, Text} from '../../../theme';
-const {width, height} = Dimensions.get('screen');
-const SavedPosts = ({navigation}) => {
+import { Box, Text } from '../../../theme';
+
+const { width } = Dimensions.get('screen');
+
+const fetchSavedPosts = async (email) => {
+  const snapshot = await firestore()
+    .collection('users')
+    .where('email', '==', email)
+    .get();
+
+  if (!snapshot.empty) {
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+    return userData.savedPosts || [];
+  } else {
+    return [];
+  }
+};
+
+const fetchPostsDetails = async (savedPosts) => {
+  const postPromises = savedPosts.map(postId =>
+    firestore().collection('posts').doc(postId).get(),
+  );
+  const postSnapshots = await Promise.all(postPromises);
+  return postSnapshots.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+const SavedPosts = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
-  const [savedPosts, setSavedPosts] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('users')
-      .where('email', '==', currentUser.email)
-      .onSnapshot(
-        snapshot => {
-          if (!snapshot.empty) {
-            const userDoc = snapshot.docs[0];
-            const userData = userDoc.data();
-            setSavedPosts(userData.savedPosts || []);
-          } else {
-            setSavedPosts([]);
-          }
-        },
-        error => {
-          console.error('Error fetching liked posts:', error);
-        },
-      );
+  const { data: savedPosts, isLoading: savedPostsLoading } = useQuery({
+    queryKey: ['savedPosts', currentUser.email],
+    queryFn: () => fetchSavedPosts(currentUser.email),
+    enabled: !!currentUser.email,
+  });
 
-    return () => unsubscribe();
-  }, []);
+  const { data: posts, isLoading: postsLoading } = useQuery({
+    queryKey: ['postsDetails', savedPosts],
+    queryFn: () => fetchPostsDetails(savedPosts),
+    enabled: !!savedPosts?.length,
+  });
 
-  useEffect(() => {
-    if (savedPosts.length > 0) {
-      const fetchPosts = async () => {
-        try {
-          setLoading(true);
-          const postPromises = savedPosts.map(postId =>
-            firestore().collection('posts').doc(postId).get(),
-          );
-          const postSnapshots = await Promise.all(postPromises);
-          const fetchedPosts = postSnapshots.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setPosts(fetchedPosts);
-        } catch (error) {
-          console.error('Error fetching posts:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchPosts();
-    } else {
-      setPosts([]);
-      setLoading(false);
-    }
-  }, [savedPosts]);
-
-  if (loading) {
+  if (savedPostsLoading || postsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
@@ -79,7 +68,7 @@ const SavedPosts = ({navigation}) => {
         statusBarProps={{
           hidden: true,
         }}
-        leftContainerStyle={{flex: 3}}
+        leftContainerStyle={{ flex: 3 }}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'s'}>
             <BackBtn onPress={() => navigation.goBack()} />
@@ -97,24 +86,24 @@ const SavedPosts = ({navigation}) => {
             <Text>No Saved Posts Yet</Text>
           </Box>
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('PostPage', {postId: item?.postId})
+              navigation.navigate('PostPage', { postId: item.id })
             }>
             {item?.mediaUrls ? (
               <FastImage
                 resizeMode="cover"
-                source={{uri: item?.mediaUrls[0]}}
-                style={{width: width / 3, height: width / 3}}
+                source={{ uri: item?.mediaUrls[0] }}
+                style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
             {item?.videoUrl ? (
               <Video
                 playWhenInactive
                 resizeMode="cover"
-                source={{uri: item?.mediaUrl}}
-                style={{width: width / 3, height: width / 3}}
+                source={{ uri: item?.videoUrl }}
+                style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
           </TouchableOpacity>

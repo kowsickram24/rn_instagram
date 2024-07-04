@@ -14,7 +14,7 @@ const PostPage = ({route, navigation}) => {
   const [loading, setLoading] = useState(true);
   const [mutedStates, setMutedStates] = useState({});
 
-  const toggleMute = (postId) => {
+  const toggleMute = postId => {
     setMutedStates(prevState => ({
       ...prevState,
       [postId]: !prevState[postId],
@@ -78,7 +78,7 @@ const PostPage = ({route, navigation}) => {
             <Insta_Typo_logo />
           </Box>
         }
-        leftContainerStyle={{flex: 3}}
+        leftContainerStyle={{flex: 1}}
         statusBarProps={{hidden: false}}
         backgroundColor="white"
       />
@@ -92,7 +92,7 @@ const PostPage = ({route, navigation}) => {
             userId={currentUser?.userId}
             postId={post.id}
             mediaSrc={post.mediaUrls}
-            isMuted={!!mutedStates[post.id]}
+            isMuted={!mutedStates[post.id]}
             toggleMute={() => toggleMute(post.id)}
             mediaType={post.mediaType}
             Caption={post.caption}

@@ -1,9 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
-import React, {useEffect, useState} from 'react';
-import {Dimensions, FlatList, Image, TouchableOpacity} from 'react-native';
-import Video from 'react-native-video';
-import {Box, Text} from '../../../../theme';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
+import { Box, Text } from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 const PostsView = ({user, navigation}) => {
   const [posts, setPosts] = useState([]);
@@ -41,7 +41,7 @@ const PostsView = ({user, navigation}) => {
         {item?.mediaUrls ? (
           <FastImage
             resizeMode="cover"
-            style={{width: 120, height: 120}}
+            style={{width: width /3, height: width /3}}
             source={{uri: item?.mediaUrls[0]}}
           />
         ) : item?.videoUrl ? (

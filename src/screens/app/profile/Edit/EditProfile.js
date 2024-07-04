@@ -1,21 +1,20 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Button, Header, Input} from '@rneui/themed';
-import {Buffer} from 'buffer';
-import {Formik} from 'formik';
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, ScrollView, TouchableOpacity} from 'react-native';
+import { Avatar, Button, Header, Input } from '@rneui/themed';
+import { Buffer } from 'buffer';
+import { Formik } from 'formik';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
 import DropdownComponent from '../../../../components/dropdown/dropDownPicker';
 import config from '../../../../config';
-import {Defaultimage} from '../../../../constants/assets';
-import {S3Bucket} from '../../../../services/aws/s3bucket';
-import {Box, Text} from '../../../../theme';
-import {ProfileSchema} from '../../../../utils/validation';
-import {ActivityIndicator} from 'react-native';
+import { Defaultimage } from '../../../../constants/assets';
+import { S3Bucket } from '../../../../services/aws/s3bucket';
+import { Box, Text } from '../../../../theme';
+import { ProfileSchema } from '../../../../utils/validation';
 const {width, height} = Dimensions.get('screen');
 
 const EditProfile = ({navigation, route}) => {

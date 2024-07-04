@@ -1,7 +1,7 @@
+import '@react-native-firebase/analytics';
 import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/auth';
-import '@react-native-firebase/analytics';
-import '@react-native-firebase/crashlytics'
+import '@react-native-firebase/crashlytics';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90',

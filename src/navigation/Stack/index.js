@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/slices/userSlice';
 import AuthStack from './Auth/AuthStack';
 import UserStack from './User/UserStack';
 const Stack = createNativeStackNavigator();
-import {useDispatch} from 'react-redux';
-import {login} from '../../store/slices/userSlice';
 
 const StackNavigator = () => {
   const [user, setUser] = useState();

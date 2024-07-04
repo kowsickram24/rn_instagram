@@ -1,13 +1,11 @@
-import {Header} from '@rneui/themed';
-import React, {useState} from 'react';
-import {FlatList} from 'react-native';
-import {useSelector} from 'react-redux';
-import {Box, Text} from '../../../theme';
+import { Header } from '@rneui/themed';
+import React from 'react';
+import { FlatList } from 'react-native';
 import BackBtn from '../../../components/buttons/backButton';
+import { Box, Text } from '../../../theme';
 
 const NotificationSetup = ({navigation}) => {
-  const LogUser = useSelector(state => state.user.user);
-  const [notifications, setNotifications] = useState([]);
+
 
   return (
     <Box flex={1} backgroundColor="mainwhite">

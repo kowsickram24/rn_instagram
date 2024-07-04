@@ -9,9 +9,9 @@ const TopNavigator = () => {
     <TopTab.Navigator
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarIndicatorStyle:{
-            backgroundColor:'#000',
-        }
+        tabBarIndicatorStyle: {
+          backgroundColor: '#000',
+        },
       }}>
       <TopTab.Screen
         options={{
@@ -30,6 +30,5 @@ const TopNavigator = () => {
     </TopTab.Navigator>
   );
 };
-
 
 export default TopNavigator;

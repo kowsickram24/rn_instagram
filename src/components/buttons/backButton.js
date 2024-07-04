@@ -1,6 +1,6 @@
-import {TouchableOpacity} from 'react-native';
-import {Back} from '../../constants/assets';
-import {Box, Text} from '../../theme';
+import { TouchableOpacity } from 'react-native';
+import { Back } from '../../constants/assets';
+import { Box } from '../../theme';
 
 const BackBtn = ({onPress}) => {
   return (

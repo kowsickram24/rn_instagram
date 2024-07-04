@@ -1,38 +1,41 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Formik} from 'formik';
-import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {ScrollView, TouchableOpacity} from 'react-native';
-import {useDispatch} from 'react-redux';
-import ToastManager, {Toast} from 'toastify-react-native';
+import { Formik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import { Provider, Snackbar } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+import ToastManager from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
-import {Loader} from '../../components/loader/Loader';
-import {Insta_Typo_logo, Line} from '../../constants/assets';
-import {login} from '../../store/slices/userSlice';
-import {Box, Text} from '../../theme';
-import {LoginSchema} from '../../utils/validation';
-import SnackBar from '../../components/snackbar/snackBar';
+import { Insta_Typo_logo, Line } from '../../constants/assets';
+import { login } from '../../store/slices/userSlice';
+import { Box, Text } from '../../theme';
+import { LoginSchema } from '../../utils/validation';
 
-const LoginScreen = ({navigation, getData}) => {
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const {t} = useTranslation();
-  const [error, setError] = useState(null);
-  const [isForget, setIsForget] = useState(false);
+const LoginScreen = ({ navigation, getData }) => {
+
+ const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const handleForgotPassword = async email => {
     if (!email) {
-      setError('Please enter your email address');
+      setSnackbarMessage('Please enter your email address');
+      setSnackbarVisible(true);
       return;
     }
     try {
       await auth().sendPasswordResetEmail(email);
-      setError('Email sent for reset password');
+      setSnackbarMessage('Email sent for reset password');
+      setSnackbarVisible(true);
     } catch (error) {
       console.log(error);
+      setSnackbarMessage('Error sending reset email');
+      setSnackbarVisible(true);
     }
   };
 
@@ -52,25 +55,8 @@ const LoginScreen = ({navigation, getData}) => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const user = await AsyncStorage.getItem('user');
-  //       if (user) {
-  //         console.log(user, 'old user');
-  //       } else {
-  //         console.log('No user data found');
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to fetch user data:', error);
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, []);
-
-  const handleLogin = async (values, {setSubmitting, setErrors}) => {
-    const {email, password} = values;
+  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+    const { email, password } = values;
     try {
       setSubmitting(true);
 
@@ -85,7 +71,7 @@ const LoginScreen = ({navigation, getData}) => {
         .get();
 
       if (userQuerySnapshot.empty) {
-        setErrors({email: 'User data not found in Firestore'});
+        setErrors({ email: 'User data not found in Firestore' });
       } else {
         const userDoc = userQuerySnapshot.docs[0];
         const userData = userDoc.data();
@@ -103,9 +89,9 @@ const LoginScreen = ({navigation, getData}) => {
         error.code === 'auth/user-not-found' ||
         error.code === 'auth/wrong-password'
       ) {
-        setErrors({password: 'Invalid Credentials'});
+        setErrors({ password: 'Invalid Credentials' });
       } else {
-        setErrors({password: 'Invalid Credentials. Please try again '});
+        setErrors({ password: 'Invalid Credentials. Please try again ' });
       }
     } finally {
       setSubmitting(false);
@@ -113,10 +99,8 @@ const LoginScreen = ({navigation, getData}) => {
   };
 
   return (
-    <Box backgroundColor={'mainwhite'} flex={1} padding={'l'}>
-      {loading ? (
-        <Loader text={'Logging In'} />
-      ) : (
+    <Provider>
+      <Box backgroundColor={'mainwhite'} flex={1} padding={'l'}>
         <>
           <Box gap={'xl'}>
             <ToastManager position="top" />
@@ -124,7 +108,7 @@ const LoginScreen = ({navigation, getData}) => {
               <Insta_Typo_logo />
             </Box>
             <Formik
-              initialValues={{email: '', password: ''}}
+              initialValues={{ email: '', password: '' }}
               validationSchema={LoginSchema}
               onSubmit={handleLogin}>
               {({
@@ -159,23 +143,13 @@ const LoginScreen = ({navigation, getData}) => {
                   <Box paddingVertical={'s'}>
                     <TouchableOpacity
                       onPress={() => handleForgotPassword(values.email)}>
-                      <Text
-                        textAlign="right"
-                        fontSize={14}
-                        color={'primaryBlue'}>
+                      <Text textAlign="right" fontSize={14} color={'primaryBlue'}>
                         {t('Auth.forgetPassword')}
                       </Text>
                     </TouchableOpacity>
-                    <Text
-                      fontSize={14}
-                      textAlign="center"
-                      padding={'s'}
-                      color={'primaryBlue'}>
-                      {error && error}
-                    </Text>
                   </Box>
                   <Authbutton
-                    loading={isSubmitting ? true : false }
+                    loading={isSubmitting ? true : false}
                     title={t('Auth.loginButton')}
                     onPress={handleSubmit}
                   />
@@ -194,12 +168,11 @@ const LoginScreen = ({navigation, getData}) => {
               <Line />
             </Box>
             <Box margin={'l'} gap={'l'}>
-              <Box style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <Box style={{ flexDirection: 'row', justifyContent: 'center' }}>
                 <Text fontSize={14} color={'darkgrey'}>
                   {t('Auth.DontHaveAccount')}{' '}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Register')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                   <Text color={'primaryBlue'} fontSize={14}>
                     {t('Auth.Signup')}
                   </Text>
@@ -212,8 +185,15 @@ const LoginScreen = ({navigation, getData}) => {
             {t('Auth.footerText')}
           </Text>
         </>
-      )}
-    </Box>
+      </Box>
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={Snackbar.DURATION_SHORT}
+      >
+        {snackbarMessage}
+      </Snackbar>
+    </Provider>
   );
 };
 

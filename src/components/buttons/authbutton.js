@@ -1,7 +1,7 @@
-import {StyleSheet, View} from 'react-native';
+import { Button } from '@rneui/themed';
 import React from 'react';
-import {Button} from '@rneui/themed';
-import {palette} from '../../theme';
+import { StyleSheet, View } from 'react-native';
+import { palette } from '../../theme';
 
 const AuthButton = ({loading, title, onPress, disabled}) => {
   const buttonStyle = disabled ? styles.disabledBtn : styles.activebtn;

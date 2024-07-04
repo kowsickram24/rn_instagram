@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar} from '@rneui/themed';
-import {useEffect, useState} from 'react';
+import { Avatar } from '@rneui/themed';
+import { useEffect, useState } from 'react';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Box, Text} from '../../theme';
 import Video from 'react-native-video';
-import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import { Box, Text } from '../../theme';
 
 const SharePost = ({postId, onMediaPress, onProfilePress}) => {
   const [post, setPost] = useState(null);

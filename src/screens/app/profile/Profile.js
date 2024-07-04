@@ -1,5 +1,5 @@
-import {Avatar, Button, Header} from '@rneui/themed';
-import React, {useRef, useState} from 'react';
+import { Avatar, Button, Header } from '@rneui/themed';
+import React, { useRef, useState } from 'react';
 import {
   Modal,
   TouchableOpacity,
@@ -7,13 +7,12 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import ProfileCard from '../../../components/card/profileCard';
-import {Dw_Arrow, Menu, Tick_blue} from '../../../constants/assets';
-import TopNavigator from '../../../navigation/TopTab/TopTab';
-import {Box, Text, height, width} from '../../../theme';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import StoryHighlight from '../../../components/avatar/StoryHighlight';
-import { ScrollView } from 'react-native';
+import ProfileCard from '../../../components/card/profileCard';
+import { Dw_Arrow, Menu, Tick_blue } from '../../../constants/assets';
+import TopNavigator from '../../../navigation/TopTab/TopTab';
+import { Box, Text, height, width } from '../../../theme';
 const Profile = ({navigation, User}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);

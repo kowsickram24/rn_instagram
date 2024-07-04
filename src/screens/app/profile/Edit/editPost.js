@@ -1,22 +1,19 @@
 import firestore from '@react-native-firebase/firestore';
-import {Header, Input} from '@rneui/themed';
-import {useState} from 'react';
+import { Header, Input } from '@rneui/themed';
+import { useState } from 'react';
 import {
   Animated,
-  Dimensions,
-  FlatList,
   ScrollView,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
-import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
-import {Box, Text} from '../../../../theme';
+import { PrimaryBtn } from '../../../../components/buttons/primaryButton';
+import { Box, Text } from '../../../../theme';
 
-const {width, height} = Dimensions.get('screen');
 const EditPost = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.selectedPost);

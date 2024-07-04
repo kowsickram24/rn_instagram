@@ -9,20 +9,16 @@ import i18n from './src/language/i18n';
 import linking from './linking';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
-
-import {
-  Keyboard,
-  SafeAreaView,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+const queryClient = new QueryClient();
+import {Keyboard, SafeAreaView, TouchableWithoutFeedback} from 'react-native';
 // Network
 import NetworkProvider from './src/context/Network/NetworkContext';
 
 import {NavigationContainer} from '@react-navigation/native';
 import StackNavigator from './src/navigation/Stack';
 import {theme} from './src/theme';
-
-
+import {ProgressProvider} from './src/context/Upload/progressCtxt';
 
 const App = () => {
   useEffect(() => {
@@ -47,19 +43,23 @@ const App = () => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={{flex: 1}}>
-        <Provider store={store}>
-          <ThemeProvider theme={theme}>
-            <NetworkProvider>
-              <I18nextProvider i18n={i18n}>
-                <NavigationContainer linking={linking}>
-                  <StackNavigator />
-                </NavigationContainer>
-              </I18nextProvider>
-            </NetworkProvider>
-          </ThemeProvider>
-        </Provider>
-      </SafeAreaView>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaView style={{flex: 1}}>
+          <Provider store={store}>
+            <ThemeProvider theme={theme}>
+              <NetworkProvider>
+                <I18nextProvider i18n={i18n}>
+                  <ProgressProvider>
+                    <NavigationContainer linking={linking}>
+                      <StackNavigator />
+                    </NavigationContainer>
+                  </ProgressProvider>
+                </I18nextProvider>
+              </NetworkProvider>
+            </ThemeProvider>
+          </Provider>
+        </SafeAreaView>
+      </QueryClientProvider>
     </TouchableWithoutFeedback>
   );
 };

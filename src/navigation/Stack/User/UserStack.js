@@ -1,26 +1,25 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import firestore from '@react-native-firebase/firestore';
-import React, {useState, useEffect} from 'react';
-import EditProfile from '../../../screens/app/profile/Edit/EditProfile';
-import Settings from '../../../screens/app/settings/Settings';
-import BottomNavigator from '../../BottomTab/BottomTab';
-import NewPost from '../../../screens/app/post/create/Newpost';
-import PostDesc from '../../../screens/app/profile/View/PostDesc';
-import Notification from '../../../screens/app/notification/Notification';
-import AccountReach from '../../../screens/app/reach';
-import ProfileView from '../../../screens/app/explore/ProfileView';
-import PostInfo from '../../../screens/app/explore/public/PostInfo';
-import EditPost from '../../../screens/app/profile/Edit/editPost';
-import LikedUsers from '../../../screens/app/explore/LikedUsers';
-import Chats from '../../../screens/app/chat/Chats';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import ChatBox from '../../../screens/app/chat/ChatBox';
 import ChatInfo from '../../../screens/app/chat/ChatInfo';
-
-import AccountCenter from '../../../screens/app/settings/AccountCenter';
-import SavedPosts from '../../../screens/app/saves/savedPosts';
+import Chats from '../../../screens/app/chat/Chats';
+import LikedUsers from '../../../screens/app/explore/LikedUsers';
+import ProfileView from '../../../screens/app/explore/ProfileView';
+import PostInfo from '../../../screens/app/explore/public/PostInfo';
+import Notification from '../../../screens/app/notification/Notification';
+import NewPost from '../../../screens/app/post/create/Newpost';
+import EditProfile from '../../../screens/app/profile/Edit/EditProfile';
+import EditPost from '../../../screens/app/profile/Edit/editPost';
+import PostDesc from '../../../screens/app/profile/View/PostDesc';
+import AccountReach from '../../../screens/app/reach';
 import LikedPosts from '../../../screens/app/saves/LikedPosts';
 import PostPage from '../../../screens/app/saves/postPage';
-import {useSelector} from 'react-redux';
+import SavedPosts from '../../../screens/app/saves/savedPosts';
+import AccountCenter from '../../../screens/app/settings/AccountCenter';
+import Settings from '../../../screens/app/settings/Settings';
+import BottomNavigator from '../../BottomTab/BottomTab';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {

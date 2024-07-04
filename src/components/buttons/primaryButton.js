@@ -1,5 +1,4 @@
-import {Button} from '@rneui/themed';
-import {Box} from '../../theme';
+import { Button } from '@rneui/themed';
 
 export const PrimaryBtn = ({title, onPress}) => {
   return (
@@ -37,11 +36,4 @@ export const SecondaryBtn = ({title, onPress}) => {
   );
 };
 
-export const ComboBtn = ({title, onPress}) => {
-  return (
-    <Box flexDirection="row" gap={'s'}>
-      <PrimaryBtn title={title} onPress={onPress} />
-      <SecondaryBtn title={title} onPress={onPress} />
-    </Box>
-  );
-};
+

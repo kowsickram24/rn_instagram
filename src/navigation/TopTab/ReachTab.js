@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import Followers from '../../screens/app/reach/followers';
 import Following from '../../screens/app/reach/following';
-import {Box} from '../../theme';
+import { Box } from '../../theme';
 
 const TopTab = createMaterialTopTabNavigator();
 

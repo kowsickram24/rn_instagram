@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Text} from '../../../../theme';
+import { Box, Text } from '../../../../theme';
 
 const TagsView = ({user}) => {
   return (

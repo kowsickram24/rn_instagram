@@ -1,17 +1,15 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
-import {forwardRef} from 'react';
-import {Dimensions} from 'react-native';
+import React, { forwardRef } from 'react';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {Grid} from '../../constants/assets';
-import {Box} from '../../theme';
+import { Grid } from '../../constants/assets';
+import { Box } from '../../theme';
 const NewSheet = forwardRef(({navigation}, ref) => {
   const Height = Dimensions.get('screen').height;
 
   return (
     <Box>
       <RBSheet
-      closeOnPressBack
+        closeOnPressBack
         draggable
         ref={ref}
         height={Height / 2}
@@ -66,7 +64,7 @@ const styles = StyleSheet.create({
   sheetContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent:'center'
+    justifyContent: 'center',
   },
   sheetItem: {
     paddingVertical: 20,

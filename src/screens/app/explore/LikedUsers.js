@@ -1,17 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, FlatList, TouchableOpacity} from 'react-native';
-import {Back, Heaty_uf} from '../../../constants/assets';
-import {Box, Text} from '../../../theme';
-import {Avatar, Button, Header} from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
+import { Avatar, Header } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import { FlatList, TouchableOpacity } from 'react-native';
 import BackBtn from '../../../components/buttons/backButton';
+import { Heaty_uf } from '../../../constants/assets';
+import { Box, Text } from '../../../theme';
 
 const LikedUsers = ({navigation, route}) => {
-  const currentUser = useSelector(state => state.user.user);
   const {likedId} = route.params;
   const [users, setUsers] = useState([]);
-  const [isFollowed, setIsFollowed] = useState(false);
 
   useEffect(() => {
     if (!likedId || likedId.length === 0) return;
@@ -89,30 +86,6 @@ const LikedUsers = ({navigation, route}) => {
                     </Text>
                   </Box>
                 </Box>
-                {/* {isFollowed ? (
-                    <Button
-                      containerStyle={{width: 150, paddingHorizontal: 6}}
-                      titleStyle={{
-                        color: '#000',
-                        fontSize: 14,
-                        fontWeight: '100',
-                      }}
-                      buttonStyle={{
-                        borderRadius: 6,
-                        backgroundColor: 'lightgrey',
-                      }}
-                      title={'Following'}
-                      onPress={() => setIsFollowed(!isFollowed)}
-                    />
-                  ) : (
-                    <Button
-                      containerStyle={{width: 150, paddingHorizontal: 6}}
-                      titleStyle={{fontSize: 14, fontWeight: '100'}}
-                      buttonStyle={{borderRadius: 6}}
-                      title={'Follow'}
-                      onPress={() => setIsFollowed(!isFollowed)}
-                    />
-                  )} */}
               </Box>
             </TouchableOpacity>
           </>

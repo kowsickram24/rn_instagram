@@ -1,5 +1,5 @@
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {Grid, Tags} from '../../constants/assets';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Grid, Tags } from '../../constants/assets';
 import PostsView from '../../screens/app/explore/public/PostsView';
 import TagsView from '../../screens/app/explore/public/TagsView';
 

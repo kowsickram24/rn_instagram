@@ -1,7 +1,6 @@
 import React from 'react';
-import {Box, Text} from '../../theme';
-import {Dialog} from '@rneui/themed';
-import {ActivityIndicator} from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { Box, Text } from '../../theme';
 
 export const Loader = ({text}) => {
   return (

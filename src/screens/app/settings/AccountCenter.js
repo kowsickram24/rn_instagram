@@ -1,8 +1,7 @@
-import {Avatar, Button, Divider, Header} from '@rneui/themed';
-import {Fragment} from 'react';
-import {Image} from 'react-native';
+import { Avatar, Button, Divider, Header } from '@rneui/themed';
+import { Fragment } from 'react';
 import BackBtn from '../../../components/buttons/backButton';
-import {Box, Text} from '../../../theme';
+import { Box, Text } from '../../../theme';
 
 const AccountCenter = ({currentUser, navigation}) => {
   return (

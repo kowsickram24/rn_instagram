@@ -1,7 +1,7 @@
-import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
-import {Box, Text} from '../../theme';
-import {Avatar, Card} from '@rneui/themed';
-import {Plus_blue} from '../../constants/assets';
+import { Avatar, Card } from '@rneui/themed';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Plus_blue } from '../../constants/assets';
+import { Box, Text } from '../../theme';
 const ProfileCard = ({
   userAvatar,
   Postcount,

@@ -1,23 +1,22 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Badge, Button, Divider, Header, SearchBar} from '@rneui/themed';
-import {Buffer} from 'buffer';
-import React, {useEffect, useRef, useState} from 'react';
+import { Avatar, Badge, Button, Divider, Header, SearchBar } from '@rneui/themed';
+import { Buffer } from 'buffer';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  Modal,
   Platform,
   SafeAreaView,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
@@ -30,9 +29,8 @@ import {
   Gallery_Icon,
   Info,
 } from '../../../constants/assets';
-import {GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
-import {S3Bucket} from '../../../services/aws/s3bucket';
-import {Box, Text, height} from '../../../theme';
+import { S3Bucket } from '../../../services/aws/s3bucket';
+import { Box, Text, height } from '../../../theme';
 
 const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -51,7 +49,7 @@ const ChatBox = ({navigation, route}) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [replyingMessage, setReplyingMessage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const cloudFrontDomain = config.CLDFRNTDOM;
   const ToggleMute = () => {
@@ -97,7 +95,7 @@ const ChatBox = ({navigation, route}) => {
         mediaType: 'photo',
       });
       setSelectedImage(result.path);
-      setSelectedVideo('')
+      setSelectedVideo('');
     } catch (error) {
       console.error('Error picking image: ', error);
     }
@@ -109,7 +107,7 @@ const ChatBox = ({navigation, route}) => {
         mediaType: 'video',
       });
       setSelectedVideo(result.path);
-      setSelectedImage('')
+      setSelectedImage(null);
     } catch (error) {
       console.error('Error picking video: ', error);
     }
@@ -249,6 +247,7 @@ const ChatBox = ({navigation, route}) => {
   const handleShare = async () => {
     if (selectedImage || selectedVideo) {
       try {
+        setIsLoading(true);
         const file = selectedImage || selectedVideo;
         const type = selectedImage ? 'image' : 'video';
         const fileUrl = await UploadtoAWS(file, type);
@@ -267,7 +266,8 @@ const ChatBox = ({navigation, route}) => {
             .update({
               messages: firestore.FieldValue.arrayUnion(newMessage),
               lastMessage: newMessage,
-            });
+            })
+            .then(() => setIsLoading(false));
 
           setSelectedImage('');
           setSelectedVideo('');
@@ -640,7 +640,7 @@ const ChatBox = ({navigation, route}) => {
             )}
           </Box>
           <Button
-          loading={isLoading}
+            loading={isLoading}
             onPress={handleShare}
             buttonStyle={{borderRadius: 8, marginVertical: 5}}
             titleStyle={{fontSize: 14}}

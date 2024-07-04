@@ -1,6 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
-import {Header} from '@rneui/themed';
-import React, {useEffect, useState} from 'react';
+import { Header } from '@rneui/themed';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -9,67 +10,54 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
-import {Box, Text} from '../../../theme';
-const {width, height} = Dimensions.get('screen');
-const LikedPosts = ({navigation}) => {
-  const [likedPosts, setLikedPosts] = useState([]);
+import { Box, Text } from '../../../theme';
+
+const { width } = Dimensions.get('screen');
+
+const fetchLikedPosts = async (email) => {
+  const snapshot = await firestore()
+    .collection('users')
+    .where('email', '==', email)
+    .get();
+
+  if (!snapshot.empty) {
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+    return userData.likedPosts || [];
+  } else {
+    return [];
+  }
+};
+
+const fetchPostsDetails = async (likedPosts) => {
+  const postPromises = likedPosts.map(postId =>
+    firestore().collection('posts').doc(postId).get(),
+  );
+  const postSnapshots = await Promise.all(postPromises);
+  return postSnapshots.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+const LikedPosts = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  console.log('posts: ', posts);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('users')
-      .where('email', '==', currentUser.email)
-      .onSnapshot(
-        snapshot => {
-          if (!snapshot.empty) {
-            const userDoc = snapshot.docs[0];
-            const userData = userDoc.data();
-            setLikedPosts(userData.likedPosts || []);
-          } else {
-            setLikedPosts([]);
-          }
-        },
-        error => {
-          console.error('Error fetching liked posts:', error);
-        },
-      );
+  const { data: likedPosts, isLoading: likedPostsLoading } = useQuery({
+    queryKey: ['likedPosts', currentUser.email],
+    queryFn: () => fetchLikedPosts(currentUser.email),
+    enabled: !!currentUser.email,
+  });
 
-    return () => unsubscribe();
-  }, []);
+  const { data: posts, isLoading: postsLoading } = useQuery({
+    queryKey: ['postsDetails', likedPosts],
+    queryFn: () => fetchPostsDetails(likedPosts),
+    enabled: !!likedPosts?.length,
+  });
 
-  useEffect(() => {
-    if (likedPosts.length > 0) {
-      const fetchPosts = async () => {
-        try {
-          setLoading(true);
-          const postPromises = likedPosts.map(postId =>
-            firestore().collection('posts').doc(postId).get(),
-          );
-          const postSnapshots = await Promise.all(postPromises);
-          const fetchedPosts = postSnapshots.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setPosts(fetchedPosts);
-        } catch (error) {
-          console.error('Error fetching posts:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchPosts();
-    } else {
-      setPosts([]);
-      setLoading(false);
-    }
-  }, [likedPosts]);
-
-  if (loading) {
+  if (likedPostsLoading || postsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
@@ -80,7 +68,7 @@ const LikedPosts = ({navigation}) => {
         statusBarProps={{
           hidden: true,
         }}
-        leftContainerStyle={{flex: 3}}
+        leftContainerStyle={{ flex: 3 }}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'s'}>
             <BackBtn onPress={() => navigation.goBack()} />
@@ -94,23 +82,23 @@ const LikedPosts = ({navigation}) => {
         data={posts}
         keyExtractor={item => item.id}
         ListEmptyComponent={<Text textAlign="center">No Liked Posts Yet</Text>}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('PostPage', {postId: item.id});
+              navigation.navigate('PostPage', { postId: item.id });
             }}>
             {item?.mediaUrls ? (
               <FastImage
                 resizeMode="cover"
-                source={{uri: item?.mediaUrls[0]}}
-                style={{width: width / 3, height: width / 3}}
+                source={{ uri: item?.mediaUrls[0] }}
+                style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
             {item?.videoUrl ? (
               <Video
                 resizeMode="cover"
-                source={{uri: item?.videoUrl}}
-                style={{width: width / 3, height: width / 3}}
+                source={{ uri: item?.videoUrl }}
+                style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
           </TouchableOpacity>

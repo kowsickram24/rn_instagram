@@ -1,5 +1,5 @@
-import {Skeleton, Card} from '@rneui/themed';
-import {Box} from '../../theme';
+import { Card, Skeleton } from '@rneui/themed';
+import { Box } from '../../theme';
 
 const SkeletonCard = () => {
   return (

@@ -1,5 +1,5 @@
-import React, {createContext, useState, useEffect} from 'react';
-import {useNetInfo} from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
+import React, { createContext, useEffect, useState } from 'react';
 
 export const NetworkContext = createContext({
   isConnected: false,

@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
+import { Card } from '@rneui/themed';
+import React, { useState } from 'react';
 import {
   Dimensions,
   FlatList,
-  TouchableWithoutFeedback,
   Modal,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Box} from '../../../theme';
-import {PostData} from '../../../utils/randomData';
-import {Card} from '@rneui/themed';
+import { Box } from '../../../theme';
+import { PostData } from '../../../utils/randomData';
 
 const {width, height} = Dimensions.get('window');
 

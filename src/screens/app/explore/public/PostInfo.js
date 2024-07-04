@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import {useEffect, useRef, useState} from 'react';
-import {Dimensions, FlatList} from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import FeedPost from '../../../../components/card/FeedPost';
-import {Box, Text} from '../../../../theme';
+import { Box, Text } from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
 const PostInfo = ({navigation,route}) => {
@@ -61,7 +61,7 @@ const PostInfo = ({navigation,route}) => {
         time={item?.time}
         mediaSrc={item?.mediaUrls}
         videoSrc={item?.videoUrl}
-        isMuted={!!mutedStates[item.postId]}
+        isMuted={!mutedStates[item.postId]}
         toggleMute={() => toggleMute(item.postId)}
         onProfilePress={() =>
           navigation.navigate('ProfileView', {userId: item?.userId})

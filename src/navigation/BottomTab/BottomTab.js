@@ -1,7 +1,7 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Avatar} from '@rneui/themed';
-import {useRef} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Avatar } from '@rneui/themed';
+import { useRef } from 'react';
+import { TouchableOpacity, View } from 'react-native';
 import NewSheet from '../../components/bottomsheet/NewSheet';
 import {
   Heart_bf,
@@ -16,7 +16,7 @@ import Explore from '../../screens/app/explore/Explore';
 import Home from '../../screens/app/home/Home';
 import Notification from '../../screens/app/notification/Notification';
 import Profile from '../../screens/app/profile/Profile';
-import {Box} from '../../theme';
+import { Box } from '../../theme';
 const BottomTab = createBottomTabNavigator();
 
 const BottomNavigator = ({User, navigation}) => {

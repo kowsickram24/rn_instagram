@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
-import {Header, Overlay, SearchBar} from '@rneui/themed';
-import React, {useState, useEffect} from 'react';
-import {Platform, TouchableOpacity} from 'react-native';
-import {Button} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
+import { Header, Overlay, SearchBar } from '@rneui/themed';
+import React, { useEffect, useState } from 'react';
+import { Platform, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
-import {Loader} from '../../../components/loader/Loader';
+import { Loader } from '../../../components/loader/Loader';
 import {
   Heaty_uf,
   Log_out,
@@ -14,8 +14,8 @@ import {
   Save,
   User,
 } from '../../../constants/assets';
-import {logout} from '../../../store/slices/userSlice';
-import {Box, Text} from '../../../theme';
+import { logout } from '../../../store/slices/userSlice';
+import { Box, Text } from '../../../theme';
 
 const Settings = ({navigation, getData}) => {
   const [visible, setVisible] = useState(false);

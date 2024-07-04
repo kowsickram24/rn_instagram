@@ -1,23 +1,22 @@
 import firestore from '@react-native-firebase/firestore';
-import {Avatar, Divider, Header} from '@rneui/themed';
-import {useEffect, useState} from 'react';
+import { Header } from '@rneui/themed';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
-  TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import FastImage from 'react-native-fast-image';
+import { useSelector } from 'react-redux';
+import BackBtn from '../../../components/buttons/backButton';
 import {
   PrimaryBtn,
   SecondaryBtn,
 } from '../../../components/buttons/primaryButton';
-import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import {Box, Text, height, width} from '../../../theme';
 import ProfileCard from '../../../components/card/profileCard';
-import BackBtn from '../../../components/buttons/backButton';
-import FastImage from 'react-native-fast-image';
+import ProfileTab from '../../../navigation/TopTab/ProfileTab';
+import { Box, Text, width } from '../../../theme';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;

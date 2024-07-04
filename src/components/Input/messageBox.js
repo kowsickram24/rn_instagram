@@ -1,7 +1,7 @@
-import {Input} from '@rneui/themed';
-import {TouchableOpacity} from 'react-native';
-import {Image_Fill, White_cam_Fill} from '../../constants/assets';
-import {Box, Text} from '../../theme';
+import { Input } from '@rneui/themed';
+import { TouchableOpacity } from 'react-native';
+import { Image_Fill, White_cam_Fill } from '../../constants/assets';
+import { Box, Text } from '../../theme';
 
 const MessageBox = ({
   onChangeText,
