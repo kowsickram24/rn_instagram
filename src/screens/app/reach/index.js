@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../firebase.config';
 import React, {useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {Back} from '../../../constants/assets';

@@ -1,19 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { Provider, Snackbar } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import ToastManager from 'toastify-react-native';
 import Inputbox from '../../components/Input/Inputbox';
 import Authbutton from '../../components/buttons/authbutton';
 import { Insta_Typo_logo, Line } from '../../constants/assets';
 import { login } from '../../store/slices/userSlice';
 import { Box, Text } from '../../theme';
 import { LoginSchema } from '../../utils/validation';
+import { auth, firestore } from '../../../firebase.config';
 
 const LoginScreen = ({ navigation, getData }) => {
 
@@ -103,7 +101,7 @@ const LoginScreen = ({ navigation, getData }) => {
       <Box backgroundColor={'mainwhite'} flex={1} padding={'l'}>
         <>
           <Box gap={'xl'}>
-            <ToastManager position="top" />
+
             <Box alignSelf="center" marginVertical={'l'}>
               <Insta_Typo_logo />
             </Box>

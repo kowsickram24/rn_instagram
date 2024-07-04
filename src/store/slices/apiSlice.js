@@ -1,6 +1,6 @@
 // src/features/api/apiSlice.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../firebase.config';
 
 const baseQuery = async ({ queryFn }) => {
   try {

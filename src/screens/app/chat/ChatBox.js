@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../firebase.config';
 import { Avatar, Badge, Button, Divider, Header, SearchBar } from '@rneui/themed';
 import { Buffer } from 'buffer';
 import React, { useEffect, useRef, useState } from 'react';

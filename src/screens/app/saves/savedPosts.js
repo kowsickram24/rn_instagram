@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../firebase.config';
 import { Header } from '@rneui/themed';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';

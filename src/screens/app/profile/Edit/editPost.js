@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../../firebase.config';
 import { Header, Input } from '@rneui/themed';
 import { useState } from 'react';
 import {
@@ -9,7 +9,6 @@ import {
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
 import { useSelector } from 'react-redux';
-import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
 import { PrimaryBtn } from '../../../../components/buttons/primaryButton';
 import { Box, Text } from '../../../../theme';
@@ -46,7 +45,7 @@ const EditPost = ({route, navigation}) => {
 
   return (
     <Box backgroundColor="mainwhite" padding="s" flex={1}>
-      <ToastManager position="top" />
+      
       <Header
         leftComponent={
           <Box flexDirection="row" gap={'s'} alignItems="center">

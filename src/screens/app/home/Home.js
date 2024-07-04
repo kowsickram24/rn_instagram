@@ -1,76 +1,40 @@
-import firestore from '@react-native-firebase/firestore';
-import { Divider, Header, LinearProgress } from '@rneui/themed';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   FlatList,
+  RefreshControl,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+import {Header, Divider, LinearProgress} from '@rneui/themed';
+import {Insta_Typo_logo, Msg_Icon, Notifi} from '../../../constants/assets';
+import {Box, Text} from '../../../theme';
+import {Data} from '../../../utils/randomData';
+import {usePosts} from '../../../hooks/data/fetchPosts';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
-import { Insta_Typo_logo, Msg_Icon, Notifi } from '../../../constants/assets';
-import { ProgressContext } from '../../../context/Upload/progressCtxt';
-import { Box, Text } from '../../../theme';
-import { Data } from '../../../utils/randomData';
+import {ProgressContext} from '../../../context/Upload/progressCtxt';
 
-const fetchPosts = async (currentUser, setPosts, setLoading) => {
-  const unsubscribe = firestore()
-    .collection('posts')
-    .orderBy('time', 'desc')
-    .onSnapshot(async (snapshot) => {
-      const postsData = [];
-      for (const doc of snapshot.docs) {
-        const postData = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        try {
-          const userDoc = await firestore()
-            .collection('users')
-            .doc(postData.userId)
-            .get();
-
-          if (userDoc.exists) {
-            postData.user = userDoc.data();
-          } else {
-            console.log(`User with ID ${postData.userId} not found.`);
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-
-        postsData.push(postData);
-      }
-
-      setPosts(postsData);
-      setLoading(false);
-    });
-
-  return unsubscribe;
-};
-
-const Home = ({ navigation }) => {
-  const currentUser = useSelector((state) => state.user.user);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Home = ({navigation}) => {
+  const {data: postData, isSuccess: postsFetched, refetch} = usePosts();
+  const currentUser = useSelector(state => state.user.user);
+  const {progress} = useContext(ProgressContext);
   const [mutedStates, setMutedStates] = useState({});
-  const { progress } = useContext(ProgressContext);
+  const [refreshing, setRefreshing] = useState(false);
+  useEffect(() => {
+    if (postsFetched) {
+      setRefreshing(false);
+    }
+  }, [postsFetched]);
 
-  const toggleMute = (postId) => {
-    setMutedStates((prevState) => ({
+  const toggleMute = postId => {
+    setMutedStates(prevState => ({
       ...prevState,
       [postId]: !prevState[postId],
     }));
   };
 
-  useEffect(() => {
-    const unsubscribe = fetchPosts(currentUser, setPosts, setLoading);
-    return () => unsubscribe();
-  }, [currentUser]);
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <Box>
       <FeedPost
         location={item?.location}
@@ -82,7 +46,7 @@ const Home = ({ navigation }) => {
         comments={item?.comments}
         time={item?.time}
         onProfilePress={() =>
-          navigation.navigate('ProfileView', { userId: item?.userId })
+          navigation.navigate('ProfileView', {userId: item?.userId})
         }
         mediaSrc={item?.mediaUrls}
         isMuted={!mutedStates[item.postId]}
@@ -91,7 +55,7 @@ const Home = ({ navigation }) => {
     </Box>
   );
 
-  const renderStory = ({ item }) => (
+  const renderStory = ({item}) => (
     <TouchableWithoutFeedback>
       <Box alignItems="center">
         <StoryAvatar source={item?.Url} />
@@ -105,14 +69,14 @@ const Home = ({ navigation }) => {
   const ListHeaderComponent = () => (
     <>
       <Header
-        statusBarProps={{ hidden: true }}
+        statusBarProps={{hidden: true}}
         leftComponent={<Insta_Typo_logo width="120" />}
         backgroundColor="white"
         rightComponent={
           <Box flexDirection="row" gap={'m'}>
             <Box>
               <TouchableOpacity
-                onPress={() => navigation.navigate('Notifications')}>
+                onPress={() => navigation.navigate('Notification')}>
                 <Notifi />
               </TouchableOpacity>
             </Box>
@@ -147,9 +111,10 @@ const Home = ({ navigation }) => {
     </>
   );
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  const onRefresh = () => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  };
 
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
@@ -157,7 +122,7 @@ const Home = ({ navigation }) => {
         overScrollMode="never"
         scrollEnabled={true}
         showsVerticalScrollIndicator={false}
-        data={posts}
+        data={postData}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         ListHeaderComponent={ListHeaderComponent}
@@ -169,6 +134,13 @@ const Home = ({ navigation }) => {
             textAlign="center">
             No More Feeds
           </Text>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#3797EF']}
+          />
         }
       />
     </Box>

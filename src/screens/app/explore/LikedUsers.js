@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../firebase.config';
 import { Avatar, Header } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
 import { FlatList, TouchableOpacity } from 'react-native';

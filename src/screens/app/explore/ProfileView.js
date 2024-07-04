@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../firebase.config';
 import { Header } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import {
@@ -150,7 +150,7 @@ const ProfileView = ({route, navigation}) => {
         backgroundColor={'mainwhite'}
         alignItems="center"
         justifyContent="center">
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator color={'grey'} size={'large'} />
       </Box>
     );
   }

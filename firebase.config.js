@@ -1,7 +1,8 @@
-import '@react-native-firebase/analytics';
 import firebase from '@react-native-firebase/app';
-import '@react-native-firebase/auth';
-import '@react-native-firebase/crashlytics';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import analytics from '@react-native-firebase/analytics';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90',
@@ -10,6 +11,9 @@ const firebaseConfig = {
   storageBucket: 'instagramrn-8a8a4.appspot.com',
 };
 
-firebase.initializeApp(firebaseConfig);
 
-export default firebase;
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+export { firebase, firestore, auth, analytics, crashlytics };

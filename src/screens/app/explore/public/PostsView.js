@@ -1,39 +1,48 @@
-import firestore from '@react-native-firebase/firestore';
-import React, { useEffect, useState } from 'react';
-import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import {Skeleton} from '@rneui/themed';
+import React,{useState} from 'react';
+import {Dimensions, FlatList, RefreshControl ,TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import { Box, Text } from '../../../../theme';
+import {usePosts} from '../../../../hooks/data/fetchPosts';
+import {Box, Text} from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
+
 const PostsView = ({user, navigation}) => {
-  const [posts, setPosts] = useState([]);
+  const {data: postData, isLoading, refetch : refetchPosts } = usePosts(user?.userId);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const postsRef = firestore().collection('posts');
-        const userPosts = user?.posts || [];
+  const [refreshing, setRefreshing] = useState(false);
 
-        const unsubscribe = postsRef.onSnapshot(snapshot => {
-          const fetchedPosts = [];
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetchPosts();
+    setRefreshing(false);
+  };
+  const renderSkeletonItem = () => (
+    <Skeleton
+      animation="pulse"
+      style={{
+        width: width / 3,
+        height: 125,
+        margin: 2,
+        backgroundColor: '#E0E0E0',
+        borderRadius: 4,
+      }}
+    />
+  );
 
-          snapshot.forEach(doc => {
-            if (userPosts.includes(doc.id)) {
-              fetchedPosts.push(doc.data());
-            }
-          });
-
-          setPosts(fetchedPosts);
-        });
-
-        return () => unsubscribe();
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
-
-    fetchPosts();
-  }, [user]);
+  if (isLoading) {
+    return (
+      <FlatList
+        data={[...Array(postData?.length).keys()]}
+        renderItem={renderSkeletonItem}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={3}
+        contentContainerStyle={{
+          flex: 1,
+        }}
+      />
+    );
+  }
 
   const renderPostItem = ({item}) => (
     <Box>
@@ -41,7 +50,7 @@ const PostsView = ({user, navigation}) => {
         {item?.mediaUrls ? (
           <FastImage
             resizeMode="cover"
-            style={{width: width /3, height: width /3}}
+            style={{width: width / 3, height: width / 3}}
             source={{uri: item?.mediaUrls[0]}}
           />
         ) : item?.videoUrl ? (
@@ -59,13 +68,21 @@ const PostsView = ({user, navigation}) => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <FlatList
-        data={posts}
+        data={postData}
         renderItem={renderPostItem}
         keyExtractor={item => item.id}
         ListEmptyComponent={
           <Box flex={1} justifyContent="center" alignItems="center">
             <Text>No Posts Yet</Text>
           </Box>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#9Bd35A', '#689F38']}
+            progressBackgroundColor="#ffffff"
+          />
         }
         numColumns={3}
         contentContainerStyle={{

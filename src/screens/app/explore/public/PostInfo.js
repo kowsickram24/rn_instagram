@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../../firebase.config';
 import { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';

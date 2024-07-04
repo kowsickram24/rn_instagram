@@ -1,34 +1,36 @@
-import analytics from '@react-native-firebase/analytics';
-import React, {useEffect} from 'react';
-import firebase from './firebase.config';
-// import S3Bucket from './src/services/aws/s3bucket';
 import notifee from '@notifee/react-native';
-import {ThemeProvider} from '@shopify/restyle';
-import {I18nextProvider} from 'react-i18next';
+import { ThemeProvider } from '@shopify/restyle';
+import React, { useEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
+import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
+import { Provider } from 'react-redux';
+import  { analytics } from './firebase.config';
+import { auth } from './firebase.config';
 import i18n from './src/language/i18n';
-import linking from './linking';
-import {Provider} from 'react-redux';
-import {store} from './src/store';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import { store } from './src/store';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
-import {Keyboard, SafeAreaView, TouchableWithoutFeedback} from 'react-native';
+
 // Network
 import NetworkProvider from './src/context/Network/NetworkContext';
 
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { ProgressProvider } from './src/context/Upload/progressCtxt';
+import { theme } from './src/theme';
+
+import linking from './linking';
 import StackNavigator from './src/navigation/Stack';
-import {theme} from './src/theme';
-import {ProgressProvider} from './src/context/Upload/progressCtxt';
 
 const App = () => {
   useEffect(() => {
     const checkFirebaseConnection = async () => {
       try {
-        const user = firebase.auth().currentUser;
+        const user = auth().currentUser;
         await analytics().logEvent('check_analytics_enabled', {
           status: 'success',
         });
-        console.log('Firebase is connected successfully with Analytics');
+        console.log('Firebase is connected successfully with Analytics', user);
       } catch (error) {
         console.error('Error connecting to Firebase:', error);
       }

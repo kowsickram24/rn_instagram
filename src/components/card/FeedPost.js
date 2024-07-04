@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../firebase.config';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Avatar, Button, Card, Input, SearchBar } from '@rneui/themed';
 import { formatDistanceToNow, parse } from 'date-fns';

@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../../firebase.config';
 import { Avatar, Button, Header, Input } from '@rneui/themed';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';

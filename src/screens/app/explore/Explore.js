@@ -1,8 +1,8 @@
-import { Avatar, ListItem, SearchBar } from '@rneui/themed';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Platform } from 'react-native';
-import { useSearchUsersQuery } from '../../../store/slices/apiSlice';
-import { Box, Text } from '../../../theme';
+import {Avatar, ListItem, SearchBar} from '@rneui/themed';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Platform} from 'react-native';
+import {useSearchUsersQuery} from '../../../store/slices/apiSlice';
+import {Box, Text} from '../../../theme';
 import Gallery from './Gallery';
 
 const Explore = ({navigation}) => {

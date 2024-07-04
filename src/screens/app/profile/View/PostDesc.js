@@ -1,10 +1,9 @@
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../../../../../firebase.config';
 import {Header} from '@rneui/themed';
 import React, {useRef, useState} from 'react';
 import {Alert, Dimensions, FlatList, TouchableOpacity} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useSelector} from 'react-redux';
-import ToastManager from 'toastify-react-native';
 import BackBtn from '../../../../components/buttons/backButton';
 import FeedPost from '../../../../components/card/FeedPost';
 import {Dustbin, Insta_Typo_logo, Pencil} from '../../../../constants/assets';
@@ -106,7 +105,7 @@ const PostDesc = ({route, navigation}) => {
           </Box>
         }
       />
-      <ToastManager position="top" />
+    
       <FlatList
         showsVerticalScrollIndicator={false}
         data={posts}

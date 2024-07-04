@@ -1,14 +1,13 @@
-import firestore from '@react-native-firebase/firestore';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { firestore } from '../../../../firebase.config';
 import ChatBox from '../../../screens/app/chat/ChatBox';
 import ChatInfo from '../../../screens/app/chat/ChatInfo';
 import Chats from '../../../screens/app/chat/Chats';
 import LikedUsers from '../../../screens/app/explore/LikedUsers';
 import ProfileView from '../../../screens/app/explore/ProfileView';
 import PostInfo from '../../../screens/app/explore/public/PostInfo';
-import Notification from '../../../screens/app/notification/Notification';
 import NewPost from '../../../screens/app/post/create/Newpost';
 import EditProfile from '../../../screens/app/profile/Edit/EditProfile';
 import EditPost from '../../../screens/app/profile/Edit/editPost';
@@ -74,7 +73,6 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="Main">
         {props => <BottomNavigator User={currentUser} {...props} getData={getData} />}
       </Stack.Screen>
-      <Stack.Screen name="Notifications" component={Notification} />
       {/* Chats */}
       <Stack.Screen name="Chats" component={Chats} />
       <Stack.Screen name="ChatBox" component={ChatBox} />
