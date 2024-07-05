@@ -5,6 +5,7 @@ export const LoginSchema = yup.object({
   password: yup.string().required('Password is required'),
 });
 
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const RegSchema = yup.object({
   username: yup
