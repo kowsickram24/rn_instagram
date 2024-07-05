@@ -1,15 +1,14 @@
-import { firestore } from '../../../../../firebase.config';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, FlatList } from 'react-native';
-import RBSheet from 'react-native-raw-bottom-sheet';
+import { firestore } from '../../../../../firebase.config';
+
 import { useSelector } from 'react-redux';
 import FeedPost from '../../../../components/card/FeedPost';
 import { Box, Text } from '../../../../theme';
 const {width, height} = Dimensions.get('screen');
 
-const PostInfo = ({navigation,route}) => {
+const PostInfo = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
-  const RBref = useRef();
   const Optionref = useRef();
   const {item: post} = route.params;
   const [posts, setPosts] = useState([post]);

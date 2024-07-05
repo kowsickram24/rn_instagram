@@ -5,6 +5,7 @@ import Video from 'react-native-video';
 import { useSelector } from 'react-redux';
 import { usePosts } from '../../../../hooks/data/fetchPosts';
 import { Box, Text } from '../../../../theme';
+import { Skeleton } from '@rneui/themed';
 
 const { width } = Dimensions.get('screen');
 
