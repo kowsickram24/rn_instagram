@@ -2158,9 +2158,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (4.10.3):
+  - react-native-safe-area-context (4.10.7):
     - React-Core
-  - react-native-video (6.1.2):
+  - react-native-video (6.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2174,7 +2174,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.1.2)
+    - react-native-video/Video (= 6.3.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -2182,7 +2182,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.1.2):
+  - react-native-video/Video (6.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2483,12 +2483,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNImageCropPicker (0.41.1):
+  - RNImageCropPicker (0.41.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.41.1)
+    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
     - TOCropViewController (~> 2.7.4)
-  - RNImageCropPicker/QBImagePickerController (0.41.1):
+  - RNImageCropPicker/QBImagePickerController (0.41.2):
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
@@ -2497,7 +2497,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 7.8.2)
   - RNNotifee/NotifeeCore (7.8.2):
     - React-Core
-  - RNReanimated (3.12.0):
+  - RNReanimated (3.13.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2894,8 +2894,8 @@ SPEC CHECKSUMS:
   React-Mapbuffer: c5844bf3c2206f5475c0fc2340a89b049ea23c97
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
   react-native-pager-view: 26229a791fd4edada7d3947964fb1e62b456b8d4
-  react-native-safe-area-context: b01d8f42d4e62a7be5a3e69fd332e0c7e67584c7
-  react-native-video: edecf23162492d4f41f96ff167684fc0507ca63a
+  react-native-safe-area-context: 422017db8bcabbada9ad607d010996c56713234c
+  react-native-video: 7c84d5a1cf8489303514249a7e3bafab7bcb22ac
   React-nativeconfig: 21d89c65ca39875fad2c5c465e0e013e514eba21
   React-NativeModulesApple: e2e180dae4486b2978fcf3564cc4c8de4b453a68
   React-perflogger: 3d31e0d1e8ad891e43a09ac70b7b17a79773003a
@@ -2929,9 +2929,9 @@ SPEC CHECKSUMS:
   RNFBFirestore: 974889969da6539c48d17b1e8f66e4125e3d0211
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 20a4307fd21cbff339abfcfa68192f3f0a6a518b
-  RNImageCropPicker: 601604515fd6fbba318147b0a56aed0be9379415
+  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
-  RNReanimated: 967ae35616ef948658afa75d24595d4584051540
+  RNReanimated: 308bcd09703f16e26367dfd0c2bba43fc296aa47
   RNScreens: 30249f9331c3b00ae7cb7922e11f58b3ed369c07
   RNSVG: a48668fd382115bc89761ce291a81c4ca5f2fd2e
   RNVectorIcons: 7ac7aaa83f8f3d4c7c0f7daea5a431e91a29b0cd
@@ -2941,6 +2941,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: dafebc41bc66910af33077aaa41078e89fd635bf
 
-PODFILE CHECKSUM: a135a3c816c1973a5c382b5358eb8465b67ee3ce
+PODFILE CHECKSUM: ca7111610b9f2511ea3712324b571146ed4fae13
 
 COCOAPODS: 1.15.2
