@@ -8,6 +8,7 @@ import  { analytics } from './firebase.config';
 import { auth } from './firebase.config';
 import i18n from './src/language/i18n';
 import { store } from './src/store';
+import 'react-native-reanimated';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
