@@ -34,6 +34,7 @@ module.exports = {
     'import/namespace': 'error',
     'import/default': 'error',
     'import/export': 'error',
+    'undefined': 'error',
     'import/no-named-as-default': 'error', 
     'import/no-named-as-default-member': 'error', 
     'import/no-extraneous-dependencies': [
@@ -44,6 +45,7 @@ module.exports = {
         peerDependencies: false,
       },
     ], 
+    'import/no-unassigned-import': 'error',
   },
   settings: {
     react: {
