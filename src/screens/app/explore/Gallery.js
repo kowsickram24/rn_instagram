@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   Dimensions,
   FlatList,
+  Image,
   Modal,
   TouchableWithoutFeedback,
   View,
@@ -33,11 +34,14 @@ const Gallery = () => {
         <TouchableWithoutFeedback
           onLongPress={() => handleLongPress(item)}
           onPressOut={handlePressOut}>
+          <Box >
           <FastImage
+          onProgress={() => null}
             source={{uri: item.PostUrl}}
             alt="Post-Image"
             style={{width: width / 3, height: width / 3}}
           />
+         </Box>
         </TouchableWithoutFeedback>
       </Box>
     );

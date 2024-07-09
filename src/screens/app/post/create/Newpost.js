@@ -1,61 +1,33 @@
-import { firestore } from '../../../../../firebase.config';
-import { Button, Header, Input } from '@rneui/themed';
-import { Buffer } from 'buffer';
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback
-} from 'react-native';
+import {firestore} from '../../../../../firebase.config';
+import {Button, Header, Input} from '@rneui/themed';
+import {Buffer} from 'buffer';
+import React, {useContext, useEffect, useState} from 'react';
+import {Image, ScrollView, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
-import { Loader } from '../../../../components/loader/Loader';
+import {Loader} from '../../../../components/loader/Loader';
 import config from '../../../../config';
-import { Gal_Image, Gal_Video, Gallery_Icon } from '../../../../constants/assets';
-import { ProgressContext } from '../../../../context/Upload/progressCtxt';
-import { S3Bucket } from '../../../../services/aws/s3bucket';
-import { Box, Text } from '../../../../theme';
+import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
+import {ProgressContext} from '../../../../context/Upload/progressCtxt';
+import {S3Bucket} from '../../../../services/aws/s3bucket';
+import {Box, Text} from '../../../../theme';
 const cloudFrontDomain = config.CLDFRNTDOM;
 
-import { FlatList } from 'react-native';
+import {FlatList} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 const NewPost = ({navigation}) => {
   const currentuser = useSelector(state => state.user.user);
-  const [userData, setUserData] = useState();
   const [selectedImages, setSelectedImages] = useState([]);
+  console.log(selectedImages);
   const {setProgress} = useContext(ProgressContext);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const fetchUser = async () => {
-    try {
-      const userQuery = await firestore()
-        .collection('users')
-        .where('email', '==', currentuser.email)
-        .get();
-
-      if (!userQuery.empty) {
-        const userDoc = userQuery.docs[0];
-        const userData = userDoc.data();
-        setUserData(userData);
-        console.log('userData ', userData.id);
-      } else {
-        console.error('User document not found');
-      }
-    } catch (error) {
-      console.error('Error fetching user details: ', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
 
   const pickImage = async () => {
     try {
@@ -242,11 +214,13 @@ const NewPost = ({navigation}) => {
                     horizontal
                     renderItem={({item}) => (
                       <TouchableWithoutFeedback>
-                        <FastImage
-                          source={{uri: item}}
-                          style={{width: 350, height: 350, borderRadius: 8}}
-                          resizeMode={FastImage.resizeMode.cover}
-                        />
+                        <Box>
+                          <Image
+                            source={{uri: item}}
+                            style={{width: 350, height: 350, borderRadius: 8}}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        </Box>
                       </TouchableWithoutFeedback>
                     )}
                   />

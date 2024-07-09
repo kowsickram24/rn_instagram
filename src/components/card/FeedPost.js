@@ -1,8 +1,8 @@
-import { firestore } from '../../../firebase.config';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Avatar, Button, Card, Input, SearchBar } from '@rneui/themed';
-import { formatDistanceToNow, parse } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import {firestore} from '../../../firebase.config';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {Avatar, Button,  Input, SearchBar} from '@rneui/themed';
+import {formatDistanceToNow, parse} from 'date-fns';
+import {enUS} from 'date-fns/locale';
 import React, {
   forwardRef,
   useCallback,
@@ -23,7 +23,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import {
   Comment,
   Heaty_f,
@@ -36,7 +36,7 @@ import {
   Three_dots,
   UnMuted,
 } from '../../constants/assets';
-import { Box, Text } from '../../theme';
+import {Box, Text} from '../../theme';
 import SkeletonCard from '../Skeleton/skeletonCard';
 const {width, height} = Dimensions.get('screen');
 
@@ -319,181 +319,176 @@ const FeedPost = ({
   return (
     <TouchableWithoutFeedback>
       <Box>
-        <Card
-          containerStyle={{
-            padding: 0,
-            margin: 0,
-            elevation: 0,
-            borderWidth: 0,
-          }}>
-          <PostHeader
-            user={user}
-            location={location}
-            onOptionpress={onOptionpress}
-            ProfileUrl={ProfileUrl}
-            onProfilePress={onProfilePress}
-          />
-          {images?.length > 0 && (
-            <Animated.FlatList
-              showsHorizontalScrollIndicator={false}
-              scrollEnabled
-              pagingEnabled
-              horizontal
-              onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {x: animatedValue}}}],
-                {
-                  useNativeDriver: true,
-                  listener: event => {
-                    const offsetX = event.nativeEvent.contentOffset.x;
-                    const index = Math.round(offsetX / width);
-                    setCurrentIndex(index);
-                  },
+        <PostHeader
+          user={user}
+          location={location}
+          onOptionpress={onOptionpress}
+          ProfileUrl={ProfileUrl}
+          onProfilePress={onProfilePress}
+        />
+        {images?.length > 0 && (
+          <Animated.FlatList
+            showsHorizontalScrollIndicator={false}
+            scrollEnabled
+            pagingEnabled
+            horizontal
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {x: animatedValue}}}],
+              {
+                useNativeDriver: true,
+                listener: event => {
+                  const offsetX = event.nativeEvent.contentOffset.x;
+                  const index = Math.round(offsetX / width);
+                  setCurrentIndex(index);
                 },
-              )}
-              data={images}
-              renderItem={({item}) => (
-                <TouchableWithoutFeedback>
+              },
+            )}
+            data={images}
+            renderItem={({item}) => (
+              <TouchableWithoutFeedback>
+                <Box>
                   <FastImage
                     source={{uri: item}}
                     style={{width: width, height: 400}}
                     resizeMode={FastImage.resizeMode.cover}
                   />
-                </TouchableWithoutFeedback>
-              )}
+                </Box>
+              </TouchableWithoutFeedback>
+            )}
+          />
+        )}
+        {images?.length > 0 && images?.length != 1 && (
+          <Box
+            top={70}
+            right={10}
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
+            backgroundColor={'mainblack'}
+            borderRadius={'m'}
+            width={30}
+            height={25}>
+            <Text textAlign="center" fontSize={10} color={'mainwhite'}>
+              {`${currentIndex + 1} / ${totalImages}`}
+            </Text>
+          </Box>
+        )}
+        {videos?.length > 0 && (
+          <>
+            <Video
+              source={{uri: videos[0]}}
+              style={{height: 400, width: width}}
+              playWhenInactive
+              resizeMode="cover"
+              repeat
+              muted={isMuted}
             />
-          )}
-          {images?.length > 0 && images?.length != 1 && (
+          </>
+        )}
+        {videos?.length > 0 && (
+          <TouchableWithoutFeedback onPress={toggleMute}>
             <Box
-              top={70}
-              right={10}
+              bottom={140}
+              right={20}
               alignItems="center"
               justifyContent="center"
               position="absolute"
               backgroundColor={'mainblack'}
-              borderRadius={'m'}
-              width={30}
-              height={25}>
-              <Text textAlign="center" fontSize={10} color={'mainwhite'}>
-                {`${currentIndex + 1} / ${totalImages}`}
-              </Text>
+              borderRadius={'l'}
+              width={20}
+              height={20}>
+              {isMuted ? (
+                <Muted height="12" width="12" />
+              ) : (
+                <UnMuted height="12" width="12" />
+              )}
             </Box>
-          )}
-          {videos?.length > 0 && (
-            <>
-              <Video
-                source={{uri: videos[0]}}
-                style={{height: 400, width: width}}
-                playWhenInactive
-                resizeMode="cover"
-                repeat
-                muted={isMuted}
-              />
-            </>
-          )}
-          {videos?.length > 0 && (
-            <TouchableWithoutFeedback onPress={toggleMute}>
-              <Box
-                bottom={140}
-                right={20}
-                alignItems="center"
-                justifyContent="center"
-                position="absolute"
-                backgroundColor={'mainblack'}
-                borderRadius={'l'}
-                width={20}
-                height={20}>
-                {isMuted ? (
-                  <Muted height="12" width="12" />
-                ) : (
-                  <UnMuted height="12" width="12" />
+          </TouchableWithoutFeedback>
+        )}
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          paddingVertical={'m'}
+          paddingHorizontal={'xs'}>
+          <Box flexDirection="row" alignItems="flex-start" gap={'m'}>
+            <TouchableOpacity onPress={onLikePress}>
+              {isLiked ? <Heaty_f /> : <Heaty_uf />}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={oncommentPress}>
+              <Comment />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onSharePress}>
+              <Share />
+            </TouchableOpacity>
+          </Box>
+          <Box
+            right={'50%'}
+            left={'50%'}
+            position="absolute"
+            alignItems="center">
+            {images?.length != 1 && totalImages > 0 && renderPaginationDots()}
+          </Box>
+          <Box>
+            <TouchableOpacity onPress={onSavePress}>
+              {isSaved ? <Save_f /> : <Save />}
+            </TouchableOpacity>
+          </Box>
+        </Box>
+        {/* {likedUsers} */}
+        {likedUsers && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+            {likedUsers && likedUsers.length !== 0 ? (
+              <Box paddingHorizontal={'s'}>
+                {likedUsers.length > 0 && (
+                  <Text fontSize={14} color={'mainblack'}>
+                    {likedUsers.length === 1 ? (
+                      <Text fontSize={14}>
+                        {`Liked by `}
+                        <Text
+                          fontSize={14}
+                          fontWeight={'500'}>{`${likedUsers[0]}`}</Text>
+                      </Text>
+                    ) : (
+                      <Text fontSize={14}>
+                        {`Liked by `}
+                        <Text fontWeight={'500'} fontSize={14}>
+                          {`${likedUsers[0]} and ${
+                            likedUsers.length - 1
+                          } others`}
+                        </Text>
+                      </Text>
+                    )}
+                  </Text>
                 )}
               </Box>
-            </TouchableWithoutFeedback>
-          )}
-          <Box
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            paddingVertical={'m'}
-            paddingHorizontal={'xs'}>
-            <Box flexDirection="row" alignItems="flex-start" gap={'m'}>
-              <TouchableOpacity onPress={onLikePress}>
-                {isLiked ? <Heaty_f /> : <Heaty_uf />}
-              </TouchableOpacity>
-              <TouchableOpacity onPress={oncommentPress}>
-                <Comment />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onSharePress}>
-                <Share />
-              </TouchableOpacity>
-            </Box>
-            <Box
-              right={'50%'}
-              left={'50%'}
-              position="absolute"
-              alignItems="center">
-              {images?.length != 1 && totalImages > 0 && renderPaginationDots()}
-            </Box>
-            <Box>
-              <TouchableOpacity onPress={onSavePress}>
-                {isSaved ? <Save_f /> : <Save />}
-              </TouchableOpacity>
-            </Box>
-          </Box>
-          {/* {likedUsers} */}
-          {likedUsers && (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('LikedUsers', {likedId})}>
-              {likedUsers && likedUsers.length !== 0 ? (
-                <Box paddingHorizontal={'s'}>
-                  {likedUsers.length > 0 && (
-                    <Text fontSize={14} color={'mainblack'}>
-                      {likedUsers.length === 1 ? (
-                        <Text fontSize={14}>
-                          {`Liked by `}
-                          <Text
-                            fontSize={14}
-                            fontWeight={'500'}>{`${likedUsers[0]}`}</Text>
-                        </Text>
-                      ) : (
-                        <Text fontSize={14}>
-                          {`Liked by `}
-                          <Text fontWeight={'500'} fontSize={14}>
-                            {`${likedUsers[0]} and ${
-                              likedUsers.length - 1
-                            } others`}
-                          </Text>
-                        </Text>
-                      )}
-                    </Text>
-                  )}
-                </Box>
-              ) : null}
-            </TouchableOpacity>
-          )}
+            ) : null}
+          </TouchableOpacity>
+        )}
 
-          <Box padding={'s'}>
-            <Text width={300} numberOfLines={1}>
-              <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
-                {user}{' '}
-              </Text>
-              <Text numberOfLines={3} fontSize={14} color={'mainblack'}>
-                {Caption}
-              </Text>
+        <Box padding={'s'}>
+          <Text width={300} numberOfLines={1}>
+            <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
+              {user}{' '}
             </Text>
-          </Box>
+            <Text numberOfLines={3} fontSize={14} color={'mainblack'}>
+              {Caption}
+            </Text>
+          </Text>
+        </Box>
 
-          {comments?.length > 0 && (
-            <TouchableOpacity onPress={ViewCmnt}>
-              <Text paddingHorizontal={'s'} fontSize={12}>
-                View{' '}
-                {comments?.length > 1
-                  ? `${comments?.length} comments`
-                  : 'comment'}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </Card>
+        {comments?.length > 0 && (
+          <TouchableOpacity onPress={ViewCmnt}>
+            <Text paddingHorizontal={'s'} fontSize={12}>
+              View{' '}
+              {comments?.length > 1
+                ? `${comments?.length} comments`
+                : 'comment'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {formattedTime && (
           <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
             {formattedTime}
