@@ -20,7 +20,7 @@ const AccountCenter = ({currentUser, navigation}) => {
         flex={1}
         gap={'m'}
         padding={'l'}>
-        <Text textAlign="center" color={'mainblack'}>
+        <Text textAlign="center" fontSize={14} color={'mainblack'}>
           Account Info
         </Text>
         <Avatar
@@ -34,24 +34,24 @@ const AccountCenter = ({currentUser, navigation}) => {
         <Divider />
         <Box gap={'l'}>
           <Box padding={'s'}>
-            <Text fontSize={14}>Username</Text>
-            <Text color={'mainblack'}>{currentUser?.username}</Text>
+            <Text fontSize={14} style={{color:'grey'}}>Username</Text>
+            <Text fontSize={14} color={'mainblack'}>{currentUser?.username}</Text>
           </Box>
           <Box padding={'s'}>
-            <Text fontSize={14}>Full Name</Text>
-            <Text color={'mainblack'}>{currentUser?.fullname}</Text>
+            <Text fontSize={14} style={{color:'grey'}}>Full Name</Text>
+            <Text fontSize={14} color={'mainblack'}>{currentUser?.fullname}</Text>
           </Box>
           <Box padding={'s'}>
-            <Text fontSize={14}>Bio</Text>
-            <Text color={'mainblack'}>{currentUser?.bio}</Text>
+            <Text fontSize={14} style={{color:'grey'}}>Bio</Text>
+            <Text  fontSize={14}color={'mainblack'}>{currentUser?.bio}</Text>
           </Box>
           <Box padding={'s'}>
-            <Text fontSize={14}>Gender</Text>
-            <Text color={'mainblack'}>{currentUser?.gender}</Text>
+            <Text fontSize={14} style={{color:'grey'}}>Gender</Text>
+            <Text  fontSize={14}color={'mainblack'}>{currentUser?.gender}</Text>
           </Box>
-          <Box padding={'s'}>
-            <Text fontSize={14}>Created On</Text>
-            <Text color={'mainblack'}>{currentUser?.createdAt}</Text>
+          <Box padding={'s'} >
+            <Text fontSize={14} style={{color:'grey'}}>Created On</Text>
+            <Text fontSize={14} color={'mainblack'}>{currentUser?.createdAt}</Text>
           </Box>
         </Box>
       </Box>

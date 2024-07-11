@@ -1,20 +1,20 @@
-import { firestore } from '../../../../firebase.config';
-import { Divider, Header, SearchBar } from '@rneui/themed';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useRef, useState } from 'react';
-import { FlatList, Platform, TouchableOpacity } from 'react-native';
+import {firestore} from '../../../../firebase.config';
+import {Divider, Header, SearchBar} from '@rneui/themed';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import React, {useRef, useState} from 'react';
+import {FlatList, Platform, TouchableOpacity} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
-import { Box, Text } from '../../../theme';
+import {Box, Text} from '../../../theme';
 
-const fetchChats = async (currentUser) => {
+const fetchChats = async currentUser => {
   const snapshot = await firestore()
     .collection('chats')
     .where('members', 'array-contains', currentUser.userId)
     .get();
-  
+
   const chatData = await Promise.all(
     snapshot.docs.map(async doc => {
       const chat = doc.data();
@@ -24,36 +24,42 @@ const fetchChats = async (currentUser) => {
         .doc(secondUserId)
         .get();
       const secondUser = userDoc.data();
-      return { id: doc.id, ...chat, secondUser };
-    })
+      return {id: doc.id, ...chat, secondUser};
+    }),
   );
 
   return chatData;
 };
 
-const ChatBox = ({ navigation }) => {
+const ChatBox = ({navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChat, setSelectedChat] = useState('');
   const Actionref = useRef();
   const queryClient = useQueryClient();
 
-  const { data: chats, isLoading, error } = useQuery({
+  const {
+    data: chats,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['chats', currentUser],
     queryFn: () => fetchChats(currentUser),
     enabled: !!currentUser,
     select: data =>
-      data.filter(chat =>
-        chat.secondUser.username
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      ).sort(
-        (a, b) => b.lastMessage.time.toDate() - a.lastMessage.time.toDate()
-      ),
+      data
+        .filter(chat =>
+          chat.secondUser.username
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
+        )
+        .sort(
+          (a, b) => b.lastMessage.time.toDate() - a.lastMessage.time.toDate(),
+        ),
   });
 
   const deleteChatMutation = useMutation({
-    mutationFn: async (chatId) => {
+    mutationFn: async chatId => {
       await firestore().collection('chats').doc(chatId).delete();
     },
     onSuccess: () => {
@@ -66,14 +72,14 @@ const ChatBox = ({ navigation }) => {
     deleteChatMutation.mutate(selectedChat.id);
   };
 
-  const RenderChats = ({ item }) => (
+  const RenderChats = ({item}) => (
     <TouchableOpacity
       onLongPress={() => {
         setSelectedChat(item);
         Actionref.current.open();
       }}
       onPress={() =>
-        navigation.navigate('ChatBox', { params: { chatId: item.id } })
+        navigation.navigate('ChatBox', {params: {chatId: item.id}})
       }>
       <ChatCard
         loading={isLoading}
@@ -105,10 +111,16 @@ const ChatBox = ({ navigation }) => {
           </Text>
         }
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
-        statusBarProps={{ hidden: true }}
+        statusBarProps={{hidden: true}}
       />
       <SearchBar
-        inputStyle={{ fontSize: 14 }}
+        searchIcon={{
+          name: 'search',
+        }}
+        clearIcon={{
+          name: 'close',
+        }}
+        inputStyle={{fontSize: 14}}
         placeholder="Search"
         platform={Platform.OS === 'android' ? 'android' : 'ios'}
         value={searchQuery}
@@ -130,7 +142,9 @@ const ChatBox = ({ navigation }) => {
         }}
         ref={Actionref}>
         <Box flex={1} gap={'l'}>
-          <Text textAlign='center' color={'mainblack'}>{selectedChat?.secondUser?.username}</Text>
+          <Text textAlign="center" color={'mainblack'}>
+            {selectedChat?.secondUser?.username}
+          </Text>
           <Divider />
           <TouchableOpacity onPress={handleDeleteChat}>
             <Text textAlign="center" color={'red'}>

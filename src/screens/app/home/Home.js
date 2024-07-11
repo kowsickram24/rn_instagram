@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {Header, Divider, LinearProgress} from '@rneui/themed';
-import {Insta_Typo_logo, Msg_Icon, Notifi} from '../../../constants/assets';
+import {Insta_Typo_logo, Msg_Icon, Notifi, Reels} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Data} from '../../../utils/randomData';
 import {usePosts} from '../../../hooks/data/fetchPosts';
@@ -76,8 +76,8 @@ const Home = ({navigation}) => {
           <Box flexDirection="row" gap={'m'}>
             <Box>
               <TouchableOpacity
-                onPress={() => navigation.navigate('Notification')}>
-                <Notifi />
+                onPress={() => navigation.navigate('ReelsFeed')}>
+                <Reels />
               </TouchableOpacity>
             </Box>
             <Box>

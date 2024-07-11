@@ -1,7 +1,6 @@
-import { firestore } from '../../../../firebase.config';
-import { Avatar, Badge, Button, Divider, Header, SearchBar } from '@rneui/themed';
-import { Buffer } from 'buffer';
-import React, { useEffect, useRef, useState } from 'react';
+import {Avatar, Badge, Button, Divider, Header, SearchBar} from '@rneui/themed';
+import {Buffer} from 'buffer';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,11 +11,12 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import RNFS from 'react-native-fs';
-import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import {GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+import {firestore} from '../../../../firebase.config';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
@@ -29,14 +29,14 @@ import {
   Gallery_Icon,
   Info,
 } from '../../../constants/assets';
-import { S3Bucket } from '../../../services/aws/s3bucket';
-import { Box, Text, height } from '../../../theme';
+import {S3Bucket} from '../../../services/aws/s3bucket';
+import {Box, Text, height} from '../../../theme';
 
 const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
   const chatId = route?.params.params.chatId;
   const MediaRef = useRef();
-  const fwdRef = useRef();
+  const FwdRef = useRef();
   const ActionRef = useRef();
   const [chatData, setChatData] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -88,6 +88,10 @@ const ChatBox = ({navigation, route}) => {
     fetchUsers();
     return () => unsubscribe();
   }, [chatId, currentUser.userId]);
+  const handleFwdOpen = () => {
+    ActionRef.current.close();
+    FwdRef.current.open();
+  };
 
   const PickImage = async () => {
     try {
@@ -227,7 +231,7 @@ const ChatBox = ({navigation, route}) => {
           lastMessage: newMessage,
         });
 
-      fwdRef.current.close();
+      FwdRef.current.close();
     } catch (error) {
       console.error('Error forwarding message: ', error);
     }
@@ -410,7 +414,6 @@ const ChatBox = ({navigation, route}) => {
             const handleLongPress = () => {
               ActionRef.current.open();
               setSelectedMessage(item);
-              console.log(selectedMessage);
             };
 
             const renderLeftActions = (progress, dragX) => {
@@ -444,6 +447,7 @@ const ChatBox = ({navigation, route}) => {
                         <Box
                           margin="m"
                           padding="m"
+                          borderWidth={0.2}
                           elevation={2}
                           backgroundColor={'mainwhite'}
                           borderRadius="xl"
@@ -568,6 +572,7 @@ const ChatBox = ({navigation, route}) => {
 
       {/* Media View */}
       <RBSheet
+        ref={MediaRef}
         dragOnContent
         draggable
         customStyles={{
@@ -576,8 +581,7 @@ const ChatBox = ({navigation, route}) => {
             borderTopRightRadius: 15,
           },
         }}
-        height={height / 1.5}
-        ref={MediaRef}>
+        height={height / 1.5}>
         <Box padding={'s'} gap={'s'}>
           {selectedImage ? (
             <Image
@@ -648,7 +652,10 @@ const ChatBox = ({navigation, route}) => {
           />
         </Box>
       </RBSheet>
+
+      {/* Action Sheet */}
       <RBSheet
+        ref={ActionRef}
         customStyles={{
           container: {
             borderTopLeftRadius: 20,
@@ -658,7 +665,6 @@ const ChatBox = ({navigation, route}) => {
         }}
         openDuration={200}
         height={200}
-        ref={ActionRef}
         draggable>
         <Box flex={1}>
           <Text color={'mainblack'} fontSize={14} textAlign="center">
@@ -683,7 +689,12 @@ const ChatBox = ({navigation, route}) => {
                 </Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => fwdRef.current.open()}>
+
+            <TouchableOpacity
+              onPress={() => {
+                ActionRef.current.close();
+                FwdRef.current.open();
+              }}>
               <Box
                 padding={'m'}
                 borderRadius={'l'}
@@ -697,7 +708,11 @@ const ChatBox = ({navigation, route}) => {
           </Box>
         </Box>
       </RBSheet>
+
+      {/* Forward Sheet */}
+
       <RBSheet
+        ref={FwdRef}
         draggable
         customStyles={{
           container: {
@@ -706,27 +721,30 @@ const ChatBox = ({navigation, route}) => {
           },
         }}
         height={450}
-        openDuration={200}
-        ref={fwdRef}>
-        <Box flex={1}>
-          <SearchBar
-            inputStyle={{fontSize: 14}}
-            platform={Platform.OS === 'android' ? 'android' : 'ios'}
-            placeholder="Search"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-          />
-          <FlatList
-            data={filteredUsers}
-            ListEmptyComponent={
-              <Text color={'mainblack'} fontSize={14} textAlign="center">
-                No users found
-              </Text>
-            }
-            renderItem={renderFwdUsers}
-            keyExtractor={item => item.id}
-          />
-        </Box>
+        openDuration={200}>
+        <SearchBar
+          searchIcon={{
+            name: 'search',
+          }}
+          clearIcon={{
+            name: 'close',
+          }}
+          inputStyle={{fontSize: 14}}
+          platform={Platform.OS === 'android' ? 'android' : 'ios'}
+          placeholder="Search"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+        />
+        <FlatList
+          data={filteredUsers}
+          ListEmptyComponent={
+            <Text color={'mainblack'} fontSize={14} textAlign="center">
+              No users found
+            </Text>
+          }
+          renderItem={renderFwdUsers}
+          keyExtractor={item => item.id}
+        />
       </RBSheet>
     </Box>
   );

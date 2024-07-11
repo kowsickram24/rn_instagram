@@ -234,12 +234,12 @@ const ProfileView = ({route, navigation}) => {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'rgba(0,0,0,0.8)',
+              backgroundColor: 'rgba(0,0,0,0.9)',
             }}>
             {selectedImage && (
               <FastImage
                 source={{uri: selectedImage}}
-                style={{width: width, height: width, borderRadius: width}}
+                style={{width: 250, height: 250, borderRadius: 250}}
                 resizeMode="contain"
               />
             )}

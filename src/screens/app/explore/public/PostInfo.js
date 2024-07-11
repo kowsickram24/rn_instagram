@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList } from 'react-native';
 import { firestore } from '../../../../../firebase.config';
-
+import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
 import FeedPost from '../../../../components/card/FeedPost';
 import { Box, Text } from '../../../../theme';
+import { Header } from '@rneui/themed';
+import BackBtn from '../../../../components/buttons/backButton';
+import { Insta_Typo_logo } from '../../../../constants/assets';
 const {width, height} = Dimensions.get('screen');
 
 const PostInfo = ({navigation, route}) => {
@@ -71,6 +74,16 @@ const PostInfo = ({navigation, route}) => {
 
   return (
     <Box flex={1} backgroundColor="mainwhite">
+          <Header
+        statusBarProps={{hidden: true}}
+        backgroundColor="white"
+        leftComponent={
+          <Box flexDirection="row" alignItems="center" gap={'s'}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Insta_Typo_logo />
+          </Box>
+        }
+      />
       <FlatList
         showsVerticalScrollIndicator={false}
         data={posts}
@@ -81,6 +94,7 @@ const PostInfo = ({navigation, route}) => {
 
       {/* RBSheet for options */}
       <RBSheet
+        draggable
         customStyles={{
           container: {
             borderTopRightRadius: 20,

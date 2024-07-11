@@ -1,5 +1,5 @@
-import { Card } from '@rneui/themed';
-import React, { useState } from 'react';
+import {Card} from '@rneui/themed';
+import React, {useState} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { Box } from '../../../theme';
-import { PostData } from '../../../utils/randomData';
+import {Box} from '../../../theme';
+import {PostData} from '../../../utils/randomData';
 
 const {width, height} = Dimensions.get('window');
 
@@ -34,14 +34,14 @@ const Gallery = () => {
         <TouchableWithoutFeedback
           onLongPress={() => handleLongPress(item)}
           onPressOut={handlePressOut}>
-          <Box >
-          <FastImage
-          onProgress={() => null}
-            source={{uri: item.PostUrl}}
-            alt="Post-Image"
-            style={{width: width / 3, height: width / 3}}
-          />
-         </Box>
+          <Box>
+            <FastImage
+              onProgress={() => null}
+              source={{uri: item.PostUrl}}
+              alt="Post-Image"
+              style={{width: width / 3, height: width / 3}}
+            />
+          </Box>
         </TouchableWithoutFeedback>
       </Box>
     );
@@ -69,17 +69,14 @@ const Gallery = () => {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'rgba(0,0,0,0.5)',
+              backgroundColor: 'rgba(0,0,0,0.9)',
             }}>
             {selectedImage && (
-              <Card containerStyle={{margin: 0, padding: 0}}>
-                <Card.Title h4>Explore Images</Card.Title>
-                <FastImage
-                  source={{uri: selectedImage}}
-                  style={{width: width, height: height / 2}}
-                  resizeMode="contain"
-                />
-              </Card>
+              <FastImage
+                source={{uri: selectedImage}}
+                style={{width: width, height: height / 2}}
+                resizeMode="contain"
+              />
             )}
           </View>
         </TouchableWithoutFeedback>

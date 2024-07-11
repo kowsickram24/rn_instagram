@@ -1,4 +1,4 @@
-import { firestore } from '../../../../../firebase.config';
+import {firestore} from '../../../../../firebase.config';
 import {Header} from '@rneui/themed';
 import React, {useRef, useState} from 'react';
 import {Alert, Dimensions, FlatList, TouchableOpacity} from 'react-native';
@@ -8,9 +8,12 @@ import BackBtn from '../../../../components/buttons/backButton';
 import FeedPost from '../../../../components/card/FeedPost';
 import {Dustbin, Insta_Typo_logo, Pencil} from '../../../../constants/assets';
 import {Box, Text} from '../../../../theme';
+import {Button} from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 const {width, height} = Dimensions.get('screen');
 
-const PostDesc = ({route, navigation}) => {
+const PostDesc = ({route}) => {
+  const navigation = useNavigation();
   const currentUser = useSelector(state => state.user.user);
   const [selectedPost, setSelectedPost] = useState();
   const RBref = useRef();
@@ -26,8 +29,8 @@ const PostDesc = ({route, navigation}) => {
   console.log('posts: ', posts);
 
   const handleOptions = data => {
-    RBref.current.open();
     setSelectedPost(data);
+    RBref.current.open();
   };
 
   const handleDeletePost = async () => {
@@ -105,7 +108,7 @@ const PostDesc = ({route, navigation}) => {
           </Box>
         }
       />
-    
+
       <FlatList
         showsVerticalScrollIndicator={false}
         data={posts}
@@ -114,6 +117,8 @@ const PostDesc = ({route, navigation}) => {
         keyExtractor={(item, index) => index.toString()}
       />
       <RBSheet
+        animationType="slide"
+       openDuration={300}
         draggable
         customStyles={{
           container: {
@@ -122,12 +127,16 @@ const PostDesc = ({route, navigation}) => {
             justifyContent: 'center',
           },
         }}
+        closeOnDragDown
         height={height / 4}
         ref={RBref}>
         <Box alignItems="center" justifyContent="center" gap="xl" flex={1}>
           <Box gap="xl" alignItems="center">
             <TouchableOpacity
-              onPress={() => navigation.navigate('Editpost', {selectedPost})}>
+              onPress={() => {
+                navigation.navigate('Editpost', {post : selectedPost});
+                RBref.current.close();
+              }}>
               <Box flexDirection="row" gap="s" alignItems="center">
                 <Pencil />
                 <Text fontSize={14} textAlign="center" color="mainblack">
@@ -146,6 +155,7 @@ const PostDesc = ({route, navigation}) => {
           </Box>
         </Box>
       </RBSheet>
+
     </Box>
   );
 };

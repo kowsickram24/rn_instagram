@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
-
+import storage from '@react-native-firebase/storage';
 const firebaseConfig = {
   apiKey: 'AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90',
   projectId: 'instagramrn-8a8a4',
@@ -16,4 +16,4 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-export { firebase, firestore, auth, analytics, crashlytics };
+export { storage, firebase, firestore, auth, analytics, crashlytics };

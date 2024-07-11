@@ -1,13 +1,13 @@
 export const Data = [
   {
     id: 1,
-    Url: 'https://randomuser.me/api/portraits/men/62.jpg',
+    Url: 'https://randomuser.me/api/portraits/men/56.jpg',
     name: 'Gavin',
-    PostImg: 'https://picsum.photos/600',
+    PostImg: 'https://picsum.photos/895',
   },
   {
     id: 37,
-    Url: 'https://randomuser.me/api/portraits/men/54.jpg',
+    Url: 'https://randomuser.me/api/portraits/men/89.jpg',
     name: 'Josephine',
     PostImg: 'https://picsum.photos/300',
   },

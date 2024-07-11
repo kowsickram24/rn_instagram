@@ -1,7 +1,7 @@
-import { Input } from '@rneui/themed';
-import { TouchableOpacity } from 'react-native';
-import { Image_Fill, White_cam_Fill } from '../../constants/assets';
-import { Box, Text } from '../../theme';
+import {Input} from '@rneui/themed';
+import {SafeAreaView, TouchableOpacity} from 'react-native';
+import {Image_Fill, White_cam_Fill} from '../../constants/assets';
+import {Box, Text} from '../../theme';
 
 const MessageBox = ({
   onChangeText,
@@ -12,6 +12,8 @@ const MessageBox = ({
   BackCont,
 }) => {
   return (
+    <SafeAreaView>
+
     <Input
       multiline
       leftIconContainerStyle={{
@@ -32,7 +34,8 @@ const MessageBox = ({
         marginVertical: 10,
       }}
       inputStyle={{
-        fontSize:14
+        padding: 10,
+        fontSize: 14,
       }}
       rightIcon={
         <>
@@ -64,6 +67,8 @@ const MessageBox = ({
       onChangeText={onChangeText}
       placeholder="Message"
     />
+    </SafeAreaView>
+    
   );
 };
 

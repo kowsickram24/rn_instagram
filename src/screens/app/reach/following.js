@@ -115,6 +115,12 @@ const Following = ({currentUser, userData, navigation}) => {
   return (
     <Box backgroundColor={'mainwhite'} flex={1}>
       <SearchBar
+              searchIcon={{
+          name: 'search',
+        }}
+        clearIcon={{
+          name: 'close',
+        }}
         inputStyle={{fontSize: 14}}
         platform={Platform.OS === 'android' ? 'android' : 'ios'}
         placeholder="Search"

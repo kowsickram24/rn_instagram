@@ -44,6 +44,12 @@ const Explore = ({navigation}) => {
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <SearchBar
+              searchIcon={{
+          name: 'search',
+        }}
+        clearIcon={{
+          name: 'close',
+        }}
         inputStyle={{fontSize: 14}}
         onChangeText={setSearchQuery}
         value={searchQuery}

@@ -22,7 +22,6 @@ import FastImage from 'react-native-fast-image';
 const NewPost = ({navigation}) => {
   const currentuser = useSelector(state => state.user.user);
   const [selectedImages, setSelectedImages] = useState([]);
-  console.log(selectedImages);
   const {setProgress} = useContext(ProgressContext);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
@@ -41,6 +40,7 @@ const NewPost = ({navigation}) => {
       });
 
       const imagePaths = results.map(result => result.path);
+      console.log('imagePaths: ', imagePaths);
       setSelectedImages(imagePaths);
       setSelectedVideo('');
     } catch (error) {
@@ -56,7 +56,7 @@ const NewPost = ({navigation}) => {
         loadingLabelText: 'loading',
       });
       setSelectedVideo(result.path);
-      setSelectedImages('');
+      setSelectedImages([]);
     } catch (error) {
       console.error('Error picking video: ', error);
     }
@@ -67,6 +67,7 @@ const NewPost = ({navigation}) => {
       const bucketName = 'instaaws';
       const fileExtension = mediaType === 'image' ? 'jpg' : 'mp4';
       const key = `post_${Date.now()}.${fileExtension}`;
+      console.log('mediaPath: ', mediaPath);
       const mediaUrl = await uploadFileToS3(
         mediaPath,
         bucketName,

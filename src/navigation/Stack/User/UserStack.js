@@ -19,6 +19,8 @@ import SavedPosts from '../../../screens/app/saves/savedPosts';
 import AccountCenter from '../../../screens/app/settings/AccountCenter';
 import Settings from '../../../screens/app/settings/Settings';
 import BottomNavigator from '../../BottomTab/BottomTab';
+import ReelsFeed from '../../../screens/app/explore/reels/ReelsFeed';
+import NewStory from '../../../screens/app/post/create/Newstory';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
@@ -77,6 +79,8 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="Chats" component={Chats} />
       <Stack.Screen name="ChatBox" component={ChatBox} />
       <Stack.Screen name="ChatInfo" component={ChatInfo} />
+      <Stack.Screen name="ReelsFeed" component={ReelsFeed} />
+      <Stack.Screen name="NewStory" component={NewStory} />
 
       <Stack.Screen name="EditProfile">
         {props => <EditProfile {...props} />}

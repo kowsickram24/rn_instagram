@@ -55,7 +55,9 @@ const SharePost = ({postId, onMediaPress, onProfilePress}) => {
           <Text fontWeight={'500'} fontSize={14} color={'mainblack'}>
             {postData?.user?.username}
           </Text>
-          <Text color={'mainblack'}>{postData?.caption}</Text>
+          <Text numberOfLines={1} width={150} fontSize={14} color={'mainblack'}>
+            {postData?.caption}
+          </Text>
         </Box>
       </Box>
     </>

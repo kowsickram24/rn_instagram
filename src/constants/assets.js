@@ -49,6 +49,7 @@ export { default as User } from '../assets/icons/user.svg';
 export { default as Video_Icon } from '../assets/icons/video.svg';
 export { default as White_cam } from '../assets/icons/white_cam.svg';
 export { default as Within } from '../assets/icons/within.svg';
+export { default as Reels } from '../assets/icons/reels.svg';
 
 export const Defaultimage =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/480px-Default_pfp.png';

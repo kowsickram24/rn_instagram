@@ -45,7 +45,13 @@ const NewSheet = forwardRef(({navigation}, ref) => {
             <Grid />
             <Text style={styles.sheetItemText}>Post</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.sheetItem}>
+          <TouchableOpacity 
+          onPress={() => {
+              ref.current.close();
+              navigation.navigate('NewStory');
+            }}
+          
+           style={styles.sheetItem}>
             <Text style={styles.sheetItemText}>Story</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.sheetItem}>

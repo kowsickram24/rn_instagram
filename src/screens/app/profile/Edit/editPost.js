@@ -1,21 +1,15 @@
-import { firestore } from '../../../../../firebase.config';
-import { Header, Input } from '@rneui/themed';
-import { useState } from 'react';
-import {
-  Animated,
-  ScrollView,
-  TouchableWithoutFeedback
-} from 'react-native';
+import {firestore} from '../../../../../firebase.config';
+import {Header, Input} from '@rneui/themed';
+import {useState} from 'react';
+import {Animated, ScrollView, TouchableWithoutFeedback} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
-import { useSelector } from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
-import { PrimaryBtn } from '../../../../components/buttons/primaryButton';
-import { Box, Text } from '../../../../theme';
+import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
+import {Box, Text} from '../../../../theme';
 
 const EditPost = ({route, navigation}) => {
-  const currentUser = useSelector(state => state.user.user);
-  const [posts, setPosts] = useState(route.params.selectedPost);
+  const [posts, setPosts] = useState(route.params.post);
   const VideoUrl = posts?.mediaUrls.filter(key => key.endsWith('.mp4'));
   console.log('VideoUrl: ', VideoUrl);
   const imageUrl = posts?.mediaUrls.filter(key => key.endsWith('.jpg'));
@@ -45,7 +39,6 @@ const EditPost = ({route, navigation}) => {
 
   return (
     <Box backgroundColor="mainwhite" padding="s" flex={1}>
-      
       <Header
         leftComponent={
           <Box flexDirection="row" gap={'s'} alignItems="center">
@@ -71,21 +64,28 @@ const EditPost = ({route, navigation}) => {
                 data={imageUrl}
                 renderItem={({item}) => (
                   <TouchableWithoutFeedback>
-                    <FastImage
-                      source={{uri: item}}
-                      style={{width: 350, height: 350, alignSelf:'center'}}
-                      resizeMode={FastImage.resizeMode.cover}
-                    />
+                    <Box>
+                      <FastImage
+                        source={{uri: item}}
+                        style={{width: 350, height: 350, alignSelf: 'center'}}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                    </Box>
                   </TouchableWithoutFeedback>
                 )}
               />
             </Box>
           )}
-          {VideoUrl.length > 0 && (
+          {VideoUrl?.length > 0 && (
             <TouchableWithoutFeedback onPress={toggleMute}>
               <Video
                 source={{uri: VideoUrl[0]}}
-                style={{alignSelf:'center', height: 350,width:350, borderRadius: 10}}
+                style={{
+                  alignSelf: 'center',
+                  height: 350,
+                  width: 350,
+                  borderRadius: 10,
+                }}
                 playWhenInactive
                 repeat
                 muted={isMuted}
@@ -102,8 +102,8 @@ const EditPost = ({route, navigation}) => {
               color: 'grey',
               paddingVertical: 6,
             }}
-            inputStyle={{fontSize: 14, height: 60, textAlignVertical: 'top'}}
-            value={posts.caption}
+            inputStyle={{fontSize: 14, height: 60, padding: 8, textAlignVertical: 'top'}}
+            value={posts?.caption}
             placeholder="Caption"
             onChangeText={text => setPosts({...posts, caption: text})}
             multiline
@@ -112,7 +112,7 @@ const EditPost = ({route, navigation}) => {
               borderWidth: 0.5,
               borderBottomWidth: 0.5,
             }}
-            />
+          />
           <Input
             label={'Location'}
             labelStyle={{
@@ -121,8 +121,8 @@ const EditPost = ({route, navigation}) => {
               color: 'grey',
               paddingVertical: 6,
             }}
-            inputStyle={{fontSize: 14, textAlignVertical: 'center'}}
-            value={posts.location}
+            inputStyle={{fontSize: 14, padding:8, textAlignVertical: 'center'}}
+            value={posts?.location}
             placeholder="Location"
             onChangeText={handleLocationChange}
             inputContainerStyle={{

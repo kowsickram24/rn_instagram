@@ -27,6 +27,11 @@ const Profile = ({navigation, User}) => {
     setSelectedImage(null);
   };
 
+  const handleAccount = () => {
+   navigation.navigate('AccountCenter')
+   ProfileRef.current.close();
+  };
+
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Header
@@ -90,7 +95,7 @@ const Profile = ({navigation, User}) => {
             borderRadius: 10,
             marginVertical: 6,
           }}
-          titleStyle={{color: '#000', fontWeight: '100', fontSize: 14}}
+          titleStyle={{color: '#000', fontWeight: '400', fontSize: 14}}
           buttonStyle={{
             backgroundColor: 'lightgrey',
           }}
@@ -110,12 +115,13 @@ const Profile = ({navigation, User}) => {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'rgba(0,0,0,0.8)',
+              backgroundColor: 'rgba(0,0,0,0.9)',
+  
             }}>
             {selectedImage && (
               <FastImage
                 source={{uri: selectedImage}}
-                style={{width: width, height: width, borderRadius: width}}
+                style={{width: 250, height: 250, borderRadius: 250}}
                 resizeMode="contain"
               />
             )}
@@ -158,9 +164,9 @@ const Profile = ({navigation, User}) => {
               <Tick_blue />
             </Box>
           </Box>
-          <Box flex={1} padding={'s'} justifyContent="flex-end">
+          <Box flex={1} padding={'s'} margin={'m'} justifyContent="flex-end">
             <TouchableWithoutFeedback
-              onPress={() => navigation.navigate('AccountCenter')}>
+              onPress={handleAccount}>
               <Box padding={'xs'} borderRadius={'xl'} borderWidth={1}>
                 <Text color={'mainblack'} textAlign="center">
                   Go to Accountcenter
