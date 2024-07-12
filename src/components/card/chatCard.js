@@ -1,5 +1,5 @@
 import {Avatar, Card, Skeleton} from '@rneui/themed';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import {Share} from '../../constants/assets';
 import {Box, Text} from '../../theme';
 
@@ -8,13 +8,25 @@ const ChatCard = ({
   LastMessage = 'hii',
   ProfileUrl,
   loading,
+  onAvatarPress,
 }) => {
   if (loading) {
     return <ChatCardSkeleton />;
   }
   return (
     <Box padding={'s'} flexDirection="row" gap={'s'}>
-      <Avatar size={'medium'} rounded source={{uri: ProfileUrl}} />
+      <TouchableWithoutFeedback onPress={onAvatarPress}>
+        <Avatar
+          containerStyle={{
+            borderWidth: 2,
+            borderColor: 'darkviolet',
+            padding: 2,
+          }}
+          size={'medium'}
+          rounded
+          source={{uri: ProfileUrl}}
+        />
+      </TouchableWithoutFeedback>
       <Box
         flex={1}
         flexDirection="row"

@@ -20,7 +20,7 @@ import {firestore} from '../../../../firebase.config';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
-import config from '../../../config';
+import { config } from '../../../config';
 import {
   Dustbin,
   ForWard,

@@ -1,8 +1,15 @@
-import React, { forwardRef } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, {forwardRef} from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { Grid } from '../../constants/assets';
-import { Box } from '../../theme';
+import {Grid} from '../../constants/assets';
+import {Box} from '../../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 const NewSheet = forwardRef(({navigation}, ref) => {
   const Height = Dimensions.get('screen').height;
 
@@ -32,35 +39,38 @@ const NewSheet = forwardRef(({navigation}, ref) => {
             Create
           </Text>
         </View>
-        <View style={styles.sheetContent}>
+        <Box style={{flex: 1, alignItems: 'center', justifyContent: 'space-evenly'}}>
           <TouchableOpacity
-            style={[
-              styles.sheetItem,
-              {flexDirection: 'row', gap: 10, justifyContent: 'center'},
-            ]}
             onPress={() => {
               ref.current.close();
               navigation.navigate('NewPost');
             }}>
-            <Grid />
-            <Text style={styles.sheetItemText}>Post</Text>
+            <Box gap={'s'} alignItems="center" flexDirection="row">
+              <Grid />
+              <Text style={styles.sheetItemText}>Post</Text>
+            </Box>
           </TouchableOpacity>
-          <TouchableOpacity 
-          onPress={() => {
+          <TouchableOpacity
+            onPress={() => {
               ref.current.close();
               navigation.navigate('NewStory');
-            }}
-          
-           style={styles.sheetItem}>
-            <Text style={styles.sheetItemText}>Story</Text>
+            }}>
+            <Box gap={'s'} alignItems="center" flexDirection="row">
+              <Icon name="timer-outline" color={'#262626'} size={30} />
+              <Text style={styles.sheetItemText}>Story</Text>
+            </Box>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.sheetItem}>
+          <TouchableOpacity >
+            <Box gap={'s'} alignItems="center" flexDirection="row">
             <Text style={styles.sheetItemText}>Live</Text>
+            </Box>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.sheetItem}>
+          <TouchableOpacity >
+            <Box gap={'s'} alignItems="center" flexDirection="row">
             <Text style={styles.sheetItemText}>Reel</Text>
+            </Box>
           </TouchableOpacity>
-        </View>
+        </Box>
       </RBSheet>
     </Box>
   );

@@ -13,9 +13,13 @@ import ProfileCard from '../../../components/card/profileCard';
 import { Dw_Arrow, Menu, Tick_blue } from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
 import { Box, Text, height, width } from '../../../theme';
+import { useSelector } from 'react-redux';
+import { IgStories } from '../story/IGstories';
 const Profile = ({navigation, User}) => {
+  const stories = useSelector(state => state.stories.stories);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [storyModal, setStoryModal] = useState(false);
   const ProfileRef = useRef();
   const handleLongPress = avatar => {
     setSelectedImage(avatar);
@@ -74,6 +78,7 @@ const Profile = ({navigation, User}) => {
         followingCount={User?.following.length}
         Postcount={User?.posts.length}
         userAvatar={User?.avatar}
+        onAvatarPress={() => setStoryModal(!storyModal)}
       />
       <Box padding={'m'}>
         {User?.username && (
@@ -177,6 +182,7 @@ const Profile = ({navigation, User}) => {
         </Box>
       </RBSheet>
       {/* Profile Tab */}
+      <IgStories storyData={stories} OpenStoryModal={storyModal} />
       <TopNavigator navigation={navigation} />
     </Box>
   );

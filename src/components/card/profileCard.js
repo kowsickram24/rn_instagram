@@ -9,6 +9,7 @@ const ProfileCard = ({
   followingCount,
   onFollowersPress,
   onFollowingPress,
+  onAvatarPress,
   onAvatarLongPress,
   onAvatarPressout,
   onPostPress,
@@ -21,9 +22,11 @@ const ProfileCard = ({
       alignItems="center"
       justifyContent="space-evenly">
       <TouchableWithoutFeedback
+      onPress={onAvatarPress}
         onPressOut={onAvatarPressout}
         onLongPress={onAvatarLongPress}>
         <Avatar
+          containerStyle={{borderWidth: 2, borderColor: 'darkviolet', padding:2}}
           rounded
           size={'large'}
           source={{

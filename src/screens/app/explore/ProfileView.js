@@ -1,14 +1,14 @@
-import { firestore } from '../../../../firebase.config';
-import { Header } from '@rneui/themed';
-import { useEffect, useState } from 'react';
+import {firestore} from '../../../../firebase.config';
+import {Header} from '@rneui/themed';
+import {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Modal,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import {
   PrimaryBtn,
@@ -16,7 +16,7 @@ import {
 } from '../../../components/buttons/primaryButton';
 import ProfileCard from '../../../components/card/profileCard';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import { Box, Text, width } from '../../../theme';
+import {Box, Text, width} from '../../../theme';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
@@ -38,7 +38,9 @@ const ProfileView = ({route, navigation}) => {
 
   const isSameUser = currentUser?.userId === selectedUser?.userId;
   console.log('isSameUser: ', isSameUser);
-
+  if (isSameUser) {
+    navigation.navigate('Profile');
+  }
   const handleChat = async () => {
     try {
       // Check if a chat already exists
@@ -155,10 +157,6 @@ const ProfileView = ({route, navigation}) => {
     );
   }
 
-  if (isSameUser) {
-    navigation.navigate('Profile');
-  }
-
   return (
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Header
@@ -176,7 +174,7 @@ const ProfileView = ({route, navigation}) => {
       />
 
       <ProfileCard
-      onPostPress={() => navigation.navigate('PublicPost')}
+        onPostPress={() => navigation.navigate('PublicPost')}
         onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
         show={false}
         // onAvatarPressout={handlePressOut}

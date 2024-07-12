@@ -4,28 +4,62 @@ import {
   RefreshControl,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  BackHandler,
 } from 'react-native';
-import {useSelector} from 'react-redux';
-import {Header, Divider, LinearProgress} from '@rneui/themed';
-import {Insta_Typo_logo, Msg_Icon, Notifi, Reels} from '../../../constants/assets';
+import {useSelector, useDispatch} from 'react-redux';
+import {Header, Divider, LinearProgress, Button} from '@rneui/themed';
+import {
+  Insta_Typo_logo,
+  Msg_Icon,
+  Notifi,
+  Reels,
+} from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
 import {Data} from '../../../utils/randomData';
 import {usePosts} from '../../../hooks/data/fetchPosts';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
 import {ProgressContext} from '../../../context/Upload/progressCtxt';
+import {IgStories} from '../story/IGstories';
+import {fetchStories} from '../../../store/slices/storiesSlice';
 
 const Home = ({navigation}) => {
+  const dispatch = useDispatch();
+  const stories = useSelector(state => state.stories.stories);
+  console.log('stories: ', stories);
   const {data: postData, isSuccess: postsFetched, refetch} = usePosts();
   const currentUser = useSelector(state => state.user.user);
   const {progress} = useContext(ProgressContext);
   const [mutedStates, setMutedStates] = useState({});
   const [refreshing, setRefreshing] = useState(false);
+  const [storyModal, setStoryModal] = useState(false);
+
   useEffect(() => {
     if (postsFetched) {
       setRefreshing(false);
     }
   }, [postsFetched]);
+
+  useEffect(() => {
+    dispatch(fetchStories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (storyModal) {
+        setStoryModal(false);
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [storyModal]);
 
   const toggleMute = postId => {
     setMutedStates(prevState => ({
@@ -56,11 +90,15 @@ const Home = ({navigation}) => {
   );
 
   const renderStory = ({item}) => (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={() => setStoryModal(!storyModal)}>
       <Box alignItems="center">
-        <StoryAvatar source={item?.Url} />
-        <Text fontSize={12} color={'mainblack'} textAlign="center">
-          {item?.name}
+        <StoryAvatar source={item?.user?.avatar} />
+        <Text
+          fontSize={12}
+          numberOfLines={1}
+          color={'mainblack'}
+          textAlign="center">
+          {item?.user?.username}
         </Text>
       </Box>
     </TouchableWithoutFeedback>
@@ -96,7 +134,7 @@ const Home = ({navigation}) => {
           horizontal
           keyExtractor={item => item.id}
           renderItem={renderStory}
-          data={Data}
+          data={stories}
         />
       </Box>
 
@@ -142,6 +180,12 @@ const Home = ({navigation}) => {
             colors={['#3797EF']}
           />
         }
+
+      />
+      <IgStories
+        storyData={stories}
+        onDismiss={() => setStoryModal(false)}
+        OpenStoryModal={storyModal}
       />
     </Box>
   );

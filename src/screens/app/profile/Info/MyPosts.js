@@ -12,7 +12,7 @@ const { width } = Dimensions.get('screen');
 const MyPosts = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const { data: postData, isLoading, refetch: refetchPosts } = usePosts(currentUser?.userId);
-  
+  const ImagePst = postData?.mediaUrls?.filter(key => key?.endsWith('.jpg'));
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {

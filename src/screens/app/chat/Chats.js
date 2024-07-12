@@ -4,10 +4,11 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import React, {useRef, useState} from 'react';
 import {FlatList, Platform, TouchableOpacity} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
 import {Box, Text} from '../../../theme';
+import {IgStories} from '../story/IGstories';
 
 const fetchChats = async currentUser => {
   const snapshot = await firestore()
@@ -32,11 +33,14 @@ const fetchChats = async currentUser => {
 };
 
 const ChatBox = ({navigation}) => {
+  const dispatch = useDispatch();
+  const stories = useSelector(state => state.stories.stories);
   const currentUser = useSelector(state => state.user.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChat, setSelectedChat] = useState('');
   const Actionref = useRef();
   const queryClient = useQueryClient();
+  const [storyModal, setStoryModal] = useState(false);
 
   const {
     data: chats,
@@ -82,6 +86,7 @@ const ChatBox = ({navigation}) => {
         navigation.navigate('ChatBox', {params: {chatId: item.id}})
       }>
       <ChatCard
+        onAvatarPress={() => setStoryModal(!storyModal)}
         loading={isLoading}
         ProfileUrl={item?.secondUser.avatar}
         Username={item?.secondUser.username}
@@ -158,6 +163,7 @@ const ChatBox = ({navigation}) => {
           </TouchableOpacity>
         </Box>
       </RBSheet>
+      <IgStories OpenStoryModal={storyModal} storyData={stories} />
     </Box>
   );
 };
