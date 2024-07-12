@@ -20,7 +20,7 @@ import AccountCenter from '../../../screens/app/settings/AccountCenter';
 import Settings from '../../../screens/app/settings/Settings';
 import BottomNavigator from '../../BottomTab/BottomTab';
 import ReelsFeed from '../../../screens/app/explore/reels/ReelsFeed';
-import NewStory from '../../../screens/app/post/create/Newstory';
+import NewStory from '../../../screens/app/story/Newstory';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {

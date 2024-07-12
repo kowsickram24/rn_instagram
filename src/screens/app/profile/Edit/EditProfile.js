@@ -10,7 +10,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
 import DropdownComponent from '../../../../components/dropdown/dropDownPicker';
-import config from '../../../../config';
+import { config } from '../../../../config';
 import { Defaultimage } from '../../../../constants/assets';
 import { S3Bucket } from '../../../../services/aws/s3bucket';
 import { Box, Text } from '../../../../theme';

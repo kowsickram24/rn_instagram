@@ -25,6 +25,7 @@ import SkeletonCard from '../Skeleton/skeletonCard';
 import CmtSheet from '../bottomsheet/CmtSheet';
 import ShareSheet from '../bottomsheet/ShareSheet';
 import PostHeader from './PostHeader';
+import { useSelector } from 'react-redux';
 
 const FeedPost = ({
   user,
@@ -50,11 +51,12 @@ const FeedPost = ({
   const [isSaved, setIsSaved] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const [likedId, setLikedId] = useState([]);
-  const images = mediaSrc?.filter(key => key.endsWith('.jpg'));
-  const videos = mediaSrc?.filter(key => key.endsWith('.mp4'));
+  const images = mediaSrc?.filter(key => key?.endsWith('.jpg'));
+  const videos = mediaSrc?.filter(key => key?.endsWith('.mp4'));
   const totalImages = images?.length || 0;
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(0)).current;
+
   let formattedTime = '';
 
   try {

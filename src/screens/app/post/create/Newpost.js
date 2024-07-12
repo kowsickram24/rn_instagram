@@ -9,7 +9,7 @@ import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
 import {Loader} from '../../../../components/loader/Loader';
-import config from '../../../../config';
+import { config } from '../../../../config';
 import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
 import {ProgressContext} from '../../../../context/Upload/progressCtxt';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
