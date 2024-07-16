@@ -1,7 +1,7 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { firestore } from '../../../../firebase.config';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
+import {firestore} from '../../../../firebase.config';
 import ChatBox from '../../../screens/app/chat/ChatBox';
 import ChatInfo from '../../../screens/app/chat/ChatInfo';
 import Chats from '../../../screens/app/chat/Chats';
@@ -21,6 +21,8 @@ import Settings from '../../../screens/app/settings/Settings';
 import BottomNavigator from '../../BottomTab/BottomTab';
 import ReelsFeed from '../../../screens/app/explore/reels/ReelsFeed';
 import NewStory from '../../../screens/app/story/Newstory';
+import Archives from '../../../screens/app/settings/Archives';
+import {IgStories} from '../../../screens/app/story/IGstories';
 const Stack = createNativeStackNavigator();
 
 const UserStack = ({getData}) => {
@@ -73,7 +75,9 @@ const UserStack = ({getData}) => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main">
-        {props => <BottomNavigator User={currentUser} {...props} getData={getData} />}
+        {props => (
+          <BottomNavigator User={currentUser} {...props} getData={getData} />
+        )}
       </Stack.Screen>
       {/* Chats */}
       <Stack.Screen name="Chats" component={Chats} />
@@ -81,6 +85,15 @@ const UserStack = ({getData}) => {
       <Stack.Screen name="ChatInfo" component={ChatInfo} />
       <Stack.Screen name="ReelsFeed" component={ReelsFeed} />
       <Stack.Screen name="NewStory" component={NewStory} />
+      <Stack.Screen
+        options={{
+          presentation: 'modal',
+          headerShown: false,
+        }}
+        name="Stories"
+        component={IgStories}
+      />
+      <Stack.Screen name="Archives" component={Archives} />
 
       <Stack.Screen name="EditProfile">
         {props => <EditProfile {...props} />}

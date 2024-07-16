@@ -20,7 +20,7 @@ import {firestore} from '../../../../firebase.config';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
-import { config } from '../../../config';
+import {config} from '../../../config';
 import {
   Dustbin,
   ForWard,
@@ -447,7 +447,7 @@ const ChatBox = ({navigation, route}) => {
                         <Box
                           margin="m"
                           padding="m"
-                          borderWidth={0.2}
+                          borderWidth={Platform.OS === 'ios' ? 0.2 : 0}
                           elevation={2}
                           backgroundColor={'mainwhite'}
                           borderRadius="xl"
@@ -500,6 +500,17 @@ const ChatBox = ({navigation, route}) => {
                                 }
                                 postId={item?.message}
                               />
+                            </>
+                          ) : item.messageType === 'storyreply' ? (
+                            <>
+                              <Box padding={'s'} backgroundColor={'lightgrey'}>
+                                <Text color={'mainblack'} fontSize={12}>
+                                  Replyed Your Story
+                                </Text>
+                              </Box>
+                              <Text fontSize={14} color={'mainblack'}>
+                                {item.message}
+                              </Text>
                             </>
                           ) : (
                             <TouchableWithoutFeedback onPress={ToggleMute}>

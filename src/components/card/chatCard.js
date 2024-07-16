@@ -9,6 +9,7 @@ const ChatCard = ({
   ProfileUrl,
   loading,
   onAvatarPress,
+  iSstory,
 }) => {
   if (loading) {
     return <ChatCardSkeleton />;
@@ -17,11 +18,15 @@ const ChatCard = ({
     <Box padding={'s'} flexDirection="row" gap={'s'}>
       <TouchableWithoutFeedback onPress={onAvatarPress}>
         <Avatar
-          containerStyle={{
-            borderWidth: 2,
-            borderColor: 'darkviolet',
-            padding: 2,
-          }}
+          containerStyle={[
+            iSstory
+              ? {
+                  borderWidth: 2,
+                  borderColor: 'darkviolet',
+                  padding: 2,
+                }
+              : {},
+          ]}
           size={'medium'}
           rounded
           source={{uri: ProfileUrl}}

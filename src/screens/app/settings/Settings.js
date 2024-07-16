@@ -16,6 +16,7 @@ import {
 } from '../../../constants/assets';
 import {logout} from '../../../store/slices/userSlice';
 import {Box, Text} from '../../../theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Settings = ({navigation, getData}) => {
   const [visible, setVisible] = useState(false);
@@ -33,6 +34,12 @@ const Settings = ({navigation, getData}) => {
     },
     {id: 'saves', label: 'Saved', icon: <Save />, screen: 'MySaves'},
     {id: 'likes', label: 'Liked', icon: <Heaty_uf />, screen: 'LikedPosts'},
+    {
+      id: 'Archive',
+      label: 'Archive',
+      icon: <Icon name="timer-outline" color={'#262626'} size={28} />,
+      screen: 'Archives',
+    },
     {
       id: 'logout',
       label: 'Logout',
@@ -132,7 +139,7 @@ const Settings = ({navigation, getData}) => {
 
             <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
               <Box padding="m" alignItems="center">
-                <Text variant="body" marginBottom="m">
+                <Text color={'mainblack'} marginBottom="m">
                   Are you sure you want to logout?
                 </Text>
                 <Box flexDirection="row" gap="m">

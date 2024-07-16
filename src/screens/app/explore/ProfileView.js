@@ -17,12 +17,15 @@ import {
 import ProfileCard from '../../../components/card/profileCard';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
 import {Box, Text, width} from '../../../theme';
+import { IgStories } from '../story/IGstories';
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;
   console.log('userId: ', userId);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const stories = useSelector(state => state.stories.stories);
+  const [storyModal, setStoryModal] = useState(false);
 
   const handleLongPress = avatar => {
     setSelectedImage(avatar);
@@ -177,7 +180,7 @@ const ProfileView = ({route, navigation}) => {
         onPostPress={() => navigation.navigate('PublicPost')}
         onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
         show={false}
-        // onAvatarPressout={handlePressOut}
+        onAvatarPress={() => setStoryModal(!storyModal)}
         userAvatar={selectedUser?.avatar}
         Postcount={selectedUser?.posts.length}
         onFollowersPress={() =>
@@ -244,7 +247,6 @@ const ProfileView = ({route, navigation}) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
       <ProfileTab user={selectedUser} />
     </Box>
   );

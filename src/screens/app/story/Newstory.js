@@ -65,24 +65,38 @@ const NewStory = ({navigation}) => {
         Alert.alert('Error', 'Please select an image for your story.');
         return;
       }
-
+  
       const imageUrl = await uploadMediaToAWS(selectedImage, 'image');
-      const storyId = firestore().collection('stories').doc().id;
-
-      const storyData = {
-        userId: currentUser.userId,
+  
+      const userStoryDocRef = firestore().collection('stories').doc(currentUser.userId);
+      const userStoryDoc = await userStoryDocRef.get();
+  
+      const newStory = {
         image: imageUrl,
         caption: storytext || '',
         seen: [],
         time: firestore.Timestamp.now(),
       };
-      await firestore().collection('stories').doc(storyId).set(storyData);
+  
+      if (userStoryDoc.exists) {
+        await userStoryDocRef.update({
+          stories: firestore.FieldValue.arrayUnion(newStory),
+        });
+      } else {
+        const storyData = {
+          userId: currentUser.userId,
+          stories: [newStory],
+        };
+        await userStoryDocRef.set(storyData);
+      }
+  
       navigation.goBack();
     } catch (error) {
       console.error('Error adding story:', error);
       Alert.alert('Error', 'Failed to add story.');
     }
   };
+  
 
   const PickImage = async () => {
     try {
@@ -97,7 +111,7 @@ const NewStory = ({navigation}) => {
   };
 
   return (
-    <Box flex={1} backgroundColor={'mainwhite'}>
+    <Box flex={1} backgroundColor={'red'}>
       <Header
         statusBarProps={{hidden: true}}
         leftContainerStyle={{flex: 3}}
@@ -117,8 +131,9 @@ const NewStory = ({navigation}) => {
           resizeMode="cover"
           style={{width: '100%', height: '100%'}}
           source={{uri: selectedImage}}>
-          <BlurView
+          <Box
             style={{
+              backgroundColor:'#000',
               width: '100%',
               padding: 8,
             }}>
@@ -129,12 +144,12 @@ const NewStory = ({navigation}) => {
               onChangeText={setStorytext}
               inputStyle={{fontSize: 14, color: 'white'}}
               placeholder="Enter Caption"></Input>
-          </BlurView>
+          </Box>
         </ImageBackground>
       </Box>
 
       {/* Button */}
-      <BlurView style={{position: 'absolute', bottom: 0, width: '100%'}}>
+      <Box style={{backgroundColor:'#000', position: 'absolute', bottom: 0, width: '100%'}}>
         <Box
           padding={'m'}
           flexDirection="row"
@@ -153,7 +168,7 @@ const NewStory = ({navigation}) => {
             </Box>
           </TouchableOpacity>
         </Box>
-      </BlurView>
+      </Box>
     </Box>
   );
 };

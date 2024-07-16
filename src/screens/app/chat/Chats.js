@@ -97,6 +97,8 @@ const ChatBox = ({navigation}) => {
             ? 'Sent a video'
             : item?.lastMessage?.messageType === 'post'
             ? 'Sent a post'
+            : item?.lastMessage?.messageType === 'storyreply'
+            ? 'Sent a story reply'
             : item?.lastMessage?.message
         }
       />
@@ -112,7 +114,7 @@ const ChatBox = ({navigation}) => {
         }}
         centerComponent={
           <Text fontSize={14} color={'mainblack'}>
-            {currentUser.username}
+            {currentUser?.username}
           </Text>
         }
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
@@ -163,7 +165,6 @@ const ChatBox = ({navigation}) => {
           </TouchableOpacity>
         </Box>
       </RBSheet>
-      <IgStories OpenStoryModal={storyModal} storyData={stories} />
     </Box>
   );
 };

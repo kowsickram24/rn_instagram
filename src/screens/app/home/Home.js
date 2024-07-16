@@ -4,7 +4,6 @@ import {
   RefreshControl,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  BackHandler,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {Header, Divider, LinearProgress, Button} from '@rneui/themed';
@@ -15,7 +14,6 @@ import {
   Reels,
 } from '../../../constants/assets';
 import {Box, Text} from '../../../theme';
-import {Data} from '../../../utils/randomData';
 import {usePosts} from '../../../hooks/data/fetchPosts';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
@@ -26,7 +24,6 @@ import {fetchStories} from '../../../store/slices/storiesSlice';
 const Home = ({navigation}) => {
   const dispatch = useDispatch();
   const stories = useSelector(state => state.stories.stories);
-  console.log('stories: ', stories);
   const {data: postData, isSuccess: postsFetched, refetch} = usePosts();
   const currentUser = useSelector(state => state.user.user);
   const {progress} = useContext(ProgressContext);
@@ -44,28 +41,15 @@ const Home = ({navigation}) => {
     dispatch(fetchStories());
   }, [dispatch]);
 
-  useEffect(() => {
-    const backAction = () => {
-      if (storyModal) {
-        setStoryModal(false);
-        return true;
-      }
-      return false;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [storyModal]);
-
   const toggleMute = postId => {
     setMutedStates(prevState => ({
       ...prevState,
       [postId]: !prevState[postId],
     }));
+  };
+
+  const ViewStory = () => {
+    setStoryModal(true);
   };
 
   const renderItem = ({item}) => (
@@ -90,7 +74,8 @@ const Home = ({navigation}) => {
   );
 
   const renderStory = ({item}) => (
-    <TouchableWithoutFeedback onPress={() => setStoryModal(!storyModal)}>
+    <TouchableWithoutFeedback
+      onPress={() => navigation.navigate('Stories', {stories: stories})}>
       <Box alignItems="center">
         <StoryAvatar source={item?.user?.avatar} />
         <Text
@@ -180,11 +165,10 @@ const Home = ({navigation}) => {
             colors={['#3797EF']}
           />
         }
-
       />
       <IgStories
         storyData={stories}
-        onDismiss={() => setStoryModal(false)}
+        onDismiss={() => setStoryModal(!storyModal)}
         OpenStoryModal={storyModal}
       />
     </Box>

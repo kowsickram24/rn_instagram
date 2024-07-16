@@ -269,7 +269,7 @@ const FeedPost = ({
 
   return (
     <TouchableWithoutFeedback>
-      <Box marginVertical={'s'}>
+      <Box >
         <PostHeader
           user={user}
           location={location}
@@ -431,7 +431,7 @@ const FeedPost = ({
 
         {comments?.length > 0 && (
           <TouchableOpacity onPress={ViewCmnt}>
-            <Text paddingHorizontal={'s'} fontSize={12}>
+            <Text style={{color:'grey'}} paddingHorizontal={'s'} fontSize={12}>
               View{' '}
               {comments?.length > 1
                 ? `${comments?.length} comments`
@@ -441,7 +441,7 @@ const FeedPost = ({
         )}
 
         {formattedTime && (
-          <Text paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
+          <Text style={{color:'grey'}} paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
             {formattedTime}
           </Text>
         )}

@@ -172,7 +172,7 @@ const Profile = ({navigation, User}) => {
           <Box flex={1} padding={'s'} margin={'m'} justifyContent="flex-end">
             <TouchableWithoutFeedback
               onPress={handleAccount}>
-              <Box padding={'xs'} borderRadius={'xl'} borderWidth={1}>
+              <Box padding={'s'} borderRadius={'xl'} borderWidth={1}>
                 <Text color={'mainblack'} textAlign="center">
                   Go to Accountcenter
                 </Text>
@@ -182,7 +182,7 @@ const Profile = ({navigation, User}) => {
         </Box>
       </RBSheet>
       {/* Profile Tab */}
-      <IgStories storyData={stories} OpenStoryModal={storyModal} />
+      {/* <IgStories storyData={stories} onDismiss={() => setStoryModal(false) } OpenStoryModal={storyModal} /> */}
       <TopNavigator navigation={navigation} />
     </Box>
   );

@@ -1,9 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { firestore } from '../../../firebase.config';
 
-// Async thunk for fetching stories
-export const fetchStories = createAsyncThunk('stories/fetchStories', async () => {
-  const storiesSnapshot = await firestore().collection('stories').orderBy('time', 'desc').get();
+// Async thunk for fetching stories with optional userId parameter
+export const fetchStories = createAsyncThunk('stories/fetchStories', async (userId = null) => {
+  let storiesSnapshot;
+  if (userId) {
+    storiesSnapshot = await firestore()
+      .collection('stories')
+      .where('userId', '==', userId)
+      .get();
+  } else {
+    storiesSnapshot = await firestore().collection('stories').get();
+  }
+
   const fetchedStories = [];
 
   for (const doc of storiesSnapshot.docs) {
