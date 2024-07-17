@@ -22,7 +22,7 @@ import { theme } from './src/theme';
 import linking from './linking';
 import StackNavigator from './src/navigation/Stack';
 
-import IgStories from './src/screens/app/story/IGstories';
+
 
 const App = () => {
   useEffect(() => {
@@ -54,7 +54,6 @@ const App = () => {
               <NetworkProvider>
                 <I18nextProvider i18n={i18n}>
                   <ProgressProvider>
-                  {/* <IgStories /> */}
                     <NavigationContainer linking={linking}>
                       <StackNavigator />
                     </NavigationContainer>

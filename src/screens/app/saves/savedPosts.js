@@ -87,6 +87,7 @@ const SavedPosts = ({ navigation }) => {
           </Box>
         }
         renderItem={({ item }) => (
+          <Box >
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('PostPage', { postId: item.id })
@@ -95,7 +96,7 @@ const SavedPosts = ({ navigation }) => {
               <FastImage
                 resizeMode="cover"
                 source={{ uri: item?.mediaUrls[0] }}
-                style={{ width: width / 3, height: width / 3 }}
+                style={{ width: width / 3, height: width / 3, borderRadius:10 }}
               />
             ) : null}
             {item?.videoUrl ? (
@@ -107,6 +108,7 @@ const SavedPosts = ({ navigation }) => {
               />
             ) : null}
           </TouchableOpacity>
+          </Box>
         )}
       />
     </Box>

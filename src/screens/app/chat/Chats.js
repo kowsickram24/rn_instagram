@@ -8,7 +8,6 @@ import {useSelector, useDispatch} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
 import {Box, Text} from '../../../theme';
-import {IgStories} from '../story/IGstories';
 
 const fetchChats = async currentUser => {
   const snapshot = await firestore()
@@ -98,7 +97,7 @@ const ChatBox = ({navigation}) => {
             : item?.lastMessage?.messageType === 'post'
             ? 'Sent a post'
             : item?.lastMessage?.messageType === 'storyreply'
-            ? 'Sent a story reply'
+            ? 'Replyed to your story'
             : item?.lastMessage?.message
         }
       />

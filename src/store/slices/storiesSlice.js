@@ -25,6 +25,15 @@ export const fetchStories = createAsyncThunk('stories/fetchStories', async (user
   return fetchedStories;
 });
 
+// Async thunk for deleting a story
+export const deleteStory = createAsyncThunk('stories/deleteStory', async ({ userId, story }) => {
+  const userStoriesRef = firestore().collection('stories').doc(userId);
+  await userStoriesRef.update({
+    stories: firestore.FieldValue.arrayRemove(story),
+  });
+  return { userId, storyId: story.id };
+});
+
 const storiesSlice = createSlice({
   name: 'stories',
   initialState: {
@@ -44,6 +53,22 @@ const storiesSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(deleteStory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteStory.fulfilled, (state, action) => {
+        const { userId, storyId } = action.payload;
+        const userStories = state.stories.find(story => story.userId === userId);
+        if (userStories) {
+          userStories.stories = userStories.stories.filter(story => story.id !== storyId);
+        }
+        state.loading = false;
+      })
+      .addCase(deleteStory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

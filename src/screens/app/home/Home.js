@@ -18,7 +18,6 @@ import {usePosts} from '../../../hooks/data/fetchPosts';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
 import {ProgressContext} from '../../../context/Upload/progressCtxt';
-import {IgStories} from '../story/IGstories';
 import {fetchStories} from '../../../store/slices/storiesSlice';
 
 const Home = ({navigation}) => {
@@ -29,7 +28,6 @@ const Home = ({navigation}) => {
   const {progress} = useContext(ProgressContext);
   const [mutedStates, setMutedStates] = useState({});
   const [refreshing, setRefreshing] = useState(false);
-  const [storyModal, setStoryModal] = useState(false);
 
   useEffect(() => {
     if (postsFetched) {
@@ -48,9 +46,7 @@ const Home = ({navigation}) => {
     }));
   };
 
-  const ViewStory = () => {
-    setStoryModal(true);
-  };
+
 
   const renderItem = ({item}) => (
     <Box>
@@ -166,11 +162,7 @@ const Home = ({navigation}) => {
           />
         }
       />
-      <IgStories
-        storyData={stories}
-        onDismiss={() => setStoryModal(!storyModal)}
-        OpenStoryModal={storyModal}
-      />
+
     </Box>
   );
 };

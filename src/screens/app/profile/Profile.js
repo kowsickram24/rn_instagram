@@ -14,7 +14,7 @@ import { Dw_Arrow, Menu, Tick_blue } from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
 import { Box, Text, height, width } from '../../../theme';
 import { useSelector } from 'react-redux';
-import { IgStories } from '../story/IGstories';
+
 const Profile = ({navigation, User}) => {
   const stories = useSelector(state => state.stories.stories);
   const [modalVisible, setModalVisible] = useState(false);
@@ -181,8 +181,6 @@ const Profile = ({navigation, User}) => {
           </Box>
         </Box>
       </RBSheet>
-      {/* Profile Tab */}
-      {/* <IgStories storyData={stories} onDismiss={() => setStoryModal(false) } OpenStoryModal={storyModal} /> */}
       <TopNavigator navigation={navigation} />
     </Box>
   );

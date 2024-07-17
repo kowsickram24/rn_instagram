@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
-import {Header, Overlay, SearchBar} from '@rneui/themed';
+import {Divider, Header, Overlay, SearchBar} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
 import {Platform, TouchableOpacity} from 'react-native';
 import {Button} from 'react-native-paper';
@@ -17,6 +17,7 @@ import {
 import {logout} from '../../../store/slices/userSlice';
 import {Box, Text} from '../../../theme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {Modal} from 'react-native';
 
 const Settings = ({navigation, getData}) => {
   const [visible, setVisible] = useState(false);
@@ -126,7 +127,9 @@ const Settings = ({navigation, getData}) => {
                   }}>
                   <Box flexDirection="row" justifyContent="space-between">
                     <Box flexDirection="row" alignItems="center" gap={'s'}>
-                      {item.icon}
+                      <Box justifyContent="center" alignItems="center">
+                        {item.icon}
+                      </Box>
                       <Text fontSize={14} color={item.textColor || 'mainblack'}>
                         {item.label}
                       </Text>
@@ -137,19 +140,35 @@ const Settings = ({navigation, getData}) => {
               ))}
             </Box>
 
-            <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-              <Box padding="m" alignItems="center">
-                <Text color={'mainblack'} marginBottom="m">
-                  Are you sure you want to logout?
-                </Text>
-                <Box flexDirection="row" gap="m">
-                  <Button onPress={toggleOverlay}> Cancel </Button>
-                  <Button textColor="red" mode="text" onPress={handleLogout}>
-                    Logout
-                  </Button>
+            <Modal transparent visible={visible}>
+              <Box
+                style={{backgroundColor: 'rgba(0,0,0,0.5)'}}
+                flex={1}
+                alignItems="center"
+                justifyContent="center">
+                <Box
+                  borderRadius={'m'}
+                  backgroundColor={'mainwhite'}
+                  padding="l"
+                  alignItems="center">
+                  <Text fontSize={14} color={'mainblack'} marginBottom="m">
+                    Log out of your account?
+                  </Text>
+                  <Box flexDirection="column" gap="s">
+                    <Divider />
+                    <Button textColor="red" mode="text" onPress={handleLogout}>
+                      Log out
+                    </Button>
+                    <Divider />
+                    <Button
+                      textColor="black"
+                      onPress={() => setVisible(!visible)}>
+                      Cancel
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
-            </Overlay>
+            </Modal>
           </>
         </>
       )}

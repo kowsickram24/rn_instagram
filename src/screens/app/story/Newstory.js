@@ -3,6 +3,7 @@ import { Header, Input } from '@rneui/themed';
 import { Buffer } from 'buffer';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
@@ -15,12 +16,16 @@ import BackBtn from '../../../components/buttons/backButton';
 import { config } from '../../../config';
 import { S3Bucket } from '../../../services/aws/s3bucket';
 import { Box, Text } from '../../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 const Cloudfront = config.CLDFRNTDOM;
-const NewStory = ({navigation}) => {
+const NewStory = () => {
+  const navigation = useNavigation();
   const currentUser = useSelector(state => state.user.user);
   const [selectedImage, setSelectedImage] = useState(null);
   const [storytext, setStorytext] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isImagePicking, setIsImagePicking] = useState(false);
 
   const uploadMediaToAWS = async (mediaPath, mediaType) => {
     try {
@@ -60,9 +65,11 @@ const NewStory = ({navigation}) => {
   };
 
   const handleAddStory = async () => {
+    setIsLoading(true);
     try {
       if (!selectedImage) {
         Alert.alert('Error', 'Please select an image for your story.');
+        setIsLoading(false);
         return;
       }
   
@@ -94,11 +101,13 @@ const NewStory = ({navigation}) => {
     } catch (error) {
       console.error('Error adding story:', error);
       Alert.alert('Error', 'Failed to add story.');
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   const PickImage = async () => {
+    setIsImagePicking(true);
     try {
       const image = await ImageCropPicker.openPicker({
         mediaType: 'photo',
@@ -107,6 +116,8 @@ const NewStory = ({navigation}) => {
     } catch (error) {
       console.error('Error picking image: ', error);
       Alert.alert('Error', 'Failed to pick an image.');
+    } finally {
+      setIsImagePicking(false);
     }
   };
 
@@ -159,12 +170,14 @@ const NewStory = ({navigation}) => {
             <Box alignItems="center" gap={'s'} flexDirection="row">
               <Icon name="image" size={20} color="#fff" />
               <Text color={'mainwhite'}>Image</Text>
+              {isImagePicking && <ActivityIndicator size={'small'} color={'white'} />}
             </Box>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleAddStory}>
             <Box alignItems="center" gap={'s'} flexDirection="row">
               <Icon name="share" size={20} color="#fff" />
               <Text color={'mainwhite'}>Share</Text>
+              {isLoading && <ActivityIndicator size={'small'} color={'white'} />}
             </Box>
           </TouchableOpacity>
         </Box>

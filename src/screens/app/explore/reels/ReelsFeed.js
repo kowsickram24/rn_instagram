@@ -42,7 +42,7 @@ const ReelsFeed = () => {
     showsVerticalScrollIndicator={false}
     pagingEnabled 
     >
-      <Header
+      {/* <Header
         statusBarProps={{hidden: true}}
         leftContainerStyle={{flex: 3}}
         leftComponent={
@@ -52,7 +52,7 @@ const ReelsFeed = () => {
           </Box>
         }
         backgroundColor="white"
-      />
+      /> */}
       {data?.map((item, index) => (
         <Box key={index} flex={1} backgroundColor="mainwhite" >
           <Video

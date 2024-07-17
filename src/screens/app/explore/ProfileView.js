@@ -17,7 +17,7 @@ import {
 import ProfileCard from '../../../components/card/profileCard';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
 import {Box, Text, width} from '../../../theme';
-import { IgStories } from '../story/IGstories';
+
 const ProfileView = ({route, navigation}) => {
   const currentUser = useSelector(state => state.user.user);
   const {userId} = route.params;

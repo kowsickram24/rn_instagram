@@ -33,12 +33,11 @@ const Archives = ({navigation}) => {
       />
       <Box flex={1} backgroundColor={'mainwhite'}>
         <FlatList
-          horizontal
           data={userStories}
           renderItem={({item}) => (
-            <Box backgroundColor={'mainwhite'}>
+            <Box flexDirection='row' backgroundColor={'mainwhite'}>
               {item.stories.map((story, index) => (
-                <Box key={index} marginVertical={'s'}>
+                <Box flexDirection='row' key={index}>
                   <Box
                     borderRadius={'s'}
                     width={60}
