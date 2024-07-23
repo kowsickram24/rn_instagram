@@ -10,7 +10,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
 import DropdownComponent from '../../../../components/dropdown/dropDownPicker';
-import { config } from '../../../../config';
+import Config from 'react-native-config';
 import { Defaultimage } from '../../../../constants/assets';
 import { S3Bucket } from '../../../../services/aws/s3bucket';
 import { Box, Text } from '../../../../theme';
@@ -99,7 +99,7 @@ const EditProfile = ({navigation, route}) => {
       const buffer = Buffer.from(imageData, 'base64');
       const filename = `profile_${Date.now()}.jpg`;
       const params = {
-        Bucket: config.BUCKETNAME,
+        Bucket: Config.AWS_BUCKET_NAME,
         Key: filename,
         Body: buffer,
         ContentType: 'image/jpeg',
@@ -114,7 +114,7 @@ const EditProfile = ({navigation, route}) => {
         },
       };
       await S3Bucket.upload(params, options).promise();
-      const imageUrl = `${config.CLDFRNTDOM}/${filename}`;
+      const imageUrl = `${Config.AWS_CLOUDFRONT_DOMAIN}/${filename}`;
       return imageUrl;
     } catch (error) {
       console.error('Error uploading image: ', error);

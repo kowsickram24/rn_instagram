@@ -4,13 +4,14 @@ import auth from '@react-native-firebase/auth';
 import analytics from '@react-native-firebase/analytics';
 import crashlytics from '@react-native-firebase/crashlytics';
 import storage from '@react-native-firebase/storage';
-const firebaseConfig = {
-  apiKey: 'AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90',
-  projectId: 'instagramrn-8a8a4',
-  appID: '1:448812778466:android:617293fcd8dbfa52b2afbb',
-  storageBucket: 'instagramrn-8a8a4.appspot.com',
-};
+import Config from 'react-native-config';
 
+const firebaseConfig = {
+  apiKey: Config.FIREBASE_API_KEY,
+  projectId: Config.FIREBASE_PROJECT_ID,
+  appID: Config.FIREBASE_APP_ID,
+  storageBucket: Config.FIREBASE_STORAGE_BUCKET,
+};
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);

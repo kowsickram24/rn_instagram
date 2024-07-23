@@ -20,7 +20,7 @@ import {firestore} from '../../../../firebase.config';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
-import {config} from '../../../config';
+import Config from 'react-native-config';
 import {
   Dustbin,
   ForWard,
@@ -51,7 +51,7 @@ const ChatBox = ({navigation, route}) => {
   const [replyingMessage, setReplyingMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const cloudFrontDomain = config.CLDFRNTDOM;
+  const cloudFrontDomain = Config.AWS_CLOUDFRONT_DOMAIN;
   const ToggleMute = () => {
     setIsMuted(!isMuted);
   };

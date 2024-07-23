@@ -8,6 +8,7 @@ import  { analytics } from './firebase.config';
 import { auth } from './firebase.config';
 import i18n from './src/language/i18n';
 import { store } from './src/store';
+import SplashScreen from 'react-native-splash-screen';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
@@ -22,10 +23,13 @@ import { theme } from './src/theme';
 import linking from './linking';
 import StackNavigator from './src/navigation/Stack';
 
+import Config from 'react-native-config';
 
+console.log('Config: ', Config?.ENV);
 
 const App = () => {
   useEffect(() => {
+    SplashScreen.hide();
     const checkFirebaseConnection = async () => {
       try {
         const user = auth().currentUser;

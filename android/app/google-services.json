@@ -9,6 +9,44 @@
       "client_info": {
         "mobilesdk_app_id": "1:448812778466:android:617293fcd8dbfa52b2afbb",
         "android_client_info": {
+          "package_name": "com.instagram.development"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448812778466:android:617293fcd8dbfa52b2afbb",
+        "android_client_info": {
+          "package_name": "com.instagram.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyOiP-xzHdgb9-CfjsnKItAzpDgE29v90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448812778466:android:617293fcd8dbfa52b2afbb",
+        "android_client_info": {
           "package_name": "com.instagram"
         }
       },

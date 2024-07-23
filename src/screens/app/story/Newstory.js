@@ -13,12 +13,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
 import { firestore } from '../../../../firebase.config';
 import BackBtn from '../../../components/buttons/backButton';
-import { config } from '../../../config';
+import Config from 'react-native-config';
 import { S3Bucket } from '../../../services/aws/s3bucket';
 import { Box, Text } from '../../../theme';
 import { useNavigation } from '@react-navigation/native';
 
-const Cloudfront = config.CLDFRNTDOM;
+const Cloudfront = Config.AWS_CLOUDFRONT_DOMAIN;
 const NewStory = () => {
   const navigation = useNavigation();
   const currentUser = useSelector(state => state.user.user);

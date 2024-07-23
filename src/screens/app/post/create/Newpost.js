@@ -9,12 +9,12 @@ import Video from 'react-native-video';
 import {useSelector} from 'react-redux';
 import BackBtn from '../../../../components/buttons/backButton';
 import {Loader} from '../../../../components/loader/Loader';
-import { config } from '../../../../config';
 import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
 import {ProgressContext} from '../../../../context/Upload/progressCtxt';
 import {S3Bucket} from '../../../../services/aws/s3bucket';
 import {Box, Text} from '../../../../theme';
-const cloudFrontDomain = config.CLDFRNTDOM;
+import Config from 'react-native-config';
+const cloudFrontDomain = Config.AWS_CLOUDFRONT_DOMAIN;
 
 import {FlatList} from 'react-native';
 import FastImage from 'react-native-fast-image';

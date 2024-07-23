@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import {  View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/userSlice';
 import AuthStack from './Auth/AuthStack';
 import UserStack from './User/UserStack';
+import ActivityIndicator from '../../components/activityIndicator/ActvityIndi';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
@@ -38,7 +39,7 @@ const StackNavigator = () => {
   if (initializing) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator />
       </View>
     );
   }
