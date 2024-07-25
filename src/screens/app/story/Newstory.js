@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import { Header, Input } from '@rneui/themed';
 import { Buffer } from 'buffer';
 import React, { useState } from 'react';
@@ -88,13 +88,39 @@ const NewStory = () => {
       if (userStoryDoc.exists) {
         await userStoryDocRef.update({
           stories: firestore.FieldValue.arrayUnion(newStory),
-        });
+        }).then(() => {
+          notifee.displayNotification({
+            title: `${currentUser.username}`,
+            body: 'Story added successfully',
+            android: {
+              channelId: 'default',
+              importance: AndroidImportance.HIGH,
+              pressAction: {
+                id: 'default',
+                launchActivity: 'default',
+              },
+            },
+          });
+        })
       } else {
         const storyData = {
           userId: currentUser.userId,
           stories: [newStory],
         };
-        await userStoryDocRef.set(storyData);
+        await userStoryDocRef.set(storyData).then(() => {
+          notifee.displayNotification({
+            title: `${currentUser.username}`,
+            body: 'Story added successfully',
+            android: {
+              channelId: 'default',
+              importance: AndroidImportance.HIGH,
+              pressAction: {
+                id: 'default',
+                launchActivity: 'default',
+              },
+            },
+          });
+        });
       }
   
       navigation.goBack();

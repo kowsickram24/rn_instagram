@@ -1,4 +1,5 @@
 import {firestore} from '../../../../../firebase.config';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import {Header, Input} from '@rneui/themed';
 import {useState} from 'react';
 import {Animated, ScrollView, TouchableWithoutFeedback} from 'react-native';
@@ -7,8 +8,10 @@ import Video from 'react-native-video';
 import BackBtn from '../../../../components/buttons/backButton';
 import {PrimaryBtn} from '../../../../components/buttons/primaryButton';
 import {Box, Text} from '../../../../theme';
+import { useSelector } from 'react-redux';
 
 const EditPost = ({route, navigation}) => {
+  const currentUser = useSelector(state => state.user.user);
   const [posts, setPosts] = useState(route.params.post);
   const VideoUrl = posts?.mediaUrls.filter(key => key.endsWith('.mp4'));
   console.log('VideoUrl: ', VideoUrl);
@@ -23,9 +26,20 @@ const EditPost = ({route, navigation}) => {
       await postRef.update({
         caption: posts.caption,
         location: posts.location,
-      });
-
-      console.log('Post updated successfully');
+      }).then(() => {
+        notifee.displayNotification({
+          title: `${currentUser.username}`,
+          body: 'Post Updated successfully',
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+            pressAction: {
+              id: 'default',
+              launchActivity: 'default',
+            },
+          },
+        });
+      })
     } catch (error) {
       console.error('Error updating post: ', error);
     } finally {
@@ -38,7 +52,7 @@ const EditPost = ({route, navigation}) => {
   };
 
   return (
-    <Box backgroundColor="mainwhite" padding="s" flex={1}>
+    <Box backgroundColor="mainwhite" flex={1}>
       <Header
         leftComponent={
           <Box flexDirection="row" gap={'s'} alignItems="center">
@@ -53,7 +67,7 @@ const EditPost = ({route, navigation}) => {
         statusBarProps={{hidden: true}}
       />
       <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false}>
-        <Box gap={'s'}>
+        <Box gap={'s'} padding={'s'}>
           {imageUrl?.length > 0 && (
             <Box flex={1} justifyContent="center" alignItems="center">
               <Animated.FlatList

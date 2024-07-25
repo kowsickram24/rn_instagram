@@ -1,22 +1,27 @@
-import {firestore} from '../../../../../firebase.config';
-import {Button, Header, Input} from '@rneui/themed';
-import {Buffer} from 'buffer';
-import React, {useContext, useEffect, useState} from 'react';
-import {Image, ScrollView, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import { Button, Header, Input } from '@rneui/themed';
+import { Buffer } from 'buffer';
+import React, { useContext, useState } from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
+import { firestore } from '../../../../../firebase.config';
 import BackBtn from '../../../../components/buttons/backButton';
-import {Loader} from '../../../../components/loader/Loader';
-import {Gal_Image, Gal_Video, Gallery_Icon} from '../../../../constants/assets';
-import {ProgressContext} from '../../../../context/Upload/progressCtxt';
-import {S3Bucket} from '../../../../services/aws/s3bucket';
-import {Box, Text} from '../../../../theme';
-import Config from 'react-native-config';
+import { Gal_Image, Gal_Video, Gallery_Icon } from '../../../../constants/assets';
+import { ProgressContext } from '../../../../context/Upload/progressCtxt';
+import { S3Bucket } from '../../../../services/aws/s3bucket';
+import { Box, Text } from '../../../../theme';
 const cloudFrontDomain = Config.AWS_CLOUDFRONT_DOMAIN;
 
-import {FlatList} from 'react-native';
+import { FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 const NewPost = ({navigation}) => {
@@ -169,151 +174,163 @@ const NewPost = ({navigation}) => {
           .collection('users')
           .doc(currentuser.userId);
 
-        await userDocRef.update({
-          posts: firestore.FieldValue.arrayUnion(newPostId),
-        });
+        await userDocRef
+          .update({
+            posts: firestore.FieldValue.arrayUnion(newPostId),
+          })
+          .then(() => {
+            notifee.displayNotification({
+              title: 'Post Created Successfully',
+              body: 'Your new post has been uploaded!',
+              android: {
+                channelId: 'default',
+                importance: AndroidImportance.HIGH,
+                largeIcon:`${currentuser?.avatar}`,
+                pressAction: {
+                  id: 'default',
+                  launchActivity: 'default',
+                },
+              },
+            });
+          });
       } catch (error) {
         console.error('Error creating post:', error);
       } finally {
         setLoading(false);
-        setUploadProgress(0); // Reset progress
+        setUploadProgress(0);
       }
     }
   };
 
   return (
     <Box style={{flex: 1, backgroundColor: 'white'}}>
-      {loading ? (
-        <Loader text={'Uploading Post'} />
-      ) : (
-        <>
-          <Header
-            backgroundColor="white"
-            statusBarProps={{
-              hidden: true,
-            }}
-            leftContainerStyle={{flex: 3}}
-            leftComponent={
-              <Box gap={'m'} alignItems="center" flexDirection="row">
-                <BackBtn onPress={() => navigation.goBack()} />
-                <Text fontSize={14} color={'mainblack'}>
-                  New Post
-                </Text>
-              </Box>
-            }
-          />
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <Box style={styles.mediaPicker}>
-              {selectedImages.length > 0 ? (
-                <>
-                  <FlatList
-                    showsHorizontalScrollIndicator={false}
-                    scrollEnabled
-                    pagingEnabled
-                    style={{borderRadius: 8}}
-                    data={selectedImages}
-                    horizontal
-                    renderItem={({item}) => (
-                      <TouchableWithoutFeedback>
-                        <Box>
-                          <Image
-                            source={{uri: item}}
-                            style={{width: 350, height: 350, borderRadius: 8}}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        </Box>
-                      </TouchableWithoutFeedback>
-                    )}
-                  />
-                </>
-              ) : selectedVideo ? (
-                <Video
-                  muted
-                  source={{uri: selectedVideo}}
-                  resizeMode="cover"
-                  style={styles.media}
+      <>
+        <Header
+          backgroundColor="white"
+          statusBarProps={{
+            hidden: true,
+          }}
+          leftContainerStyle={{flex: 3}}
+          leftComponent={
+            <Box gap={'m'} alignItems="center" flexDirection="row">
+              <BackBtn onPress={() => navigation.goBack()} />
+              <Text fontSize={14} color={'mainblack'}>
+                New Post
+              </Text>
+            </Box>
+          }
+        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Box style={styles.mediaPicker}>
+            {selectedImages.length > 0 ? (
+              <>
+                <FlatList
+                  showsHorizontalScrollIndicator={false}
+                  scrollEnabled
+                  pagingEnabled
+                  style={{borderRadius: 8}}
+                  data={selectedImages}
+                  horizontal
+                  renderItem={({item}) => (
+                    <TouchableWithoutFeedback>
+                      <Box>
+                        <Image
+                          source={{uri: item}}
+                          style={{width: 350, height: 350, borderRadius: 8}}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      </Box>
+                    </TouchableWithoutFeedback>
+                  )}
                 />
-              ) : (
-                <Gallery_Icon />
-              )}
-            </Box>
+              </>
+            ) : selectedVideo ? (
+              <Video
+                muted
+                source={{uri: selectedVideo}}
+                resizeMode="cover"
+                style={styles.media}
+              />
+            ) : (
+              <Gallery_Icon />
+            )}
+          </Box>
 
-            <Box
-              gap={'s'}
-              padding={'s'}
-              justifyContent="space-evenly"
-              flexDirection="row">
-              <Button
-                buttonStyle={{
-                  elevation: 1,
-                  borderRadius: 10,
-                  backgroundColor: 'powderblue',
-                }}
-                icon={<Gal_Image />}
-                onPress={pickImage}
-              />
+          <Box
+            gap={'s'}
+            padding={'s'}
+            justifyContent="space-evenly"
+            flexDirection="row">
+            <Button
+              buttonStyle={{
+                elevation: 1,
+                borderRadius: 10,
+                backgroundColor: 'powderblue',
+              }}
+              icon={<Gal_Image />}
+              onPress={pickImage}
+            />
 
-              <Button
-                buttonStyle={{
-                  elevation: 1,
-                  borderRadius: 10,
-                  backgroundColor: 'pink',
-                }}
-                icon={<Gal_Video />}
-                onPress={pickVideo}
-              />
-            </Box>
-            <Box padding={'s'}>
-              <Input
-                inputStyle={{
-                  padding: 12,
-                  height: 100,
-                  verticalAlign: 'top',
-                  fontSize: 14,
-                }}
-                value={caption}
-                onChangeText={setCaption}
-                inputContainerStyle={{
-                  borderColor: 'grey',
-                  borderRadius: 10,
-                  borderWidth: 0.5,
-                  borderBottomWidth: 0.5,
-                }}
-                multiline
-                placeholder="Caption"
-              />
-              <Input
-                inputStyle={{
-                  padding: 12,
-                  fontSize: 14,
-                }}
-                value={location}
-                onChangeText={setLocation}
-                inputContainerStyle={{
-                  borderColor: 'grey',
-                  borderRadius: 10,
-                  borderWidth: 0.5,
-                  borderBottomWidth: 0.5,
-                }}
-                placeholder="Location"
-              />
-            </Box>
-          </ScrollView>
-          <Button
-            titleStyle={{fontSize: 14}}
-            loading={'true' ? loading : 'false'}
-            containerStyle={{
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-            }}
-            buttonStyle={{
-              borderRadius: 5,
-            }}
-            title="Share"
-            onPress={handleCreatePost}
-          />
-        </>
-      )}
+            <Button
+              buttonStyle={{
+                elevation: 1,
+                borderRadius: 10,
+                backgroundColor: 'pink',
+              }}
+              icon={<Gal_Video />}
+              onPress={pickVideo}
+            />
+          </Box>
+          <Box padding={'s'}>
+            <Input
+              inputStyle={{
+                padding: 12,
+                height: 100,
+                verticalAlign: 'top',
+                fontSize: 14,
+              }}
+              value={caption}
+              onChangeText={setCaption}
+              inputContainerStyle={{
+                borderColor: 'grey',
+                borderRadius: 10,
+                borderWidth: 0.5,
+                borderBottomWidth: 0.5,
+              }}
+              multiline
+              placeholder="Caption"
+            />
+            <Input
+              inputStyle={{
+                padding: 12,
+                fontSize: 14,
+              }}
+              value={location}
+              onChangeText={setLocation}
+              inputContainerStyle={{
+                borderColor: 'grey',
+                borderRadius: 10,
+                borderWidth: 0.5,
+                borderBottomWidth: 0.5,
+              }}
+              placeholder="Location"
+            />
+          </Box>
+        </ScrollView>
+        <Button
+          titleStyle={{fontSize: 14}}
+          loading={'true' ? loading : 'false'}
+          containerStyle={{
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+          }}
+          buttonStyle={{
+            borderRadius: 5,
+          }}
+          title="Share"
+          onPress={handleCreatePost}
+        />
+      </>
     </Box>
   );
 };
@@ -324,7 +341,9 @@ const styles = StyleSheet.create({
     margin: 6,
     width: 350,
     height: 350,
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    elevation: 1,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',

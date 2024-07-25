@@ -8,6 +8,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
 import {Box, Text} from '../../../theme';
+import {
+  useGetChatsQuery,
+  useDeleteChatMutation,
+} from '../../../store/slices/chatsApi';
 
 const fetchChats = async currentUser => {
   const snapshot = await firestore()
@@ -33,7 +37,6 @@ const fetchChats = async currentUser => {
 
 const ChatBox = ({navigation}) => {
   const dispatch = useDispatch();
-  const stories = useSelector(state => state.stories.stories);
   const currentUser = useSelector(state => state.user.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChat, setSelectedChat] = useState('');

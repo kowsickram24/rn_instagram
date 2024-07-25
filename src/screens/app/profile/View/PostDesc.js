@@ -1,4 +1,5 @@
 import {firestore} from '../../../../../firebase.config';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import {Header} from '@rneui/themed';
 import React, {useRef, useState} from 'react';
 import {Alert, Dimensions, FlatList, TouchableOpacity} from 'react-native';
@@ -57,7 +58,16 @@ const PostDesc = ({route}) => {
                 .doc(currentUser?.userId);
               await userRef.update({
                 posts: firestore.FieldValue.arrayRemove(selectedPost.postId),
-              });
+              }).then(() => {
+                notifee.displayNotification({
+                  title: `${currentUser.username}`,
+                  body: 'Post deleted successfully',
+                  android: {
+                    channelId: 'default',
+                    importance: AndroidImportance.HIGH,
+                  },
+                });
+              })
 
               RBref.current.close();
               navigation.navigate('Profile');

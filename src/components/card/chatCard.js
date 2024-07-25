@@ -1,7 +1,7 @@
-import {Avatar, Card, Skeleton} from '@rneui/themed';
-import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
-import {Share} from '../../constants/assets';
-import {Box, Text} from '../../theme';
+import { Avatar, Skeleton } from '@rneui/themed';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Msg_Icon, } from '../../constants/assets';
+import { Box, Text } from '../../theme';
 
 const ChatCard = ({
   Username = 'Charles Clark',
@@ -50,9 +50,7 @@ const ChatCard = ({
           </Text>
         </Box>
         <Box alignItems="center" justifyContent="center">
-          <TouchableOpacity>
-            <Share />
-          </TouchableOpacity>
+            <Msg_Icon />        
         </Box>
       </Box>
     </Box>

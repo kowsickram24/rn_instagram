@@ -28,7 +28,6 @@ const Stack = createNativeStackNavigator();
 const UserStack = ({getData}) => {
   const user = useSelector(state => state?.user?.user);
   const [currentUser, setCurrentUser] = useState();
-  console.log('currentUser: ', currentUser);
 
   useEffect(() => {
     let unsubscribe;
@@ -44,7 +43,6 @@ const UserStack = ({getData}) => {
             const userDoc = querySnapshot.docs[0];
             setCurrentUser(userDoc.data());
 
-            // Subscribe to real-time updates
             unsubscribe = firestore()
               .collection('users')
               .doc(userDoc.id)

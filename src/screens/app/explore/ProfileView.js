@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Modal,
+  ScrollView,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -24,7 +25,6 @@ const ProfileView = ({route, navigation}) => {
   console.log('userId: ', userId);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const stories = useSelector(state => state.stories.stories);
   const [storyModal, setStoryModal] = useState(false);
 
   const handleLongPress = avatar => {
@@ -161,7 +161,7 @@ const ProfileView = ({route, navigation}) => {
   }
 
   return (
-    <Box flex={1} backgroundColor={'mainwhite'}>
+    <ScrollView  showsVerticalScrollIndicator={false}  style={{backgroundColor: 'white'}} >
       <Header
         statusBarProps={{hidden: true}}
         backgroundColor="white"
@@ -248,7 +248,7 @@ const ProfileView = ({route, navigation}) => {
         </TouchableWithoutFeedback>
       </Modal>
       <ProfileTab user={selectedUser} />
-    </Box>
+    </ScrollView>
   );
 };
 

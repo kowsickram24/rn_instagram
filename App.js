@@ -3,12 +3,13 @@ import { ThemeProvider } from '@shopify/restyle';
 import React, { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
-import { Provider } from 'react-redux';
-import  { analytics } from './firebase.config';
-import { auth } from './firebase.config';
-import i18n from './src/language/i18n';
-import { store } from './src/store';
 import SplashScreen from 'react-native-splash-screen';
+import { Provider } from 'react-redux';
+import { analytics, auth } from './firebase.config';
+import i18n from './src/language/i18n';
+
+import { store } from './src/store';
+
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
@@ -22,26 +23,24 @@ import { theme } from './src/theme';
 
 import linking from './linking';
 import StackNavigator from './src/navigation/Stack';
-
-import Config from 'react-native-config';
-
-console.log('Config: ', Config?.ENV);
+import { Notifeeconfig } from './src/services/notifiee/Notifeeconfig';
 
 const App = () => {
+  const checkFirebaseConnection = async () => {
+    try {
+      const user = auth().currentUser;
+      await analytics().logEvent('check_analytics_enabled', {
+        status: 'success',
+      });
+      console.log('Firebase is connected successfully with Analytics', user);
+    } catch (error) {
+      console.error('Error connecting to Firebase:', error);
+    }
+  };
   useEffect(() => {
     SplashScreen.hide();
-    const checkFirebaseConnection = async () => {
-      try {
-        const user = auth().currentUser;
-        await analytics().logEvent('check_analytics_enabled', {
-          status: 'success',
-        });
-        console.log('Firebase is connected successfully with Analytics', user);
-      } catch (error) {
-        console.error('Error connecting to Firebase:', error);
-      }
-    };
     checkFirebaseConnection();
+    Notifeeconfig();
   }, []);
   const handleBackgroundEvent = async event => {
     console.log('Background event:', event);

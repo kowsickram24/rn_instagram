@@ -1,8 +1,8 @@
 import {Avatar, Badge, Button, Divider, Header, SearchBar} from '@rneui/themed';
 import {Buffer} from 'buffer';
 import React, {useEffect, useRef, useState} from 'react';
+import ActivityIndicator from '../../../components/activityIndicator/ActvityIndi';
 import {
-  ActivityIndicator,
   FlatList,
   Image,
   Platform,
@@ -31,6 +31,7 @@ import {
 } from '../../../constants/assets';
 import {S3Bucket} from '../../../services/aws/s3bucket';
 import {Box, Text, height} from '../../../theme';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 const ChatBox = ({navigation, route}) => {
   const currentUser = useSelector(state => state.user.user);
@@ -51,7 +52,7 @@ const ChatBox = ({navigation, route}) => {
   const [replyingMessage, setReplyingMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const cloudFrontDomain = Config.AWS_CLOUDFRONT_DOMAIN;
+
   const ToggleMute = () => {
     setIsMuted(!isMuted);
   };
@@ -63,7 +64,6 @@ const ChatBox = ({navigation, route}) => {
         async chatDoc => {
           if (chatDoc.exists) {
             const data = chatDoc.data();
-            console.log('data: ', data);
             setChatData(data);
 
             const secondUserId = data.members.find(
@@ -88,10 +88,6 @@ const ChatBox = ({navigation, route}) => {
     fetchUsers();
     return () => unsubscribe();
   }, [chatId, currentUser.userId]);
-  const handleFwdOpen = () => {
-    ActionRef.current.close();
-    FwdRef.current.open();
-  };
 
   const PickImage = async () => {
     try {
@@ -145,7 +141,7 @@ const ChatBox = ({navigation, route}) => {
         if (error) {
           reject(error);
         } else {
-          const cloudFrontUrl = `${cloudFrontDomain}/${key}`;
+          const cloudFrontUrl = `${Config.AWS_CLOUDFRONT_DOMAIN}/${key}`;
           resolve(cloudFrontUrl);
         }
       });
@@ -160,7 +156,20 @@ const ChatBox = ({navigation, route}) => {
           .doc(chatId)
           .update({
             messages: firestore.FieldValue.arrayRemove(selectedMessage),
-          });
+          }).then(() => {
+            notifee.displayNotification({
+              title: `${currentUser.username}`,
+              body: 'Deleted message',
+              android: {
+                channelId: 'default',
+                importance: AndroidImportance.HIGH,
+                pressAction: {
+                  id: 'default',
+                  launchActivity: 'default',
+                },
+              },
+            });
+          })
         ActionRef.current.close();
       } catch (error) {
         console.error('Error deleting message: ', error);
@@ -195,7 +204,6 @@ const ChatBox = ({navigation, route}) => {
         .collection('chats')
         .where('members', 'array-contains', currentUser.userId)
         .get();
-      console.log('currentUser.userId: ', userId, currentUser.userId);
 
       let chatDoc;
       chatQuerySnapshot.forEach(doc => {
@@ -204,7 +212,6 @@ const ChatBox = ({navigation, route}) => {
           chatDoc = doc;
         }
       });
-      console.log(chatDoc);
       if (!chatDoc) {
         chatDoc = await firestore()
           .collection('chats')
@@ -300,6 +307,21 @@ const ChatBox = ({navigation, route}) => {
           .update({
             messages: firestore.FieldValue.arrayUnion(newMessage),
             lastMessage: newMessage,
+          })
+          .then(() => {
+            notifee.displayNotification({
+              title: `${currentUser.username}`,
+              body: 'Message sent!',
+              android: {
+                channelId: 'default',
+                importance: AndroidImportance.HIGH,
+                largeIcon:`${currentUser.avatar}`,
+                pressAction: {
+                  id: 'default',
+                  launchActivity: 'default',
+                }
+              },
+            });
           });
 
         setMessage('');

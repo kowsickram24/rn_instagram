@@ -1,7 +1,8 @@
-import { Avatar, Button, Header } from '@rneui/themed';
-import React, { useRef, useState } from 'react';
+import {Avatar, Button, Header} from '@rneui/themed';
+import React, {useRef, useState} from 'react';
 import {
   Modal,
+  ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -10,13 +11,14 @@ import FastImage from 'react-native-fast-image';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import StoryHighlight from '../../../components/avatar/StoryHighlight';
 import ProfileCard from '../../../components/card/profileCard';
-import { Dw_Arrow, Menu, Tick_blue } from '../../../constants/assets';
+import {Dw_Arrow, Menu, Tick_blue} from '../../../constants/assets';
 import TopNavigator from '../../../navigation/TopTab/TopTab';
-import { Box, Text, height, width } from '../../../theme';
-import { useSelector } from 'react-redux';
+import {Box, Text, height, width} from '../../../theme';
+import {useSelector} from 'react-redux';
+import {useFetchStoriesQuery} from '../../../store/slices/storiesApi';
 
 const Profile = ({navigation, User}) => {
-  const stories = useSelector(state => state.stories.stories);
+  const {data: storyData, error, isLoading} = useFetchStoriesQuery();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [storyModal, setStoryModal] = useState(false);
@@ -32,12 +34,12 @@ const Profile = ({navigation, User}) => {
   };
 
   const handleAccount = () => {
-   navigation.navigate('AccountCenter')
-   ProfileRef.current.close();
+    navigation.navigate('AccountCenter');
+    ProfileRef.current.close();
   };
 
   return (
-    <Box flex={1} backgroundColor={'mainwhite'}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: 'white'}}>
       <Header
         rightComponent={
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
@@ -48,7 +50,11 @@ const Profile = ({navigation, User}) => {
         leftComponent={
           <TouchableOpacity onPress={() => ProfileRef.current.open()}>
             <Box flexDirection="row" alignItems="center" gap={'s'}>
-              <Text color={'mainblack'} numberOfLines={1} fontWeight={'400'} fontSize={14}>
+              <Text
+                color={'mainblack'}
+                numberOfLines={1}
+                fontWeight={'400'}
+                fontSize={14}>
                 {User?.username}
               </Text>
               <Dw_Arrow />
@@ -65,7 +71,7 @@ const Profile = ({navigation, User}) => {
 
       <ProfileCard
         show={true}
-        onPostPress={() => navigation.navigate('MyPosts')  }
+        onPostPress={() => navigation.navigate('MyPosts')}
         onAvatarLongPress={() => handleLongPress(User?.avatar)}
         // onAvatarPressout={handlePressOut}
         onFollowersPress={() =>
@@ -87,7 +93,11 @@ const Profile = ({navigation, User}) => {
           </Text>
         )}
         {User?.bio && (
-          <Text ellipsizeMode='tail' numberOfLines={3} fontSize={12} color={'mainblack'}>
+          <Text
+            ellipsizeMode="tail"
+            numberOfLines={3}
+            fontSize={12}
+            color={'mainblack'}>
             {User?.bio}
           </Text>
         )}
@@ -121,7 +131,6 @@ const Profile = ({navigation, User}) => {
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: 'rgba(0,0,0,0.9)',
-  
             }}>
             {selectedImage && (
               <FastImage
@@ -170,8 +179,7 @@ const Profile = ({navigation, User}) => {
             </Box>
           </Box>
           <Box flex={1} padding={'s'} margin={'m'} justifyContent="flex-end">
-            <TouchableWithoutFeedback
-              onPress={handleAccount}>
+            <TouchableWithoutFeedback onPress={handleAccount}>
               <Box padding={'s'} borderRadius={'xl'} borderWidth={1}>
                 <Text color={'mainblack'} textAlign="center">
                   Go to Accountcenter
@@ -182,7 +190,7 @@ const Profile = ({navigation, User}) => {
         </Box>
       </RBSheet>
       <TopNavigator navigation={navigation} />
-    </Box>
+    </ScrollView>
   );
 };
 

@@ -4,17 +4,14 @@ import BackBtn from '../../../components/buttons/backButton';
 import {useSelector} from 'react-redux';
 import {FlatList} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useFetchStoriesQuery } from '../../../store/slices/storiesApi';
 
 const Archives = ({navigation}) => {
   const currentUser = useSelector(state => state?.user?.user);
-  const stories = useSelector(state => state.stories.stories);
-
-  // Filter stories for the current user
-  const userStories = stories.filter(
+  const { data: storyData, error, isLoading } = useFetchStoriesQuery();
+  const userStories = storyData.filter(
     story => story.userId === currentUser?.userId,
   );
-
-  console.log('userstories: ', userStories);
 
   return (
     <Box flex={1} color={'mainwhite'}>

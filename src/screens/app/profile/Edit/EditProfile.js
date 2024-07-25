@@ -1,4 +1,5 @@
 import { firestore } from '../../../../../firebase.config';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import { Avatar, Button, Header, Input } from '@rneui/themed';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
@@ -154,7 +155,16 @@ const EditProfile = ({navigation, route}) => {
       if (newImage) {
         imageUrl = await uploadImageToS3(newImage);
       }
-      await updateFirestore(imageUrl, values);
+      await updateFirestore(imageUrl, values).then(() => {
+        notifee.displayNotification({
+          title: `${currentUser.username}`,
+          body: 'Updated profile' ,
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+          },
+        });
+      })
       setNewImage(null);
       navigation.navigate('Profile');
     } catch (error) {

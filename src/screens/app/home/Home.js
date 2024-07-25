@@ -19,10 +19,11 @@ import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
 import {ProgressContext} from '../../../context/Upload/progressCtxt';
 import {fetchStories} from '../../../store/slices/storiesSlice';
+import { useFetchStoriesQuery } from '../../../store/slices/storiesApi';
 
 const Home = ({navigation}) => {
-  const dispatch = useDispatch();
-  const stories = useSelector(state => state.stories.stories);
+
+  const { data: storyData, error, isLoading } = useFetchStoriesQuery();
   const {data: postData, isSuccess: postsFetched, refetch} = usePosts();
   const currentUser = useSelector(state => state.user.user);
   const {progress} = useContext(ProgressContext);
@@ -35,9 +36,6 @@ const Home = ({navigation}) => {
     }
   }, [postsFetched]);
 
-  useEffect(() => {
-    dispatch(fetchStories());
-  }, [dispatch]);
 
   const toggleMute = postId => {
     setMutedStates(prevState => ({
@@ -71,7 +69,7 @@ const Home = ({navigation}) => {
 
   const renderStory = ({item}) => (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate('Stories', {stories: stories})}>
+      onPress={() => navigation.navigate('Stories', {stories: storyData})}>
       <Box alignItems="center">
         <StoryAvatar source={item?.user?.avatar} />
         <Text
@@ -115,7 +113,7 @@ const Home = ({navigation}) => {
           horizontal
           keyExtractor={item => item.id}
           renderItem={renderStory}
-          data={stories}
+          data={storyData}
         />
       </Box>
 

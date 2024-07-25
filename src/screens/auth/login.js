@@ -1,3 +1,4 @@
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
@@ -27,7 +28,17 @@ const LoginScreen = ({ navigation, getData }) => {
       return;
     }
     try {
-      await auth().sendPasswordResetEmail(email);
+      await auth().sendPasswordResetEmail(email).then(() => {
+        notifee.displayNotification({
+          title: 'Password reset email sent',
+          body: 'Check your email',
+          android: {
+            category: 'social',
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+          },
+        });
+      })
       setSnackbarMessage('Email sent for reset password');
       setSnackbarVisible(true);
     } catch (error) {
@@ -37,21 +48,6 @@ const LoginScreen = ({ navigation, getData }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userCollection = await firestore().collection('users').get();
-        console.log(
-          'Users collection: ',
-          userCollection.docs.map(doc => doc.data()),
-        );
-      } catch (error) {
-        console.error('Error fetching users: ', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleLogin = async (values, { setSubmitting, setErrors }) => {
     const { email, password } = values;

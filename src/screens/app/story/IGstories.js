@@ -28,13 +28,14 @@ import {Platform} from 'react-native';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
-import {deleteStory, fetchStories} from '../../../store/slices/storiesSlice';
 import ShareStory from '../../../components/bottomsheet/shareStory';
+import {useDeleteStoryMutation} from '../../../store/slices/storiesApi';
 
 const storyViewDuration = 15 * 1000;
 
 export const IgStories = ({route}) => {
   const dispatch = useDispatch();
+  const [deleteStory] = useDeleteStoryMutation();
   const currentUser = useSelector(state => state.user.user);
   const usersStories = route?.params?.stories || [];
   const [userIndex, setUserIndex] = useState(0);
@@ -43,7 +44,7 @@ export const IgStories = ({route}) => {
   const [paused, setPaused] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const ActionRef = useRef();
-  const ShareRef = useRef()
+  const ShareRef = useRef();
 
   const progress = useSharedValue(0);
   const currentUserStories = usersStories[userIndex]?.stories || [];
@@ -100,13 +101,11 @@ export const IgStories = ({route}) => {
   const DeleteStory = async () => {
     setLoading(true);
     try {
-      await dispatch(
-        deleteStory({
-          userId: usersStories[userIndex]?.user?.userId,
-          story: currentStory,
-        }),
-      );
-      setStoryIndex(0);
+      await deleteStory({
+        userId: usersStories[userIndex]?.user?.userId,
+        story: currentStory,
+      }),
+        setStoryIndex(0);
       setModalvisible(false);
     } catch (error) {
       console.error('Error deleting story: ', error);
@@ -134,8 +133,8 @@ export const IgStories = ({route}) => {
 
   const renderRightActions = () => {
     return (
-      <TouchableOpacity onPress={() => ShareRef?.current.open() }>
-       <Box
+      <TouchableOpacity onPress={() => ShareRef?.current.open()}>
+        <Box
           width={100}
           flex={1}
           justifyContent="center"
@@ -146,8 +145,8 @@ export const IgStories = ({route}) => {
           </Text>
         </Box>
       </TouchableOpacity>
-    )
-  }
+    );
+  };
 
   const PauseStory = () => {
     setPaused(prev => !prev);
@@ -301,18 +300,18 @@ export const IgStories = ({route}) => {
             </Box>
           </Swipeable>
         ) : null}
-          <Swipeable
-            containerStyle={{backgroundColor: 'black'}}
-            dragOffsetFromLeftEdge={10}
-            renderRightActions={renderRightActions}
-            renderLeftActions={() => {} }>
-            <Box
-              alignItems="flex-end"
-              padding={'s'}
-              backgroundColor={'mainblack'}>
-              <AntDesign size={16} name="doubleleft" color={'#fff'} />
-            </Box>
-          </Swipeable>
+        <Swipeable
+          containerStyle={{backgroundColor: 'black'}}
+          dragOffsetFromLeftEdge={10}
+          renderRightActions={renderRightActions}
+          renderLeftActions={() => {}}>
+          <Box
+            alignItems="flex-end"
+            padding={'s'}
+            backgroundColor={'mainblack'}>
+            <AntDesign size={16} name="doubleleft" color={'#fff'} />
+          </Box>
+        </Swipeable>
         <StoryFooter userId={usersStories[userIndex]?.user?.userId} />
         <Modal
           onRequestClose={() => setModalvisible(false)}
