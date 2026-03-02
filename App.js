@@ -25,6 +25,12 @@ import linking from './linking';
 import StackNavigator from './src/navigation/Stack';
 import { Notifeeconfig } from './src/services/notifiee/Notifeeconfig';
 
+const handleBackgroundEvent = async event => {
+  console.log('Background event:', event);
+};
+
+notifee.onBackgroundEvent(handleBackgroundEvent);
+
 const App = () => {
   const checkFirebaseConnection = async () => {
     try {
@@ -42,16 +48,11 @@ const App = () => {
     checkFirebaseConnection();
     Notifeeconfig();
   }, []);
-  const handleBackgroundEvent = async event => {
-    console.log('Background event:', event);
-  };
-
-  notifee.onBackgroundEvent(handleBackgroundEvent);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <QueryClientProvider client={queryClient}>
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{ flex: 1 }}>
           <Provider store={store}>
             <ThemeProvider theme={theme}>
               <NetworkProvider>

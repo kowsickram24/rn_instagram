@@ -1,32 +1,31 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {useSelector, useDispatch} from 'react-redux';
-import {Header, Divider, LinearProgress, Button} from '@rneui/themed';
+import { useSelector, useDispatch } from 'react-redux';
+import { Header, Divider, LinearProgress, Button } from '@rneui/themed';
 import {
   Insta_Typo_logo,
   Msg_Icon,
   Notifi,
   Reels,
 } from '../../../constants/assets';
-import {Box, Text} from '../../../theme';
-import {usePosts} from '../../../hooks/data/fetchPosts';
+import { Box, Text } from '../../../theme';
+import { usePosts } from '../../../hooks/data/fetchPosts';
 import StoryAvatar from '../../../components/avatar/StoryAvatar';
 import FeedPost from '../../../components/card/FeedPost';
-import {ProgressContext} from '../../../context/Upload/progressCtxt';
-import {fetchStories} from '../../../store/slices/storiesSlice';
+import { ProgressContext } from '../../../context/Upload/progressCtxt';
 import { useFetchStoriesQuery } from '../../../store/slices/storiesApi';
 
-const Home = ({navigation}) => {
+const Home = ({ navigation }) => {
 
   const { data: storyData, error, isLoading } = useFetchStoriesQuery();
-  const {data: postData, isSuccess: postsFetched, refetch} = usePosts();
+  const { data: postData, isSuccess: postsFetched, refetch } = usePosts();
   const currentUser = useSelector(state => state.user.user);
-  const {progress} = useContext(ProgressContext);
+  const { progress } = useContext(ProgressContext);
   const [mutedStates, setMutedStates] = useState({});
   const [refreshing, setRefreshing] = useState(false);
 
@@ -46,7 +45,7 @@ const Home = ({navigation}) => {
 
 
 
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
     <Box>
       <FeedPost
         location={item?.location}
@@ -58,7 +57,7 @@ const Home = ({navigation}) => {
         comments={item?.comments}
         time={item?.time}
         onProfilePress={() =>
-          navigation.navigate('ProfileView', {userId: item?.userId})
+          navigation.navigate('ProfileView', { userId: item?.userId })
         }
         mediaSrc={item?.mediaUrls}
         isMuted={!mutedStates[item.postId]}
@@ -67,9 +66,9 @@ const Home = ({navigation}) => {
     </Box>
   );
 
-  const renderStory = ({item}) => (
+  const renderStory = ({ item }) => (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate('Stories', {stories: storyData})}>
+      onPress={() => navigation.navigate('Stories', { stories: storyData })}>
       <Box alignItems="center">
         <StoryAvatar source={item?.user?.avatar} />
         <Text
@@ -86,7 +85,7 @@ const Home = ({navigation}) => {
   const ListHeaderComponent = () => (
     <>
       <Header
-        statusBarProps={{hidden: true}}
+        statusBarProps={{ hidden: true }}
         leftComponent={<Insta_Typo_logo width="120" />}
         backgroundColor="white"
         rightComponent={

@@ -4,6 +4,7 @@ import { Buffer } from 'buffer';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
@@ -72,19 +73,19 @@ const NewStory = () => {
         setIsLoading(false);
         return;
       }
-  
+
       const imageUrl = await uploadMediaToAWS(selectedImage, 'image');
-  
+
       const userStoryDocRef = firestore().collection('stories').doc(currentUser.userId);
       const userStoryDoc = await userStoryDocRef.get();
-  
+
       const newStory = {
         image: imageUrl,
         caption: storytext || '',
         seen: [],
         time: firestore.Timestamp.now(),
       };
-  
+
       if (userStoryDoc.exists) {
         await userStoryDocRef.update({
           stories: firestore.FieldValue.arrayUnion(newStory),
@@ -122,7 +123,7 @@ const NewStory = () => {
           });
         });
       }
-  
+
       navigation.goBack();
     } catch (error) {
       console.error('Error adding story:', error);
@@ -148,10 +149,10 @@ const NewStory = () => {
   };
 
   return (
-    <Box flex={1} backgroundColor={'red'}>
+    <Box flex={1} backgroundColor={'mainblack'}>
       <Header
-        statusBarProps={{hidden: true}}
-        leftContainerStyle={{flex: 3}}
+        statusBarProps={{ hidden: true }}
+        leftContainerStyle={{ flex: 3 }}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'s'}>
             <BackBtn onPress={() => navigation.goBack()} />
@@ -163,30 +164,30 @@ const NewStory = () => {
         backgroundColor="white"
       />
       {/* Canvas */}
-      <Box style={{backgroundColor: 'lightgrey'}} flex={1}>
+      <Box style={{ backgroundColor: 'lightgrey' }} flex={1}>
         <ImageBackground
           resizeMode="cover"
-          style={{width: '100%', height: '100%'}}
-          source={{uri: selectedImage}}>
+          style={{ width: '100%', height: '100%' }}
+          source={{ uri: selectedImage }}>
           <Box
             style={{
-              backgroundColor:'#000',
+              backgroundColor: '#000',
               width: '100%',
               padding: 8,
             }}>
             <Input
               renderErrorMessage={false}
-              inputContainerStyle={{borderBottomWidth: 0}}
+              inputContainerStyle={{ borderBottomWidth: 0 }}
               value={storytext}
               onChangeText={setStorytext}
-              inputStyle={{fontSize: 14, color: 'white'}}
+              inputStyle={{ fontSize: 14, color: 'white' }}
               placeholder="Enter Caption"></Input>
           </Box>
         </ImageBackground>
       </Box>
 
       {/* Button */}
-      <Box style={{backgroundColor:'#000', position: 'absolute', bottom: 0, width: '100%'}}>
+      <Box style={{ backgroundColor: '#000', position: 'absolute', bottom: 0, width: '100%' }}>
         <Box
           padding={'m'}
           flexDirection="row"

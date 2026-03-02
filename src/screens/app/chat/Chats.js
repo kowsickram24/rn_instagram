@@ -1,13 +1,13 @@
-import {firestore} from '../../../../firebase.config';
-import {Divider, Header, SearchBar} from '@rneui/themed';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import React, {useRef, useState} from 'react';
-import {FlatList, Platform, TouchableOpacity} from 'react-native';
+import { firestore } from '../../../../firebase.config';
+import { Divider, Header, SearchBar } from '@rneui/themed';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useRef, useState } from 'react';
+import { FlatList, Platform, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import ChatCard from '../../../components/card/chatCard';
-import {Box, Text} from '../../../theme';
+import { Box, Text } from '../../../theme';
 import {
   useGetChatsQuery,
   useDeleteChatMutation,
@@ -28,15 +28,14 @@ const fetchChats = async currentUser => {
         .doc(secondUserId)
         .get();
       const secondUser = userDoc.data();
-      return {id: doc.id, ...chat, secondUser};
+      return { id: doc.id, ...chat, secondUser };
     }),
   );
 
   return chatData;
 };
 
-const ChatBox = ({navigation}) => {
-  const dispatch = useDispatch();
+const ChatBox = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChat, setSelectedChat] = useState('');
@@ -78,14 +77,14 @@ const ChatBox = ({navigation}) => {
     deleteChatMutation.mutate(selectedChat.id);
   };
 
-  const RenderChats = ({item}) => (
+  const RenderChats = ({ item }) => (
     <TouchableOpacity
       onLongPress={() => {
         setSelectedChat(item);
         Actionref.current.open();
       }}
       onPress={() =>
-        navigation.navigate('ChatBox', {params: {chatId: item.id}})
+        navigation.navigate('ChatBox', { params: { chatId: item.id } })
       }>
       <ChatCard
         onAvatarPress={() => setStoryModal(!storyModal)}
@@ -96,12 +95,12 @@ const ChatBox = ({navigation}) => {
           item?.lastMessage?.messageType === 'image'
             ? 'Sent a photo'
             : item?.lastMessage?.messageType === 'video'
-            ? 'Sent a video'
-            : item?.lastMessage?.messageType === 'post'
-            ? 'Sent a post'
-            : item?.lastMessage?.messageType === 'storyreply'
-            ? 'Replyed to your story'
-            : item?.lastMessage?.message
+              ? 'Sent a video'
+              : item?.lastMessage?.messageType === 'post'
+                ? 'Sent a post'
+                : item?.lastMessage?.messageType === 'storyreply'
+                  ? 'Replyed to your story'
+                  : item?.lastMessage?.message
         }
       />
     </TouchableOpacity>
@@ -120,7 +119,7 @@ const ChatBox = ({navigation}) => {
           </Text>
         }
         leftComponent={<BackBtn onPress={() => navigation.goBack()} />}
-        statusBarProps={{hidden: true}}
+        statusBarProps={{ hidden: true }}
       />
       <SearchBar
         searchIcon={{
@@ -129,7 +128,7 @@ const ChatBox = ({navigation}) => {
         clearIcon={{
           name: 'close',
         }}
-        inputStyle={{fontSize: 14}}
+        inputStyle={{ fontSize: 14 }}
         placeholder="Search"
         platform={Platform.OS === 'android' ? 'android' : 'ios'}
         value={searchQuery}

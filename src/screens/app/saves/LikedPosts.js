@@ -78,10 +78,12 @@ const LikedPosts = ({ navigation }) => {
       />
 
       <FlatList
-        horizontal
+        numColumns={3}
         data={posts}
         keyExtractor={item => item.id}
-        ListEmptyComponent={<Text textAlign="center">No Liked Posts Yet</Text>}
+        columnWrapperStyle={{ gap: 2 }}
+        ItemSeparatorComponent={() => <Box height={2} />}
+        ListEmptyComponent={<Text textAlign="center" color={'mainblack'} padding={'l'}>No Liked Posts Yet</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
@@ -96,6 +98,7 @@ const LikedPosts = ({ navigation }) => {
             ) : null}
             {item?.videoUrl ? (
               <Video
+                paused
                 resizeMode="cover"
                 source={{ uri: item?.videoUrl }}
                 style={{ width: width / 3, height: width / 3 }}

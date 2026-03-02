@@ -1,6 +1,6 @@
-import {Avatar, Badge, Button, Divider, Header, SearchBar} from '@rneui/themed';
-import {Buffer} from 'buffer';
-import React, {useEffect, useRef, useState} from 'react';
+import { Avatar, Badge, Button, Divider, Header, SearchBar } from '@rneui/themed';
+import { Buffer } from 'buffer';
+import React, { useEffect, useRef, useState } from 'react';
 import ActivityIndicator from '../../../components/activityIndicator/ActvityIndi';
 import {
   FlatList,
@@ -11,12 +11,12 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import RNFS from 'react-native-fs';
-import {GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Video from 'react-native-video';
-import {useSelector} from 'react-redux';
-import {firestore} from '../../../../firebase.config';
+import { useSelector } from 'react-redux';
+import { firestore } from '../../../../firebase.config';
 import MessageBox from '../../../components/Input/messageBox';
 import BackBtn from '../../../components/buttons/backButton';
 import SharePost from '../../../components/card/sharePost';
@@ -29,11 +29,11 @@ import {
   Gallery_Icon,
   Info,
 } from '../../../constants/assets';
-import {S3Bucket} from '../../../services/aws/s3bucket';
-import {Box, Text, height} from '../../../theme';
+import { S3Bucket } from '../../../services/aws/s3bucket';
+import { Box, Text, height } from '../../../theme';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 
-const ChatBox = ({navigation, route}) => {
+const ChatBox = ({ navigation, route }) => {
   const currentUser = useSelector(state => state.user.user);
   const chatId = route?.params.params.chatId;
   const MediaRef = useRef();
@@ -115,7 +115,7 @@ const ChatBox = ({navigation, route}) => {
 
   const UploadtoAWS = async (file, type) => {
     try {
-      const bucketName = config.BUCKETNAME;
+      const bucketName = Config.AWS_BUCKET_NAME;
       const key = `${type}_${Date.now()}.${type === 'image' ? 'jpg' : 'mp4'}`;
       const fileUrl = await UploadToS3(file, bucketName, key, type);
       console.log('fileUrl: ', fileUrl);
@@ -315,7 +315,7 @@ const ChatBox = ({navigation, route}) => {
               android: {
                 channelId: 'default',
                 importance: AndroidImportance.HIGH,
-                largeIcon:`${currentUser.avatar}`,
+                largeIcon: `${currentUser.avatar}`,
                 pressAction: {
                   id: 'default',
                   launchActivity: 'default',
@@ -332,7 +332,7 @@ const ChatBox = ({navigation, route}) => {
     }
   };
 
-  const renderFwdUsers = ({item}) => (
+  const renderFwdUsers = ({ item }) => (
     <Box>
       <Box
         flex={1}
@@ -341,15 +341,15 @@ const ChatBox = ({navigation, route}) => {
         alignItems="center"
         justifyContent="space-between">
         <Box flexDirection="row" alignItems="center" gap={'m'}>
-          <Avatar rounded size={'small'} source={{uri: item.avatar}} />
-          <Text color={'mainblack'} style={{fontWeight: 'normal'}}>
+          <Avatar rounded size={'small'} source={{ uri: item.avatar }} />
+          <Text color={'mainblack'} style={{ fontWeight: 'normal' }}>
             {item.username}
           </Text>
         </Box>
         <Button
           title={'Share'}
-          containerStyle={{borderRadius: 8}}
-          titleStyle={{fontWeight: 'medium', fontSize: 14}}
+          containerStyle={{ borderRadius: 8 }}
+          titleStyle={{ fontWeight: 'medium', fontSize: 14 }}
           onPress={() => handleForwardMessage(item.userId)}
         />
       </Box>
@@ -371,21 +371,21 @@ const ChatBox = ({navigation, route}) => {
     <Box flex={1} backgroundColor={'mainwhite'}>
       <Header
         backgroundColor="white"
-        leftContainerStyle={{flex: 1}}
+        leftContainerStyle={{ flex: 1 }}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'l'}>
             <BackBtn onPress={() => navigation.goBack()} />
             <TouchableOpacity>
-              <Avatar rounded size={40} source={{uri: secondUser.avatar}} />
+              <Avatar rounded size={40} source={{ uri: secondUser.avatar }} />
             </TouchableOpacity>
           </Box>
         }
-        statusBarProps={{hidden: true}}
-        centerContainerStyle={{justifyContent: 'center'}}
-        rightContainerStyle={{justifyContent: 'center'}}
+        statusBarProps={{ hidden: true }}
+        centerContainerStyle={{ justifyContent: 'center' }}
+        rightContainerStyle={{ justifyContent: 'center' }}
         rightComponent={
           <TouchableOpacity
-            onPress={() => navigation.navigate('ChatInfo', {secondUser})}>
+            onPress={() => navigation.navigate('ChatInfo', { secondUser })}>
             <Info />
           </TouchableOpacity>
         }
@@ -394,10 +394,10 @@ const ChatBox = ({navigation, route}) => {
             <Box justifyContent="center" alignItems="center">
               <Text color={'mainblack'}> {secondUser.username} </Text>
               <Box flexDirection="row" alignItems="center">
-                <Badge badgeStyle={{backgroundColor: 'green'}} />
+                <Badge badgeStyle={{ backgroundColor: 'green' }} />
                 <Text color={'darkgrey'} fontSize={12}>
                   {' '}
-                  {!secondUser.activeTime ? 'Active Now' : 'Offline'}{' '}
+                  {secondUser.activeTime ? 'Active Now' : 'Offline'}{' '}
                 </Text>
               </Box>
             </Box>
@@ -407,12 +407,12 @@ const ChatBox = ({navigation, route}) => {
       {/* */}
       <Divider />
 
-      <GestureHandlerRootView style={{flex: 1}}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={chatData?.messages}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             const messageDate = item.time.toDate();
             const currentDate = new Date();
             const timeDifference = currentDate - messageDate;
@@ -463,7 +463,7 @@ const ChatBox = ({navigation, route}) => {
                     </Text>
                     <Swipeable
                       dragOffsetFromLeftEdge={2}
-                      renderRightActions={() => {}}
+                      renderRightActions={() => { }}
                       renderLeftActions={renderLeftActions}>
                       <TouchableWithoutFeedback onLongPress={handleLongPress}>
                         <Box
@@ -489,12 +489,12 @@ const ChatBox = ({navigation, route}) => {
                                 {item?.replyingTo?.messageType === 'text'
                                   ? item?.replyingTo?.message
                                   : item?.replyingTo?.messageType === 'post'
-                                  ? 'Post'
-                                  : item?.replyingTo?.messageType === 'video'
-                                  ? 'Video'
-                                  : item?.replyingTo.messageType === 'image'
-                                  ? 'Image'
-                                  : null}
+                                    ? 'Post'
+                                    : item?.replyingTo?.messageType === 'video'
+                                      ? 'Video'
+                                      : item?.replyingTo.messageType === 'image'
+                                        ? 'Image'
+                                        : null}
                               </Text>
                             </Box>
                           )}
@@ -505,7 +505,7 @@ const ChatBox = ({navigation, route}) => {
                           ) : item.messageType === 'image' ? (
                             <Image
                               resizeMode="cover"
-                              source={{uri: item.message}}
+                              source={{ uri: item.message }}
                               style={{
                                 width: 200,
                                 height: 200,
@@ -538,7 +538,7 @@ const ChatBox = ({navigation, route}) => {
                             <TouchableWithoutFeedback onPress={ToggleMute}>
                               <Video
                                 resizeMode="cover"
-                                source={{uri: item.message}}
+                                source={{ uri: item.message }}
                                 style={{
                                   width: 200,
                                   height: 200,
@@ -578,19 +578,19 @@ const ChatBox = ({navigation, route}) => {
                 {replyingMessage?.messageType === 'text'
                   ? replyingMessage?.message
                   : replyingMessage?.messageType === 'post'
-                  ? 'Post'
-                  : replyingMessage?.messageType === 'image'
-                  ? 'Image'
-                  : replyingMessage?.messageType === 'video'
-                  ? 'Video'
-                  : null}
+                    ? 'Post'
+                    : replyingMessage?.messageType === 'image'
+                      ? 'Image'
+                      : replyingMessage?.messageType === 'video'
+                        ? 'Video'
+                        : null}
               </Text>
             </Box>
             <Button
               onPress={() => setReplyingMessage(null)}
               title="Cancel"
-              buttonStyle={{backgroundColor: 'transparent'}}
-              titleStyle={{color: 'red'}}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              titleStyle={{ color: 'red' }}
             />
           </Box>
         )}
@@ -625,7 +625,7 @@ const ChatBox = ({navigation, route}) => {
                 borderRadius: 10,
               }}
               alt="Image"
-              source={{uri: selectedImage}}
+              source={{ uri: selectedImage }}
             />
           ) : selectedVideo ? (
             <Video
@@ -637,7 +637,7 @@ const ChatBox = ({navigation, route}) => {
                 height: 300,
                 borderRadius: 10,
               }}
-              source={{uri: selectedVideo}}
+              source={{ uri: selectedVideo }}
             />
           ) : (
             <Box
@@ -679,8 +679,8 @@ const ChatBox = ({navigation, route}) => {
           <Button
             loading={isLoading}
             onPress={handleShare}
-            buttonStyle={{borderRadius: 8, marginVertical: 5}}
-            titleStyle={{fontSize: 14}}
+            buttonStyle={{ borderRadius: 8, marginVertical: 5 }}
+            titleStyle={{ fontSize: 14 }}
             title={'Share'}
           />
         </Box>
@@ -762,7 +762,7 @@ const ChatBox = ({navigation, route}) => {
           clearIcon={{
             name: 'close',
           }}
-          inputStyle={{fontSize: 14}}
+          inputStyle={{ fontSize: 14 }}
           platform={Platform.OS === 'android' ? 'android' : 'ios'}
           placeholder="Search"
           onChangeText={setSearchQuery}

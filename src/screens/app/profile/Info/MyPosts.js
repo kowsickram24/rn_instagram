@@ -12,7 +12,6 @@ const { width } = Dimensions.get('screen');
 const MyPosts = ({ navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const { data: postData, isLoading, refetch: refetchPosts } = usePosts(currentUser?.userId);
-  const ImagePst = postData?.mediaUrls?.filter(key => key?.endsWith('.jpg'));
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -34,7 +33,7 @@ const MyPosts = ({ navigation }) => {
           <Video
             paused
             source={{ uri: item?.videoUrl }}
-            style={{ backgroundColor: 'red', width: 120, height: 120 }}
+            style={{ backgroundColor: 'black', width: width / 3, height: width / 3 }}
             resizeMode="cover"
           />
         ) : null}

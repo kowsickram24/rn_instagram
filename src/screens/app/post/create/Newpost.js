@@ -24,10 +24,10 @@ const cloudFrontDomain = Config.AWS_CLOUDFRONT_DOMAIN;
 import { FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-const NewPost = ({navigation}) => {
+const NewPost = ({ navigation }) => {
   const currentuser = useSelector(state => state.user.user);
   const [selectedImages, setSelectedImages] = useState([]);
-  const {setProgress} = useContext(ProgressContext);
+  const { setProgress } = useContext(ProgressContext);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
@@ -80,8 +80,7 @@ const NewPost = ({navigation}) => {
         mediaType,
       );
       console.log(
-        `${
-          mediaType.charAt(0).toUpperCase() + mediaType.slice(1)
+        `${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)
         } uploaded successfully:`,
         mediaUrl,
       );
@@ -143,12 +142,12 @@ const NewPost = ({navigation}) => {
 
         const videoUrl = selectedVideo
           ? await uploadMediaToAWS(selectedVideo, 'video', updateProgress).then(
-              url => {
-                uploadedFiles++;
-                updateProgress(100);
-                return url;
-              },
-            )
+            url => {
+              uploadedFiles++;
+              updateProgress(100);
+              return url;
+            },
+          )
           : null;
 
         const mediaUrls = [...imageUrls, ...(videoUrl ? [videoUrl] : [])];
@@ -185,7 +184,7 @@ const NewPost = ({navigation}) => {
               android: {
                 channelId: 'default',
                 importance: AndroidImportance.HIGH,
-                largeIcon:`${currentuser?.avatar}`,
+                largeIcon: `${currentuser?.avatar}`,
                 pressAction: {
                   id: 'default',
                   launchActivity: 'default',
@@ -197,20 +196,20 @@ const NewPost = ({navigation}) => {
         console.error('Error creating post:', error);
       } finally {
         setLoading(false);
-        setUploadProgress(0);
+        setProgress(0);
       }
     }
   };
 
   return (
-    <Box style={{flex: 1, backgroundColor: 'white'}}>
+    <Box style={{ flex: 1, backgroundColor: 'white' }}>
       <>
         <Header
           backgroundColor="white"
           statusBarProps={{
             hidden: true,
           }}
-          leftContainerStyle={{flex: 3}}
+          leftContainerStyle={{ flex: 3 }}
           leftComponent={
             <Box gap={'m'} alignItems="center" flexDirection="row">
               <BackBtn onPress={() => navigation.goBack()} />
@@ -228,15 +227,15 @@ const NewPost = ({navigation}) => {
                   showsHorizontalScrollIndicator={false}
                   scrollEnabled
                   pagingEnabled
-                  style={{borderRadius: 8}}
+                  style={{ borderRadius: 8 }}
                   data={selectedImages}
                   horizontal
-                  renderItem={({item}) => (
+                  renderItem={({ item }) => (
                     <TouchableWithoutFeedback>
                       <Box>
                         <Image
-                          source={{uri: item}}
-                          style={{width: 350, height: 350, borderRadius: 8}}
+                          source={{ uri: item }}
+                          style={{ width: 350, height: 350, borderRadius: 8 }}
                           resizeMode={FastImage.resizeMode.cover}
                         />
                       </Box>
@@ -247,7 +246,7 @@ const NewPost = ({navigation}) => {
             ) : selectedVideo ? (
               <Video
                 muted
-                source={{uri: selectedVideo}}
+                source={{ uri: selectedVideo }}
                 resizeMode="cover"
                 style={styles.media}
               />
@@ -318,8 +317,8 @@ const NewPost = ({navigation}) => {
           </Box>
         </ScrollView>
         <Button
-          titleStyle={{fontSize: 14}}
-          loading={'true' ? loading : 'false'}
+          titleStyle={{ fontSize: 14 }}
+          loading={loading}
           containerStyle={{
             paddingHorizontal: 20,
             paddingVertical: 10,

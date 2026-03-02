@@ -1,18 +1,18 @@
 import { Header } from '@rneui/themed';
-import { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { firestore } from '../../../../firebase.config';
-import { ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import FeedPost from '../../../components/card/FeedPost';
 import { Insta_Typo_logo } from '../../../constants/assets';
 // import { usePostbyId } from '../../../hooks/data/fetchPosts';
 import { Box } from '../../../theme';
-const PostPage = ({route, navigation}) => {
+const PostPage = ({ route, navigation }) => {
   const currentUser = useSelector(state => state.user.user);
   const postId = route.params?.postId;
   const [post, setPost] = useState(null);
-  // const {data: postData} = usePostbyId(postId)
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -64,6 +64,13 @@ const PostPage = ({route, navigation}) => {
 
 
 
+  if (loading || !post) {
+    return (
+      <Box flex={1} backgroundColor="mainwhite" alignItems="center" justifyContent="center">
+        <ActivityIndicator color="grey" size="large" />
+      </Box>
+    );
+  }
   return (
     <Box flex={1} backgroundColor="mainwhite">
       <Header
@@ -73,29 +80,27 @@ const PostPage = ({route, navigation}) => {
             <Insta_Typo_logo />
           </Box>
         }
-        leftContainerStyle={{flex: 3}}
-        statusBarProps={{hidden: false}}
+        leftContainerStyle={{ flex: 3 }}
+        statusBarProps={{ hidden: false }}
         backgroundColor="white"
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        
-          <FeedPost
-            onProfilePress={() =>
-              navigation.navigate('ProfileView', {userId: post?.user?.userId})
-            }
-            ProfileUrl={post?.user?.avatar}
-            userId={currentUser?.userId}
-            postId={post?.id}
-            mediaSrc={post?.mediaUrls}
-            isMuted={!mutedStates[post?.id]}
-            toggleMute={() => toggleMute(post?.id)}
-            Caption={post?.caption}
-            user={post?.user?.username}
-            location={post?.location}
-            time={post?.time}
-            comments={post?.comments}
-          />
-       
+        <FeedPost
+          onProfilePress={() =>
+            navigation.navigate('ProfileView', { userId: post?.user?.userId })
+          }
+          ProfileUrl={post?.user?.avatar}
+          userId={currentUser?.userId}
+          postId={post?.id}
+          mediaSrc={post?.mediaUrls}
+          isMuted={!mutedStates[post?.id]}
+          toggleMute={() => toggleMute(post?.id)}
+          Caption={post?.caption}
+          user={post?.user?.username}
+          location={post?.location}
+          time={post?.time}
+          comments={post?.comments}
+        />
       </ScrollView>
     </Box>
   );

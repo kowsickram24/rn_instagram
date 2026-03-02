@@ -78,16 +78,17 @@ const SavedPosts = ({ navigation }) => {
       />
 
       <FlatList
-        horizontal
+        numColumns={3}
         data={posts}
         keyExtractor={item => item.id}
+        columnWrapperStyle={{ gap: 2 }}
+        ItemSeparatorComponent={() => <Box height={2} />}
         ListEmptyComponent={
-          <Box flex={1} alignItems="center">
-            <Text>No Saved Posts Yet</Text>
+          <Box flex={1} alignItems="center" padding={'l'}>
+            <Text color={'mainblack'}>No Saved Posts Yet</Text>
           </Box>
         }
         renderItem={({ item }) => (
-          <Box >
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('PostPage', { postId: item.id })
@@ -96,19 +97,18 @@ const SavedPosts = ({ navigation }) => {
               <FastImage
                 resizeMode="cover"
                 source={{ uri: item?.mediaUrls[0] }}
-                style={{ width: width / 3, height: width / 3, borderRadius:10 }}
+                style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
             {item?.videoUrl ? (
               <Video
-                playWhenInactive
+                paused
                 resizeMode="cover"
                 source={{ uri: item?.videoUrl }}
                 style={{ width: width / 3, height: width / 3 }}
               />
             ) : null}
           </TouchableOpacity>
-          </Box>
         )}
       />
     </Box>

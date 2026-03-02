@@ -18,7 +18,7 @@ const baseQuery = async ({ url, method = 'GET', body }) => {
 };
 
 export const chatsApi = createApi({
-  reducerPath: 'api',
+  reducerPath: 'chatsApi',
   baseQuery,
   endpoints: builder => ({
     getChats: builder.query({

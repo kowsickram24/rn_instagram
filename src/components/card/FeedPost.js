@@ -66,7 +66,7 @@ const FeedPost = ({
     if (isNaN(date.getTime())) {
       throw new Error('Invalid Date');
     }
-    formattedTime = formatDistanceToNow(date, {addSuffix: true});
+    formattedTime = formatDistanceToNow(date, { addSuffix: true });
   } catch (error) {
     formattedTime = 'Invalid time';
   }
@@ -144,31 +144,28 @@ const FeedPost = ({
   }, [postId, userId]);
 
   useEffect(() => {
-    const fetchLikedUsers = async () => {
-      const postRef = firestore().collection('posts').doc(postId);
+    const postRef = firestore().collection('posts').doc(postId);
 
-      const unsubscribe = postRef.onSnapshot(async postDoc => {
-        if (postDoc.exists) {
-          const postData = postDoc.data();
-          const likedUserIds = postData.likes || [];
-          setLikedId(likedUserIds);
-          const userPromises = likedUserIds.map(async id => {
-            const userDoc = await firestore().collection('users').doc(id).get();
-            if (userDoc.exists) {
-              return userDoc.data().username;
-            }
-            return null;
-          });
+    const unsubscribe = postRef.onSnapshot(async postDoc => {
+      if (postDoc.exists) {
+        const postData = postDoc.data();
+        const likedUserIds = postData.likes || [];
+        setLikedId(likedUserIds);
 
-          const usernames = await Promise.all(userPromises);
-          setLikedUsers(usernames.filter(username => username !== null));
-        }
-      });
+        const userPromises = likedUserIds.map(async id => {
+          const userDoc = await firestore().collection('users').doc(id).get();
+          if (userDoc.exists) {
+            return userDoc.data().username;
+          }
+          return null;
+        });
 
-      return () => unsubscribe();
-    };
+        const usernames = await Promise.all(userPromises);
+        setLikedUsers(usernames.filter(username => username !== null));
+      }
+    });
 
-    fetchLikedUsers();
+    return () => unsubscribe();
   }, [postId]);
 
   const oncommentPress = () => {
@@ -200,7 +197,7 @@ const FeedPost = ({
         if (likes.includes(userId)) {
           // Unlike the post
           newLikes = likes.filter(id => id !== userId);
-          transaction.update(postRef, {likes: newLikes});
+          transaction.update(postRef, { likes: newLikes });
 
           // Remove postId from user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -210,7 +207,7 @@ const FeedPost = ({
         } else {
           // Like the post
           newLikes = [...likes, userId];
-          transaction.update(postRef, {likes: newLikes});
+          transaction.update(postRef, { likes: newLikes });
 
           // Add postId to user's likedPosts
           const likedPosts = userDoc.data().likedPosts || [];
@@ -284,7 +281,7 @@ const FeedPost = ({
             pagingEnabled
             horizontal
             onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {x: animatedValue}}}],
+              [{ nativeEvent: { contentOffset: { x: animatedValue } } }],
               {
                 useNativeDriver: true,
                 listener: event => {
@@ -295,12 +292,12 @@ const FeedPost = ({
               },
             )}
             data={images}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <TouchableWithoutFeedback>
                 <Box>
                   <FastImage
-                    source={{uri: item}}
-                    style={{width: width, height: 400}}
+                    source={{ uri: item }}
+                    style={{ width: width, height: 400 }}
                     resizeMode={FastImage.resizeMode.cover}
                   />
                 </Box>
@@ -327,8 +324,8 @@ const FeedPost = ({
         {videos?.length > 0 && (
           <>
             <Video
-              source={{uri: videos[0]}}
-              style={{height: 400, width: width}}
+              source={{ uri: videos[0] }}
+              style={{ height: 400, width: width }}
               playWhenInactive
               resizeMode="cover"
               repeat
@@ -389,7 +386,7 @@ const FeedPost = ({
         {/* {likedUsers} */}
         {likedUsers && (
           <TouchableOpacity
-            onPress={() => navigation.navigate('LikedUsers', {likedId})}>
+            onPress={() => navigation.navigate('LikedUsers', { likedId })}>
             {likedUsers && likedUsers.length !== 0 ? (
               <Box paddingHorizontal={'s'}>
                 {likedUsers.length > 0 && (
@@ -405,9 +402,8 @@ const FeedPost = ({
                       <Text fontSize={14}>
                         {`Liked by `}
                         <Text fontWeight={'500'} fontSize={14}>
-                          {`${likedUsers[0]} and ${
-                            likedUsers.length - 1
-                          } others`}
+                          {`${likedUsers[0]} and ${likedUsers.length - 1
+                            } others`}
                         </Text>
                       </Text>
                     )}
@@ -431,7 +427,7 @@ const FeedPost = ({
 
         {comments?.length > 0 && (
           <TouchableOpacity onPress={ViewCmnt}>
-            <Text style={{color:'grey'}} paddingHorizontal={'s'} fontSize={12}>
+            <Text style={{ color: 'grey' }} paddingHorizontal={'s'} fontSize={12}>
               View{' '}
               {comments?.length > 1
                 ? `${comments?.length} comments`
@@ -441,7 +437,7 @@ const FeedPost = ({
         )}
 
         {formattedTime && (
-          <Text style={{color:'grey'}} paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
+          <Text style={{ color: 'grey' }} paddingTop={'s'} paddingHorizontal={'s'} fontSize={12}>
             {formattedTime}
           </Text>
         )}

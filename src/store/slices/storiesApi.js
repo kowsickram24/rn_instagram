@@ -19,13 +19,17 @@ export const storiesApi = createApi({
             storiesSnapshot = await firestore().collection('stories').get();
           }
 
-          const fetchedStories = [];
-          for (const doc of storiesSnapshot.docs) {
-            const storyData = { id: doc.id, ...doc.data() };
-            const userSnapshot = await firestore().collection('users').doc(storyData.userId).get();
-            storyData.user = userSnapshot.data();
-            fetchedStories.push(storyData);
-          }
+          const fetchedStories = await Promise.all(
+            storiesSnapshot.docs.map(async doc => {
+              const storyData = { id: doc.id, ...doc.data() };
+              const userSnapshot = await firestore()
+                .collection('users')
+                .doc(storyData.userId)
+                .get();
+              storyData.user = userSnapshot.data();
+              return storyData;
+            }),
+          );
 
           return { data: fetchedStories };
         } catch (error) {

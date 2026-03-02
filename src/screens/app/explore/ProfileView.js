@@ -1,6 +1,6 @@
-import {firestore} from '../../../../firebase.config';
-import {Header} from '@rneui/themed';
-import {useEffect, useState} from 'react';
+import { firestore } from '../../../../firebase.config';
+import { Header } from '@rneui/themed';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import BackBtn from '../../../components/buttons/backButton';
 import {
   PrimaryBtn,
@@ -17,11 +17,11 @@ import {
 } from '../../../components/buttons/primaryButton';
 import ProfileCard from '../../../components/card/profileCard';
 import ProfileTab from '../../../navigation/TopTab/ProfileTab';
-import {Box, Text, width} from '../../../theme';
+import { Box, Text, width } from '../../../theme';
 
-const ProfileView = ({route, navigation}) => {
+const ProfileView = ({ route, navigation }) => {
   const currentUser = useSelector(state => state.user.user);
-  const {userId} = route.params;
+  const { userId } = route.params;
   console.log('userId: ', userId);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -39,11 +39,11 @@ const ProfileView = ({route, navigation}) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
 
-  const isSameUser = currentUser?.userId === selectedUser?.userId;
-  console.log('isSameUser: ', isSameUser);
-  if (isSameUser) {
-    navigation.navigate('Profile');
-  }
+  useEffect(() => {
+    if (selectedUser && currentUser?.userId === selectedUser?.userId) {
+      navigation.replace('Main');
+    }
+  }, [selectedUser, currentUser?.userId]);
   const handleChat = async () => {
     try {
       // Check if a chat already exists
@@ -72,7 +72,7 @@ const ProfileView = ({route, navigation}) => {
       }
 
       navigation.navigate('ChatBox', {
-        params: {chatId: chatDoc.id},
+        params: { chatId: chatDoc.id },
       });
     } catch (error) {
       console.error('Error handling chat: ', error);
@@ -84,7 +84,7 @@ const ProfileView = ({route, navigation}) => {
       const userDoc = await firestore().collection('users').doc(userId).get();
 
       if (userDoc.exists) {
-        const userData = {...userDoc.data(), uid: userDoc.id};
+        const userData = { ...userDoc.data(), uid: userDoc.id };
         setSelectedUser(userData);
 
         const isFollowed = userData.followers.some(
@@ -128,15 +128,15 @@ const ProfileView = ({route, navigation}) => {
         } else {
           updatedFollowers = [
             ...userData.followers,
-            {userId: currentUser.userId},
+            { userId: currentUser.userId },
           ];
-          updatedFollowing = [...currentUserData.following, {userId: userId}];
+          updatedFollowing = [...currentUserData.following, { userId: userId }];
         }
 
-        transaction.update(userDocRef, {followers: updatedFollowers});
-        transaction.update(currentUserDocRef, {following: updatedFollowing});
+        transaction.update(userDocRef, { followers: updatedFollowers });
+        transaction.update(currentUserDocRef, { following: updatedFollowing });
 
-        setSelectedUser(prev => ({...prev, followers: updatedFollowers}));
+        setSelectedUser(prev => ({ ...prev, followers: updatedFollowers }));
         setIsFollowed(!isFollowed);
       });
     } catch (error) {
@@ -161,11 +161,11 @@ const ProfileView = ({route, navigation}) => {
   }
 
   return (
-    <ScrollView  showsVerticalScrollIndicator={false}  style={{backgroundColor: 'white'}} >
+    <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: 'white' }} >
       <Header
-        statusBarProps={{hidden: true}}
+        statusBarProps={{ hidden: true }}
         backgroundColor="white"
-        leftContainerStyle={{flex: 3}}
+        leftContainerStyle={{ flex: 3 }}
         leftComponent={
           <Box flexDirection="row" alignItems="center" gap={'s'}>
             <BackBtn onPress={() => navigation.goBack()} />
@@ -177,7 +177,7 @@ const ProfileView = ({route, navigation}) => {
       />
 
       <ProfileCard
-        onPostPress={() => navigation.navigate('PublicPost')}
+        onPostPress={() => navigation.navigate('PostInfo')}
         onAvatarLongPress={() => handleLongPress(selectedUser?.avatar)}
         show={false}
         onAvatarPress={() => setStoryModal(!storyModal)}
@@ -239,8 +239,8 @@ const ProfileView = ({route, navigation}) => {
             }}>
             {selectedImage && (
               <FastImage
-                source={{uri: selectedImage}}
-                style={{width: 250, height: 250, borderRadius: 250}}
+                source={{ uri: selectedImage }}
+                style={{ width: 250, height: 250, borderRadius: 250 }}
                 resizeMode="contain"
               />
             )}
